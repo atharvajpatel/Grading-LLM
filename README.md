@@ -109,8 +109,9 @@ Open `http://localhost:5173` in your browser.
 **Frontend (Vercel):**
 1. Push repo to GitHub
 2. Import at [vercel.com](https://vercel.com)
-3. Add environment variable: `VITE_API_URL=https://your-backend.onrender.com`
-4. Deploy
+3. Set **Root Directory** to `frontend`
+4. Add environment variable: `VITE_API_URL=https://your-backend.onrender.com`
+5. Deploy (uses `frontend/vercel.json` config)
 
 **Backend (Render):**
 1. Import repo at [render.com](https://render.com)
