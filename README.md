@@ -102,7 +102,7 @@ python main.py
 cd frontend && npm install && npm run dev
 ```
 
-Open `http://localhost:3000` in your browser.
+Open `http://localhost:5173` in your browser.
 
 ### Deploy to Production
 
@@ -114,20 +114,24 @@ Open `http://localhost:3000` in your browser.
 
 **Backend (Render):**
 1. Import repo at [render.com](https://render.com)
-2. Add environment variable: `OPENAI_API_KEY=sk-...`
-3. Deploy (uses `render.yaml` config)
+2. Deploy (uses `render.yaml` config)
+
+**Note:** Users provide their own OpenAI API key via the frontend UI. No server-side API key is required for deployment.
 
 ### Features
 
 - **Analyze Tab**: Enter a statement and view:
+  - **The Problem** section explaining LLM-as-a-judge calibration
   - **Question mode selector** (Mechanistic or Interpretability)
   - Real-time progress bar with current scale and sample
   - Cancel button to stop running analysis
+  - **Value Distribution** with metric definitions and per-scale histograms
   - Interactive 3D PCA plot (rotate, zoom, pan)
-  - Variance chart by scale
-  - Stability metrics table
+  - Per-scale heatmaps showing response patterns
+  - Detailed stability metrics table
 
-- **Questions & Info Tab**:
+- **Documentation Tab**:
+  - Methodology explanation (1600 evaluations breakdown)
   - Browse all 20 questions by factor family
   - Learn how PCA reveals model uncertainty
   - Understand limitations and future directions
