@@ -2,7 +2,7 @@ services:
   - type: web
     name: grading-llm-api
     runtime: python
-    buildCommand: pip install -e .
+    buildCommand: pip install -r requirements.txt
     startCommand: python main.py
     envVars:
       - key: OPENAI_API_KEY
