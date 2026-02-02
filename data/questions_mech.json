@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "mode": "mech",
+  "description": "Mechanistic questions - probe explicit linguistic and semantic features",
+  "questions": [
+    {
+      "id": "mech_01",
+      "family": "named_entities",
+      "question": "Does the statement mention a specific person by name?"
+    },
+    {
+      "id": "mech_02",
+      "family": "actions_events",
+      "question": "Does the statement describe an action being performed?"
+    },
+    {
+      "id": "mech_03",
+      "family": "causality",
+      "question": "Does the statement express a cause-and-effect relationship?"
+    },
+    {
+      "id": "mech_04",
+      "family": "temporal",
+      "question": "Does the statement reference a specific time or date?"
+    },
+    {
+      "id": "mech_05",
+      "family": "spatial",
+      "question": "Does the statement use spatial prepositions (in, on, under, above)?"
+    },
+    {
+      "id": "mech_06",
+      "family": "numeric",
+      "question": "Does the statement contain explicit numbers?"
+    },
+    {
+      "id": "mech_07",
+      "family": "negation",
+      "question": "Does the statement contain explicit negation (not, never, no)?"
+    },
+    {
+      "id": "mech_08",
+      "family": "uncertainty",
+      "question": "Does the statement express uncertainty (might, maybe, perhaps)?"
+    },
+    {
+      "id": "mech_09",
+      "family": "modality",
+      "question": "Does the statement express obligation (should, must, ought)?"
+    },
+    {
+      "id": "mech_10",
+      "family": "sentiment",
+      "question": "Does the statement contain evaluative language (good, bad)?"
+    },
+    {
+      "id": "mech_11",
+      "family": "emotion",
+      "question": "Does the statement name a specific emotion (happy, sad, angry)?"
+    },
+    {
+      "id": "mech_12",
+      "family": "social",
+      "question": "Does the statement describe interaction between people?"
+    },
+    {
+      "id": "mech_13",
+      "family": "dialogue",
+      "question": "Does the statement contain quoted speech or dialogue?"
+    },
+    {
+      "id": "mech_14",
+      "family": "first_person",
+      "question": "Does the statement use first-person pronouns (I, me, my, we)?"
+    },
+    {
+      "id": "mech_15",
+      "family": "imperative",
+      "question": "Does the statement give instructions or commands?"
+    },
+    {
+      "id": "mech_16",
+      "family": "comparison",
+      "question": "Does the statement compare two or more things?"
+    },
+    {
+      "id": "mech_17",
+      "family": "normative",
+      "question": "Does the statement make moral or ethical judgments?"
+    },
+    {
+      "id": "mech_18",
+      "family": "intent",
+      "question": "Does the statement describe someone's intention or purpose?"
+    },
+    {
+      "id": "mech_19",
+      "family": "concreteness",
+      "question": "Does the statement describe concrete, tangible objects?"
+    },
+    {
+      "id": "mech_20",
+      "family": "identity",
+      "question": "Does the statement describe someone's identity or role?"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "version": "1.0.0",
+  "mode": "interp",
+  "description": "Interpretability questions - probe implicit meaning, inference, and social understanding",
+  "questions": [
+    {
+      "id": "interp_01",
+      "family": "implicit_judgment",
+      "question": "Is someone being judged without it being stated directly?"
+    },
+    {
+      "id": "interp_02",
+      "family": "implied_problem",
+      "question": "Does the text imply that something went wrong?"
+    },
+    {
+      "id": "interp_03",
+      "family": "unstated_reason",
+      "question": "Is there an unstated reason why events unfolded this way?"
+    },
+    {
+      "id": "interp_04",
+      "family": "tone_ambiguity",
+      "question": "Would two readers likely disagree on the tone of this text?"
+    },
+    {
+      "id": "interp_05",
+      "family": "pragmatic_meaning",
+      "question": "Is the speaker communicating more than what is literally written?"
+    },
+    {
+      "id": "interp_06",
+      "family": "mental_state_inference",
+      "question": "Does understanding this require inferring someone's internal thoughts?"
+    },
+    {
+      "id": "interp_07",
+      "family": "social_tension",
+      "question": "Is there social tension implied in the situation?"
+    },
+    {
+      "id": "interp_08",
+      "family": "implicit_cause",
+      "question": "Does the text suggest a cause without naming it?"
+    },
+    {
+      "id": "interp_09",
+      "family": "emotional_subtext",
+      "question": "Is there a subtle emotional signal that is never named?"
+    },
+    {
+      "id": "interp_10",
+      "family": "descriptive_vs_evaluative",
+      "question": "Is this text describing events, or implying meaning about them?"
+    },
+    {
+      "id": "interp_11",
+      "family": "context_dependence",
+      "question": "Would this text be interpreted differently depending on context?"
+    },
+    {
+      "id": "interp_12",
+      "family": "power_dynamics",
+      "question": "Is there an implied power dynamic between people?"
+    },
+    {
+      "id": "interp_13",
+      "family": "omission",
+      "question": "Is there something important that is not being said?"
+    },
+    {
+      "id": "interp_14",
+      "family": "social_norms",
+      "question": "Does the text rely on shared social norms to be understood?"
+    },
+    {
+      "id": "interp_15",
+      "family": "explicit_vs_implicit",
+      "question": "Is the main point of the text explicit or implicit?"
+    },
+    {
+      "id": "interp_16",
+      "family": "meaning_shift",
+      "question": "Does the text contain a shift in situation or meaning?"
+    },
+    {
+      "id": "interp_17",
+      "family": "indirection",
+      "question": "Is the speaker avoiding saying something directly?"
+    },
+    {
+      "id": "interp_18",
+      "family": "implied_intent",
+      "question": "Does the text imply intent without stating it?"
+    },
+    {
+      "id": "interp_19",
+      "family": "event_ambiguity",
+      "question": "Is there ambiguity about what actually happened?"
+    },
+    {
+      "id": "interp_20",
+      "family": "social_experience",
+      "question": "Would this be difficult to interpret without social experience?"
+    }
+  ]
+}

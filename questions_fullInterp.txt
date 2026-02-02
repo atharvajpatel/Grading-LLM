@@ -1,0 +1,99 @@
+1) Is someone being judged without it being stated directly?
+
+Neuroscience justification:
+Implicit social judgment requires pragmatic inference and activates regions associated with social reasoning and moral evaluation (medial prefrontal cortex, temporoparietal junction). Humans often disagree on whether judgment is present, indicating this is a high-level interpretive semantic feature.
+
+2) Does the text imply that something went wrong?
+
+Justification:
+This requires counterfactual reasoning and inference beyond literal content. Such processing engages prefrontal integration rather than lexical-semantic areas and is known to have lower inter-annotator agreement.
+
+3) Is there an unstated reason why events unfolded this way?
+
+Justification:
+Inferring hidden causes engages causal reasoning networks and narrative inference systems. Humans vary widely in inferred causality when it is not explicit.
+
+4) Would two readers likely disagree on the tone of this text?
+
+Justification:
+This is meta-pragmatic reasoning. Tone interpretation activates distributed networks tied to emotion and social cognition and is known to be highly subjective.
+
+5) Is the speaker communicating more than what is literally written?
+
+Justification:
+Classic pragmatics (Gricean implicature). Requires inference beyond text. Strongly associated with theory-of-mind processing in neuroscience.
+
+6) Does understanding this require inferring someone’s internal thoughts?
+
+Justification:
+Direct probe of theory of mind. Associated with TPJ and medial prefrontal cortex. Humans show variability in these inferences.
+
+7) Is there social tension implied in the situation?
+
+Justification:
+Requires emotional and social state inference, not lexical cues. Known to produce diffuse cortical activation and low agreement.
+
+8) Does the text suggest a cause without naming it?
+
+Justification:
+Implicit causality processing engages integrative reasoning beyond semantic parsing.
+
+9) Is there a subtle emotional signal that is never named?
+
+Justification:
+Humans often detect emotion from context, not words. This involves limbic + prefrontal integration and is highly subjective.
+
+10) Is this text describing events, or implying meaning about them?
+
+Justification:
+Distinguishes narrative structure from factual reporting. Narrative comprehension is a higher-order cognitive process.
+
+11) Would this text be interpreted differently depending on context?
+
+Justification:
+Context sensitivity is a hallmark of pragmatic reasoning. Requires mental simulation and is not surface detectable.
+
+12) Is there an implied power dynamic between people?
+
+Justification:
+Social hierarchy inference is deeply studied in social neuroscience and requires interpretation beyond text.
+
+13) Is there something important that is not being said?
+
+Justification:
+Inference from omission is a classic pragmatic task; humans often disagree here.
+
+14) Does the text rely on shared social norms to be understood?
+
+Justification:
+Norm inference engages cultural and social reasoning networks; high variability across readers.
+
+15) Is the main point of the text explicit or implicit?
+
+Justification:
+Requires summarization and inference; engages narrative comprehension systems.
+
+16) Does the text contain a shift in situation or meaning?
+
+Justification:
+Detecting narrative turning points involves temporal integration and discourse tracking.
+
+17) Is the speaker avoiding saying something directly?
+
+Justification:
+Indirect speech acts are core to pragmatics research; humans often debate these.
+
+18) Does the text imply intent without stating it?
+
+Justification:
+Intent inference = theory of mind + causal reasoning. Classic high-level semantic task.
+
+19) Is there ambiguity about what actually happened?
+
+Justification:
+Ambiguity detection involves uncertainty reasoning and interpretation rather than detection.
+
+20) Would this be difficult to interpret without social experience?
+
+Justification:
+Direct probe of experiential and social cognition reliance, beyond lexical semantics.

@@ -1,0 +1,23 @@
+# Mechanistic Questions (mech mode) - 20 total, 1 per family
+# Probes explicit linguistic and semantic features
+
+1. [named_entities] Does the statement mention a specific person by name?
+2. [actions_events] Does the statement describe an action being performed?
+3. [causality] Does the statement express a cause-and-effect relationship?
+4. [temporal] Does the statement reference a specific time or date?
+5. [spatial] Does the statement use spatial prepositions (in, on, under, above)?
+6. [numeric] Does the statement contain explicit numbers?
+7. [negation] Does the statement contain explicit negation (not, never, no)?
+8. [uncertainty] Does the statement express uncertainty (might, maybe, perhaps)?
+9. [modality] Does the statement express obligation (should, must, ought)?
+10. [sentiment] Does the statement contain evaluative language (good, bad)?
+11. [emotion] Does the statement name a specific emotion (happy, sad, angry)?
+12. [social] Does the statement describe interaction between people?
+13. [dialogue] Does the statement contain quoted speech or dialogue?
+14. [first_person] Does the statement use first-person pronouns (I, me, my, we)?
+15. [imperative] Does the statement give instructions or commands?
+16. [comparison] Does the statement compare two or more things?
+17. [normative] Does the statement make moral or ethical judgments?
+18. [intent] Does the statement describe someone's intention or purpose?
+19. [concreteness] Does the statement describe concrete, tangible objects?
+20. [identity] Does the statement describe someone's identity or role?

@@ -1,0 +1,207 @@
+{
+  "version": "1.0.0",
+  "description": "Default 20-question bank (1 per family, pruned for low redundancy)",
+  "source": "data/questions_100.json",
+  "questions": [
+    {
+      "id": "q_named_entities_01",
+      "family": "named_entities",
+      "question": "Does the statement mention a specific person by name?",
+      "rubric": {"0": "no person named", "1": "specific person named"},
+      "minimal_pairs": {
+        "positive": "John Smith went to the store yesterday.",
+        "negative": "Someone went to the store yesterday."
+      }
+    },
+    {
+      "id": "q_actions_events_01",
+      "family": "actions_events",
+      "question": "Does the statement describe an action being performed?",
+      "rubric": {"0": "no action described", "1": "action described"},
+      "minimal_pairs": {
+        "positive": "She ran across the field quickly.",
+        "negative": "The field was large and green."
+      }
+    },
+    {
+      "id": "q_causality_01",
+      "family": "causality",
+      "question": "Does the statement express a cause-and-effect relationship?",
+      "rubric": {"0": "no causation", "1": "cause-effect present"},
+      "minimal_pairs": {
+        "positive": "The rain caused the flooding.",
+        "negative": "There was rain and flooding."
+      }
+    },
+    {
+      "id": "q_temporal_01",
+      "family": "temporal",
+      "question": "Does the statement reference a specific time or date?",
+      "rubric": {"0": "no specific time", "1": "specific time present"},
+      "minimal_pairs": {
+        "positive": "The meeting is scheduled for March 15th at 3pm.",
+        "negative": "The meeting is scheduled for later."
+      }
+    },
+    {
+      "id": "q_spatial_02",
+      "family": "spatial",
+      "question": "Does the statement use spatial prepositions (in, on, under, above)?",
+      "rubric": {"0": "no spatial prepositions", "1": "spatial prepositions present"},
+      "minimal_pairs": {
+        "positive": "The cat is under the table.",
+        "negative": "The cat is sleeping."
+      }
+    },
+    {
+      "id": "q_numeric_01",
+      "family": "numeric",
+      "question": "Does the statement contain explicit numbers?",
+      "rubric": {"0": "no numbers", "1": "numbers present"},
+      "minimal_pairs": {
+        "positive": "There are 47 students in the class.",
+        "negative": "There are many students in the class."
+      }
+    },
+    {
+      "id": "q_negation_01",
+      "family": "negation",
+      "question": "Does the statement contain explicit negation (not, never, no)?",
+      "rubric": {"0": "no negation", "1": "negation present"},
+      "minimal_pairs": {
+        "positive": "She never eats meat.",
+        "negative": "She rarely eats meat."
+      }
+    },
+    {
+      "id": "q_uncertainty_01",
+      "family": "uncertainty",
+      "question": "Does the statement express uncertainty (might, maybe, perhaps)?",
+      "rubric": {"0": "no uncertainty", "1": "uncertainty present"},
+      "minimal_pairs": {
+        "positive": "It might rain tomorrow.",
+        "negative": "It will rain tomorrow."
+      }
+    },
+    {
+      "id": "q_modality_01",
+      "family": "modality",
+      "question": "Does the statement express obligation (should, must, ought)?",
+      "rubric": {"0": "no obligation", "1": "obligation present"},
+      "minimal_pairs": {
+        "positive": "You should finish your homework.",
+        "negative": "You can finish your homework."
+      }
+    },
+    {
+      "id": "q_sentiment_03",
+      "family": "sentiment",
+      "question": "Does the statement contain evaluative language (good, bad)?",
+      "rubric": {"0": "no evaluation", "1": "evaluation present"},
+      "minimal_pairs": {
+        "positive": "This is a good idea.",
+        "negative": "This is an idea."
+      }
+    },
+    {
+      "id": "q_emotion_01",
+      "family": "emotion",
+      "question": "Does the statement name a specific emotion (happy, sad, angry)?",
+      "rubric": {"0": "no emotion named", "1": "emotion named"},
+      "minimal_pairs": {
+        "positive": "She felt happy about the news.",
+        "negative": "She reacted to the news."
+      }
+    },
+    {
+      "id": "q_social_01",
+      "family": "social",
+      "question": "Does the statement describe interaction between people?",
+      "rubric": {"0": "no interaction", "1": "interaction described"},
+      "minimal_pairs": {
+        "positive": "They discussed the plan together.",
+        "negative": "They knew about the plan."
+      }
+    },
+    {
+      "id": "q_dialogue_01",
+      "family": "dialogue",
+      "question": "Does the statement contain quoted speech or dialogue?",
+      "rubric": {"0": "no quotes", "1": "quotes present"},
+      "minimal_pairs": {
+        "positive": "She said, \"I'll be there soon.\"",
+        "negative": "She said she would be there soon."
+      }
+    },
+    {
+      "id": "q_first_person_01",
+      "family": "first_person",
+      "question": "Does the statement use first-person pronouns (I, me, my, we)?",
+      "rubric": {"0": "no first person", "1": "first person present"},
+      "minimal_pairs": {
+        "positive": "I went to the store this morning.",
+        "negative": "Someone went to the store this morning."
+      }
+    },
+    {
+      "id": "q_imperative_01",
+      "family": "imperative",
+      "question": "Does the statement give instructions or commands?",
+      "rubric": {"0": "no instructions", "1": "instructions present"},
+      "minimal_pairs": {
+        "positive": "Press the button to start.",
+        "negative": "The button starts the machine."
+      }
+    },
+    {
+      "id": "q_comparison_01",
+      "family": "comparison",
+      "question": "Does the statement compare two or more things?",
+      "rubric": {"0": "no comparison", "1": "comparison present"},
+      "minimal_pairs": {
+        "positive": "Apples are sweeter than lemons.",
+        "negative": "Apples are sweet."
+      }
+    },
+    {
+      "id": "q_normative_01",
+      "family": "normative",
+      "question": "Does the statement make moral or ethical judgments?",
+      "rubric": {"0": "no moral judgment", "1": "moral judgment present"},
+      "minimal_pairs": {
+        "positive": "It is wrong to lie to others.",
+        "negative": "People sometimes lie to others."
+      }
+    },
+    {
+      "id": "q_intent_01",
+      "family": "intent",
+      "question": "Does the statement describe someone's intention or purpose?",
+      "rubric": {"0": "no intention", "1": "intention described"},
+      "minimal_pairs": {
+        "positive": "She plans to start a new business.",
+        "negative": "She started a new business."
+      }
+    },
+    {
+      "id": "q_concreteness_01",
+      "family": "concreteness",
+      "question": "Does the statement describe concrete, tangible objects?",
+      "rubric": {"0": "abstract only", "1": "concrete objects present"},
+      "minimal_pairs": {
+        "positive": "The wooden table has four legs.",
+        "negative": "The concept is difficult to grasp."
+      }
+    },
+    {
+      "id": "q_identity_01",
+      "family": "identity",
+      "question": "Does the statement describe someone's identity or role?",
+      "rubric": {"0": "no identity", "1": "identity described"},
+      "minimal_pairs": {
+        "positive": "She is a doctor at the local hospital.",
+        "negative": "She works at the local hospital."
+      }
+    }
+  ]
+}
