@@ -37,7 +37,7 @@ import {
   Cell,
 } from 'recharts'
 
-// ─── Default Fithian Corpus (10 texts) ────────────────────────────────────────
+// ─── Default AI Capstone Corpus (10 texts) ───────────────────────────────────
 
 const DEFAULT_TEXTS: Array<{ id: string; text: string }> = [
   {

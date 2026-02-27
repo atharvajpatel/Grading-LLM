@@ -131,9 +131,9 @@ export default function NotebookTab() {
         <p className="text-sm text-gray-600">
           Read-only rendering of{' '}
           <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">
-            fithian_analysis.ipynb
+            capstone_analysis.ipynb
           </code>{' '}
-          — the full statistical analysis notebook prepared for Prof. Will Fithian.
+          — the full statistical analysis notebook prepared for the AI Capstone.
         </p>
         <div className="flex gap-4 mt-3 text-xs text-gray-500">
           <span className="flex items-center gap-1">
@@ -155,7 +155,7 @@ export default function NotebookTab() {
           Measuring the Statistical Boundary for Calibrated LLM-as-Judge
         </h2>
         <p className="text-sm text-gray-500 mb-4">
-          <strong>Prepared for:</strong> Prof. Will Fithian, UC Berkeley Statistics
+          <strong>Prepared for:</strong> AI Capstone, UC Berkeley
         </p>
         <hr className="my-4 border-gray-200" />
         <h3 className="text-base font-semibold text-gray-800 mt-4 mb-2">
@@ -742,7 +742,7 @@ plt.show()`}
         <h2 className="text-lg font-bold text-gray-900 mb-2">
           4.9 — Summary Statistics
         </h2>
-        <p className="text-sm">Key findings for the Fithian meeting.</p>
+        <p className="text-sm">Key findings for the AI Capstone presentation.</p>
       </MarkdownCell>
 
       {/* ─── Cell 21: Executive Summary ──────────────────────────────────── */}
@@ -775,7 +775,7 @@ print(summary)`}
         output={
           <TextOutput
             text={`
-SUMMARY FOR FITHIAN MEETING
+SUMMARY FOR AI CAPSTONE
 ==================================================
 Texts analyzed: 10
 Questions per text: 20 (mechanistic mode)

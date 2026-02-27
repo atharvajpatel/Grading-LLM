@@ -26,6 +26,7 @@ import {
   CheckCircle,
   Target,
   GitBranch,
+  Grid3X3,
 } from 'lucide-react'
 
 // ─── Hardcoded Data from 16,000 Evaluations (Feb 15, 2026) ───────────────────
@@ -228,6 +229,160 @@ export default function ResearchTab() {
             We show that this is insufficient. Reliability is a function of <strong>feature type</strong>,
             not model capability or prompt quality.
           </p>
+        </div>
+      </div>
+
+      {/* ── Experimental Design Matrix ────────────────────────────────────── */}
+      <div className="card">
+        <div className="flex items-center space-x-2 mb-4">
+          <Grid3X3 className="w-5 h-5 text-purple-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Experimental Design</h3>
+        </div>
+        <p className="text-sm text-gray-600 mb-5">
+          Each cell is one (text, question) pair. Within each cell, GPT-4o-mini grades at 4 scale
+          granularities. The entire sheet is repeated <strong>20 times</strong> to measure consistency.
+        </p>
+
+        {/* ── Stacked sheets visual ── */}
+        <div className="flex flex-col lg:flex-row items-start gap-6">
+          {/* Main grid with zoomed cells */}
+          <div className="flex-1 min-w-0">
+            {/* Axis labels */}
+            <div className="flex">
+              <div className="w-24 flex-shrink-0" />
+              <div className="flex-1 text-center text-xs font-semibold text-gray-500 mb-1">
+                20 Questions (semantic factor families)
+              </div>
+            </div>
+            <div className="flex">
+              {/* Y-axis label */}
+              <div className="w-24 flex-shrink-0 flex items-center justify-center">
+                <span className="text-xs font-semibold text-gray-500 -rotate-90 whitespace-nowrap">
+                  10 Texts
+                </span>
+              </div>
+              {/* Grid */}
+              <div className="flex-1 border border-gray-300 rounded-lg overflow-hidden bg-white">
+                {Array.from({ length: 10 }).map((_, rowIdx) => (
+                  <div key={rowIdx} className="flex">
+                    {Array.from({ length: 20 }).map((_, colIdx) => {
+                      /* Highlight 2 cells to show inner structure */
+                      const isZoomed = (rowIdx === 1 && colIdx === 3) || (rowIdx === 6 && colIdx === 14)
+                      const isSecondZoom = rowIdx === 6 && colIdx === 14
+
+                      if (isZoomed) {
+                        return (
+                          <div
+                            key={colIdx}
+                            className="relative flex-1 aspect-square border border-purple-400 bg-purple-50 flex flex-col items-center justify-center gap-[1px] p-[2px]"
+                            title={`Text ${rowIdx + 1} × Q${colIdx + 1}`}
+                          >
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#2196F3' }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#4CAF50' }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#FF9800' }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#E91E63' }} />
+                            {!isSecondZoom && (
+                              <div className="absolute -right-1 -top-1 w-2 h-2 bg-purple-500 rounded-full" />
+                            )}
+                          </div>
+                        )
+                      }
+
+                      return (
+                        <div
+                          key={colIdx}
+                          className="flex-1 aspect-square border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors"
+                          title={`Text ${rowIdx + 1} × Q${colIdx + 1}`}
+                        />
+                      )
+                    })}
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Row labels (text names on left, abbreviated) */}
+            <div className="flex mt-1">
+              <div className="w-24 flex-shrink-0" />
+              <div className="flex-1 flex justify-between text-[9px] text-gray-400 px-0.5">
+                <span>Q1</span>
+                <span>Q5</span>
+                <span>Q10</span>
+                <span>Q15</span>
+                <span>Q20</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Zoomed cell explanation + stacked sheets */}
+          <div className="flex-shrink-0 w-full lg:w-72 space-y-4">
+            {/* Zoomed cell */}
+            <div className="border-2 border-purple-400 rounded-lg p-3 bg-purple-50">
+              <p className="text-xs font-semibold text-purple-700 mb-2">Each cell contains 4 measurements:</p>
+              <div className="space-y-1.5">
+                {[
+                  { label: 'Binary', value: '{0, 1}', color: '#2196F3', example: '→ 1' },
+                  { label: 'Ternary', value: '{0, 0.5, 1}', color: '#4CAF50', example: '→ 0.5' },
+                  { label: 'Quaternary', value: '{0, .33, .66, 1}', color: '#FF9800', example: '→ 0.66' },
+                  { label: 'Continuous', value: '[0, 1]', color: '#E91E63', example: '→ 0.73' },
+                ].map((s) => (
+                  <div key={s.label} className="flex items-center gap-2 text-xs">
+                    <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: s.color }} />
+                    <span className="font-semibold text-gray-700 w-20">{s.label}</span>
+                    <span className="text-gray-500 font-mono text-[10px]">{s.value}</span>
+                    <span className="text-gray-400 font-mono text-[10px] ml-auto">{s.example}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 pt-2 border-t border-purple-200 text-[10px] text-purple-600">
+                = 10 &times; 20 &times; 4 = <strong>800 scores</strong> per sample
+              </div>
+            </div>
+
+            {/* Stacked sheets */}
+            <div className="relative h-36">
+              {[4, 3, 2, 1, 0].map((i) => (
+                <div
+                  key={i}
+                  className="absolute border border-gray-300 rounded bg-white shadow-sm"
+                  style={{
+                    width: '85%',
+                    height: '70%',
+                    top: `${i * 5}px`,
+                    left: `${i * 5}px`,
+                    opacity: i === 0 ? 1 : 0.5 + i * 0.1,
+                    zIndex: 5 - i,
+                  }}
+                >
+                  {i === 0 && (
+                    <div className="flex flex-col items-center justify-center h-full text-xs text-gray-500">
+                      <div className="grid grid-cols-5 gap-[2px] mb-2">
+                        {Array.from({ length: 15 }).map((_, j) => (
+                          <div key={j} className="w-2 h-1.5 bg-gray-200 rounded-[1px]" />
+                        ))}
+                      </div>
+                      <span className="font-mono text-[10px]">10 &times; 20 sheet</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div
+                className="absolute flex items-center gap-1"
+                style={{ bottom: 0, right: 0, zIndex: 10 }}
+              >
+                <span className="text-xs font-bold text-gray-700 bg-white px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                  &times;20 samples
+                </span>
+              </div>
+            </div>
+
+            {/* Final calculation */}
+            <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <div className="text-xs text-gray-500 space-y-0.5">
+                <div>10 texts &times; 20 questions &times; 4 scales &times; 20 samples</div>
+                <div className="text-lg font-bold text-gray-900">=&nbsp;16,000 evaluations</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
