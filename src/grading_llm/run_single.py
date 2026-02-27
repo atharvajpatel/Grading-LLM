@@ -17,7 +17,7 @@ import numpy as np
 
 from .analysis import compute_all_metrics, run_pca
 from .client import QAEmbeddingClient
-from .config import get_api_key
+from .config import get_api_key_for_local_dev as get_api_key
 from .io import (
     create_run_folder,
     save_config,

@@ -19,7 +19,7 @@ from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
-from .config import get_api_key
+from .config import get_api_key_for_local_dev as get_api_key
 from .io import create_run_folder, get_project_root
 from .questiongen import load_candidate_questions, get_minimal_pair, FACTOR_FAMILIES
 from .synth_corpus import (

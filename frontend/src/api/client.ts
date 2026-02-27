@@ -1,7 +1,9 @@
 import axios from 'axios'
 
 // Use environment variable for API URL, fallback to localhost for dev
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+// Remove trailing slash if present to avoid double-slash issues
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, '')
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,

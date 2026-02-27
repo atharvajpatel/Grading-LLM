@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import AnalyzeTab from './components/AnalyzeTab'
 import QuestionsTab from './components/QuestionsTab'
+import BatchAnalysisTab from './components/BatchAnalysisTab'
+import ResearchTab from './components/ResearchTab'
+import NotebookTab from './components/NotebookTab'
 
-type TabType = 'analyze' | 'about'
+type TabType = 'analyze' | 'about' | 'batch' | 'research' | 'notebook'
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('analyze')
@@ -36,12 +39,34 @@ function App() {
           >
             Documentation
           </button>
+          <button
+            className={`tab-button ${activeTab === 'batch' ? 'active' : ''}`}
+            onClick={() => setActiveTab('batch')}
+          >
+            Batch Analysis
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'research' ? 'active' : ''}`}
+            onClick={() => setActiveTab('research')}
+          >
+            Research
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'notebook' ? 'active' : ''}`}
+            onClick={() => setActiveTab('notebook')}
+          >
+            Notebook
+          </button>
         </div>
       </div>
 
       {/* Tab Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
-        {activeTab === 'analyze' ? <AnalyzeTab /> : <QuestionsTab />}
+        {activeTab === 'analyze' && <AnalyzeTab />}
+        {activeTab === 'about' && <QuestionsTab />}
+        {activeTab === 'batch' && <BatchAnalysisTab />}
+        {activeTab === 'research' && <ResearchTab />}
+        {activeTab === 'notebook' && <NotebookTab />}
       </main>
     </div>
   )
