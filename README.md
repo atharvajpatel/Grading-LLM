@@ -2,6 +2,8 @@
 
 Measure how consistent an LLM is when grading statements across different answer granularities.
 
+**Live Demo:** [grading-llm.vercel.app](https://grading-llm.vercel.app/)
+
 ## What This Does
 
 Given a statement, this tool:
@@ -90,6 +92,8 @@ Results are saved to `logs/YYYYMMDD_HHMMSS_<hash>/`:
 - `responses.jsonl` - All API responses
 
 ## Web UI
+
+**Try it now:** [https://grading-llm.vercel.app/](https://grading-llm.vercel.app/)
 
 ### Local Development
 
