@@ -3,9 +3,10 @@ import AnalyzeTab from './components/AnalyzeTab'
 import QuestionsTab from './components/QuestionsTab'
 import BatchAnalysisTab from './components/BatchAnalysisTab'
 import ResearchTab from './components/ResearchTab'
+import LogprobsTab from './components/LogprobsTab'
 import NotebookTab from './components/NotebookTab'
 
-type TabType = 'analyze' | 'about' | 'batch' | 'research' | 'notebook'
+type TabType = 'analyze' | 'about' | 'batch' | 'research' | 'logprobs' | 'notebook'
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('analyze')
@@ -52,6 +53,12 @@ function App() {
             Research
           </button>
           <button
+            className={`tab-button ${activeTab === 'logprobs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('logprobs')}
+          >
+            Logprobs
+          </button>
+          <button
             className={`tab-button ${activeTab === 'notebook' ? 'active' : ''}`}
             onClick={() => setActiveTab('notebook')}
           >
@@ -66,6 +73,7 @@ function App() {
         {activeTab === 'about' && <QuestionsTab />}
         {activeTab === 'batch' && <BatchAnalysisTab />}
         {activeTab === 'research' && <ResearchTab />}
+        {activeTab === 'logprobs' && <LogprobsTab />}
         {activeTab === 'notebook' && <NotebookTab />}
       </main>
     </div>

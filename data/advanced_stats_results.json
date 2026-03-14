@@ -1,0 +1,2291 @@
+{
+  "metadata": {
+    "source": "data/batch_results.json",
+    "n_texts": 10,
+    "n_questions": 20,
+    "n_scales": 4,
+    "n_samples": 20,
+    "total_evaluations": 16000,
+    "scales": [
+      "binary",
+      "ternary",
+      "quaternary",
+      "continuous"
+    ],
+    "text_ids": [
+      "factual_simple",
+      "sentiment_positive",
+      "sentiment_negative",
+      "ambiguous",
+      "medical_clinical",
+      "negation_heavy",
+      "imperative_action",
+      "abstract_philosophical",
+      "narrative_paragraph",
+      "technical_ml"
+    ],
+    "question_families": [
+      "named_entities",
+      "actions_events",
+      "causality",
+      "temporal",
+      "spatial",
+      "numeric",
+      "negation",
+      "uncertainty",
+      "modality",
+      "sentiment",
+      "emotion",
+      "social",
+      "dialogue",
+      "first_person",
+      "imperative",
+      "comparison",
+      "normative",
+      "intent",
+      "concreteness",
+      "identity"
+    ]
+  },
+  "tier1_essential": {
+    "cronbachs_alpha": {
+      "binary": {
+        "mean": 0.61639,
+        "min": 0.0,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 0.0,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.071365,
+          "medical_clinical": 1.0,
+          "negation_heavy": 0.092539,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 0.0
+        }
+      },
+      "ternary": {
+        "mean": 0.340837,
+        "min": -0.41859,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": -0.0,
+          "sentiment_positive": 1.0,
+          "sentiment_negative": 0.0,
+          "ambiguous": -0.41859,
+          "medical_clinical": -0.173035,
+          "negation_heavy": 1.0,
+          "imperative_action": 1.0,
+          "abstract_philosophical": -0.0,
+          "narrative_paragraph": 0.0,
+          "technical_ml": 1.0
+        }
+      },
+      "quaternary": {
+        "mean": -0.1189,
+        "min": -3.818619,
+        "max": 1.052632,
+        "per_text": {
+          "factual_simple": 0.0,
+          "sentiment_positive": -0.419385,
+          "sentiment_negative": 1.052632,
+          "ambiguous": -0.320381,
+          "medical_clinical": -0.495246,
+          "negation_heavy": 1.0,
+          "imperative_action": 0.759372,
+          "abstract_philosophical": 1.052632,
+          "narrative_paragraph": -3.818619,
+          "technical_ml": 0.0
+        }
+      },
+      "continuous": {
+        "mean": -0.326744,
+        "min": -1.956406,
+        "max": 0.511757,
+        "per_text": {
+          "factual_simple": 0.0,
+          "sentiment_positive": 0.127334,
+          "sentiment_negative": -1.578947,
+          "ambiguous": -0.641417,
+          "medical_clinical": 0.511757,
+          "negation_heavy": -0.0,
+          "imperative_action": 0.178208,
+          "abstract_philosophical": -0.0,
+          "narrative_paragraph": -1.956406,
+          "technical_ml": 0.092033
+        }
+      }
+    },
+    "icc": {
+      "binary": {
+        "mean": 0.984923,
+        "min": 0.921507,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 0.976285,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.969833,
+          "medical_clinical": 1.0,
+          "negation_heavy": 0.921507,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 0.981607
+        }
+      },
+      "ternary": {
+        "mean": 0.975761,
+        "min": 0.894239,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 0.987529,
+          "sentiment_positive": 1.0,
+          "sentiment_negative": 0.941779,
+          "ambiguous": 0.953551,
+          "medical_clinical": 0.894239,
+          "negation_heavy": 1.0,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 0.993768,
+          "narrative_paragraph": 0.98674,
+          "technical_ml": 1.0
+        }
+      },
+      "quaternary": {
+        "mean": 0.954494,
+        "min": 0.807427,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 0.991454,
+          "sentiment_positive": 0.972066,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.807427,
+          "medical_clinical": 0.900045,
+          "negation_heavy": 1.0,
+          "imperative_action": 0.990825,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 0.905163,
+          "technical_ml": 0.977961
+        }
+      },
+      "continuous": {
+        "mean": 0.962245,
+        "min": 0.835523,
+        "max": 0.999798,
+        "per_text": {
+          "factual_simple": 0.999798,
+          "sentiment_positive": 0.968988,
+          "sentiment_negative": 0.997869,
+          "ambiguous": 0.934846,
+          "medical_clinical": 0.940177,
+          "negation_heavy": 0.997584,
+          "imperative_action": 0.959083,
+          "abstract_philosophical": 0.991258,
+          "narrative_paragraph": 0.997325,
+          "technical_ml": 0.835523
+        }
+      }
+    },
+    "cohens_kappa": {
+      "binary": {
+        "mean": 0.98471,
+        "min": 0.919514,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 0.976316,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.968507,
+          "medical_clinical": 1.0,
+          "negation_heavy": 0.919514,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 0.982759
+        }
+      },
+      "ternary": {
+        "mean": 0.994013,
+        "min": 0.940132,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 1.0,
+          "sentiment_negative": 0.940132,
+          "ambiguous": 1.0,
+          "medical_clinical": 1.0,
+          "negation_heavy": 1.0,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 1.0
+        }
+      },
+      "quaternary": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 1.0,
+          "sentiment_negative": 1.0,
+          "ambiguous": 1.0,
+          "medical_clinical": 1.0,
+          "negation_heavy": 1.0,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 1.0
+        }
+      },
+      "continuous": {
+        "mean": null,
+        "min": null,
+        "max": null,
+        "per_text": {
+          "factual_simple": null,
+          "sentiment_positive": null,
+          "sentiment_negative": null,
+          "ambiguous": null,
+          "medical_clinical": null,
+          "negation_heavy": null,
+          "imperative_action": null,
+          "abstract_philosophical": null,
+          "narrative_paragraph": null,
+          "technical_ml": null
+        },
+        "note": "Cohen's kappa not applicable to continuous scale"
+      }
+    },
+    "krippendorff_alpha": {
+      "binary": {
+        "mean": 0.984211,
+        "min": 0.917903,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 1.0,
+          "sentiment_positive": 0.975128,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.968373,
+          "medical_clinical": 1.0,
+          "negation_heavy": 0.917903,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 1.0,
+          "technical_ml": 0.980705
+        }
+      },
+      "ternary": {
+        "mean": 0.977118,
+        "min": 0.938975,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 0.967677,
+          "sentiment_positive": 1.0,
+          "sentiment_negative": 0.939045,
+          "ambiguous": 0.94304,
+          "medical_clinical": 0.938975,
+          "negation_heavy": 1.0,
+          "imperative_action": 1.0,
+          "abstract_philosophical": 0.999563,
+          "narrative_paragraph": 0.98288,
+          "technical_ml": 1.0
+        }
+      },
+      "quaternary": {
+        "mean": 0.951957,
+        "min": 0.823535,
+        "max": 1.0,
+        "per_text": {
+          "factual_simple": 0.952137,
+          "sentiment_positive": 0.991363,
+          "sentiment_negative": 1.0,
+          "ambiguous": 0.823535,
+          "medical_clinical": 0.924726,
+          "negation_heavy": 1.0,
+          "imperative_action": 0.995742,
+          "abstract_philosophical": 1.0,
+          "narrative_paragraph": 0.893759,
+          "technical_ml": 0.93831
+        }
+      },
+      "continuous": {
+        "mean": 0.960552,
+        "min": 0.828701,
+        "max": 0.999788,
+        "per_text": {
+          "factual_simple": 0.999788,
+          "sentiment_positive": 0.967488,
+          "sentiment_negative": 0.997763,
+          "ambiguous": 0.931815,
+          "medical_clinical": 0.937364,
+          "negation_heavy": 0.997463,
+          "imperative_action": 0.957124,
+          "abstract_philosophical": 0.990825,
+          "narrative_paragraph": 0.997192,
+          "technical_ml": 0.828701
+        }
+      }
+    }
+  },
+  "tier2_informative": {
+    "test_retest_correlation": {
+      "binary": {
+        "mean_pearson_r": 0.998346,
+        "mean_spearman_rho": 0.981233,
+        "per_text": {
+          "factual_simple": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_positive": {
+            "pearson_r": 0.994926,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.936586,
+            "spearman_p": 0.0
+          },
+          "sentiment_negative": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "ambiguous": {
+            "pearson_r": 0.999019,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.989539,
+            "spearman_p": 0.0
+          },
+          "medical_clinical": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "negation_heavy": {
+            "pearson_r": 0.991376,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.997686,
+            "spearman_p": 0.0
+          },
+          "imperative_action": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "abstract_philosophical": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "narrative_paragraph": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "technical_ml": {
+            "pearson_r": 0.998138,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.888523,
+            "spearman_p": 0.0
+          }
+        }
+      },
+      "ternary": {
+        "mean_pearson_r": 0.995565,
+        "mean_spearman_rho": 0.98877,
+        "per_text": {
+          "factual_simple": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_positive": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_negative": {
+            "pearson_r": 0.988508,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "ambiguous": {
+            "pearson_r": 0.999621,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.999426,
+            "spearman_p": 0.0
+          },
+          "medical_clinical": {
+            "pearson_r": 0.96895,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.889252,
+            "spearman_p": 0.0
+          },
+          "negation_heavy": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "imperative_action": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "abstract_philosophical": {
+            "pearson_r": 0.999626,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.999027,
+            "spearman_p": 0.0
+          },
+          "narrative_paragraph": {
+            "pearson_r": 0.998942,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "technical_ml": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          }
+        }
+      },
+      "quaternary": {
+        "mean_pearson_r": 0.995243,
+        "mean_spearman_rho": 0.989073,
+        "per_text": {
+          "factual_simple": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_positive": {
+            "pearson_r": 0.997931,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.997403,
+            "spearman_p": 0.0
+          },
+          "sentiment_negative": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "ambiguous": {
+            "pearson_r": 0.966441,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.916569,
+            "spearman_p": 0.0
+          },
+          "medical_clinical": {
+            "pearson_r": 0.997199,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "negation_heavy": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "imperative_action": {
+            "pearson_r": 0.999597,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.982607,
+            "spearman_p": 0.0
+          },
+          "abstract_philosophical": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "narrative_paragraph": {
+            "pearson_r": 0.991733,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.994151,
+            "spearman_p": 0.0
+          },
+          "technical_ml": {
+            "pearson_r": 0.99953,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          }
+        }
+      },
+      "continuous": {
+        "mean_pearson_r": 0.998103,
+        "mean_spearman_rho": 0.999706,
+        "per_text": {
+          "factual_simple": {
+            "pearson_r": 0.999982,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_positive": {
+            "pearson_r": 1.0,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "sentiment_negative": {
+            "pearson_r": 0.999784,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.99935,
+            "spearman_p": 0.0
+          },
+          "ambiguous": {
+            "pearson_r": 0.996224,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "medical_clinical": {
+            "pearson_r": 0.993979,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "negation_heavy": {
+            "pearson_r": 0.999887,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "imperative_action": {
+            "pearson_r": 0.994466,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "abstract_philosophical": {
+            "pearson_r": 0.999443,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          },
+          "narrative_paragraph": {
+            "pearson_r": 0.99983,
+            "pearson_p": 0.0,
+            "spearman_rho": 0.997714,
+            "spearman_p": 0.0
+          },
+          "technical_ml": {
+            "pearson_r": 0.997432,
+            "pearson_p": 0.0,
+            "spearman_rho": 1.0,
+            "spearman_p": 0.0
+          }
+        }
+      }
+    },
+    "coefficient_of_variation": {
+      "binary": {
+        "per_text": {
+          "factual_simple": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "sentiment_positive": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 3.077935,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.153897
+          },
+          "sentiment_negative": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "ambiguous": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.235376,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 3.077935,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.165666
+          },
+          "medical_clinical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "negation_heavy": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 2.051957,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.235376,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.114367
+          },
+          "imperative_action": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "abstract_philosophical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "narrative_paragraph": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "technical_ml": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 4.472136,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.223607
+          }
+        }
+      },
+      "ternary": {
+        "per_text": {
+          "factual_simple": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 2.051957,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.102598
+          },
+          "sentiment_positive": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "sentiment_negative": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 1.398173,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.069909
+          },
+          "ambiguous": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.235376,
+              "social": 0.0,
+              "dialogue": 0.341993,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.496904,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.053714
+          },
+          "medical_clinical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.318563,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 2.442317
+            },
+            "mean_cv": 0.138044
+          },
+          "negation_heavy": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "imperative_action": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "abstract_philosophical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.11467,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.005733
+          },
+          "narrative_paragraph": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.837708,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.041885
+          },
+          "technical_ml": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          }
+        }
+      },
+      "quaternary": {
+        "per_text": {
+          "factual_simple": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 1.025978,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.051299
+          },
+          "sentiment_positive": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.197792,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.198026,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.21014,
+              "identity": 0.0
+            },
+            "mean_cv": 0.030298
+          },
+          "sentiment_negative": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "ambiguous": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 1.134262,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 1.777047,
+              "social": 0.191666,
+              "dialogue": 2.442317,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.277265
+          },
+          "medical_clinical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.253864,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 1.777047,
+              "concreteness": 0.20275,
+              "identity": 0.0
+            },
+            "mean_cv": 0.111683
+          },
+          "negation_heavy": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "imperative_action": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.077341,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.077341,
+              "numeric": 0.0,
+              "negation": 0.155009,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.077341,
+              "identity": 0.0
+            },
+            "mean_cv": 0.019352
+          },
+          "abstract_philosophical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.0
+          },
+          "narrative_paragraph": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.077341,
+              "temporal": 0.0,
+              "spatial": 0.67166,
+              "numeric": 0.209784,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.858395,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.592349,
+              "concreteness": 1.051246,
+              "identity": 0.300226
+            },
+            "mean_cv": 0.18805
+          },
+          "technical_ml": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 1.398173,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.069909
+          }
+        }
+      },
+      "continuous": {
+        "per_text": {
+          "factual_simple": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.031717,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.001586
+          },
+          "sentiment_positive": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 2.051957,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.099288,
+              "identity": 0.0
+            },
+            "mean_cv": 0.107562
+          },
+          "sentiment_negative": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.028127,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.109076,
+              "identity": 0.0
+            },
+            "mean_cv": 0.00686
+          },
+          "ambiguous": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.12922,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.064406,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.846318,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.051997
+          },
+          "medical_clinical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 2.051957,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.123952,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.061277,
+              "identity": 0.0
+            },
+            "mean_cv": 0.111859
+          },
+          "negation_heavy": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.062988,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.003149
+          },
+          "imperative_action": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.899536,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.752862,
+              "identity": 0.0
+            },
+            "mean_cv": 0.08262
+          },
+          "abstract_philosophical": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.0,
+              "causality": 0.0,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.179557,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.008978
+          },
+          "narrative_paragraph": {
+            "per_question": {
+              "named_entities": 0.022473,
+              "actions_events": 0.036049,
+              "causality": 0.038961,
+              "temporal": 0.043351,
+              "spatial": 0.0,
+              "numeric": 0.144262,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.056609,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.0,
+              "identity": 0.0
+            },
+            "mean_cv": 0.017085
+          },
+          "technical_ml": {
+            "per_question": {
+              "named_entities": 0.0,
+              "actions_events": 0.064814,
+              "causality": 0.752862,
+              "temporal": 0.0,
+              "spatial": 0.0,
+              "numeric": 0.0,
+              "negation": 0.0,
+              "uncertainty": 0.0,
+              "modality": 0.0,
+              "sentiment": 0.0,
+              "emotion": 0.0,
+              "social": 0.0,
+              "dialogue": 0.0,
+              "first_person": 0.0,
+              "imperative": 0.0,
+              "comparison": 0.0,
+              "normative": 0.0,
+              "intent": 0.0,
+              "concreteness": 0.756948,
+              "identity": 0.0
+            },
+            "mean_cv": 0.078731
+          }
+        }
+      }
+    },
+    "bland_altman": {
+      "binary": {
+        "mean_bias": -0.0006,
+        "mean_std_diff": 0.04180184,
+        "per_text": {
+          "factual_simple": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "sentiment_positive": {
+            "mean_difference": 0.002,
+            "std_difference": 0.10003003,
+            "limits_of_agreement": {
+              "lower": -0.19405885,
+              "upper": 0.19805885
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 99.0
+          },
+          "sentiment_negative": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "ambiguous": {
+            "mean_difference": 0.0,
+            "std_difference": 0.1183808,
+            "limits_of_agreement": {
+              "lower": -0.23202637,
+              "upper": 0.23202637
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 98.6
+          },
+          "medical_clinical": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "negation_heavy": {
+            "mean_difference": -0.007,
+            "std_difference": 0.14481703,
+            "limits_of_agreement": {
+              "lower": -0.29084138,
+              "upper": 0.27684138
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.9
+          },
+          "imperative_action": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "abstract_philosophical": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "narrative_paragraph": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "technical_ml": {
+            "mean_difference": -0.001,
+            "std_difference": 0.05479053,
+            "limits_of_agreement": {
+              "lower": -0.10838944,
+              "upper": 0.10638944
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 99.7
+          }
+        }
+      },
+      "ternary": {
+        "mean_bias": 0.0001,
+        "mean_std_diff": 0.06127552,
+        "per_text": {
+          "factual_simple": {
+            "mean_difference": -0.002,
+            "std_difference": 0.06324555,
+            "limits_of_agreement": {
+              "lower": -0.12596128,
+              "upper": 0.12196128
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 98.4
+          },
+          "sentiment_positive": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "sentiment_negative": {
+            "mean_difference": 0.0,
+            "std_difference": 0.16132584,
+            "limits_of_agreement": {
+              "lower": -0.31619864,
+              "upper": 0.31619864
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.4
+          },
+          "ambiguous": {
+            "mean_difference": 0.0005,
+            "std_difference": 0.117318,
+            "limits_of_agreement": {
+              "lower": -0.22944328,
+              "upper": 0.23044328
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.2
+          },
+          "medical_clinical": {
+            "mean_difference": 0.001,
+            "std_difference": 0.13970869,
+            "limits_of_agreement": {
+              "lower": -0.27282904,
+              "upper": 0.27482904
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.3
+          },
+          "negation_heavy": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "imperative_action": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "abstract_philosophical": {
+            "mean_difference": 0.0005,
+            "std_difference": 0.04745526,
+            "limits_of_agreement": {
+              "lower": -0.09251232,
+              "upper": 0.09351232
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 99.1
+          },
+          "narrative_paragraph": {
+            "mean_difference": 0.001,
+            "std_difference": 0.08370189,
+            "limits_of_agreement": {
+              "lower": -0.1630557,
+              "upper": 0.1650557
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.2
+          },
+          "technical_ml": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          }
+        }
+      },
+      "quaternary": {
+        "mean_bias": 0.001071,
+        "mean_std_diff": 0.07513856,
+        "per_text": {
+          "factual_simple": {
+            "mean_difference": 0.00198,
+            "std_difference": 0.05320066,
+            "limits_of_agreement": {
+              "lower": -0.10229329,
+              "upper": 0.10625329
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.4
+          },
+          "sentiment_positive": {
+            "mean_difference": 0.00072,
+            "std_difference": 0.08550668,
+            "limits_of_agreement": {
+              "lower": -0.1668731,
+              "upper": 0.1683131
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 93.6
+          },
+          "sentiment_negative": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "ambiguous": {
+            "mean_difference": 0.00368,
+            "std_difference": 0.18872115,
+            "limits_of_agreement": {
+              "lower": -0.36621346,
+              "upper": 0.37357346
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 94.3
+          },
+          "medical_clinical": {
+            "mean_difference": -0.00067,
+            "std_difference": 0.11204466,
+            "limits_of_agreement": {
+              "lower": -0.22027753,
+              "upper": 0.21893753
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 94.3
+          },
+          "negation_heavy": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "imperative_action": {
+            "mean_difference": 0.00338,
+            "std_difference": 0.05634315,
+            "limits_of_agreement": {
+              "lower": -0.10705257,
+              "upper": 0.11381257
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 98.4
+          },
+          "abstract_philosophical": {
+            "mean_difference": 0.0,
+            "std_difference": 0.0,
+            "limits_of_agreement": {
+              "lower": 0.0,
+              "upper": 0.0
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 100.0
+          },
+          "narrative_paragraph": {
+            "mean_difference": 0.00195,
+            "std_difference": 0.20772493,
+            "limits_of_agreement": {
+              "lower": -0.40519087,
+              "upper": 0.40909087
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 93.4
+          },
+          "technical_ml": {
+            "mean_difference": -0.00033,
+            "std_difference": 0.04784433,
+            "limits_of_agreement": {
+              "lower": -0.09410489,
+              "upper": 0.09344489
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.9
+          }
+        }
+      },
+      "continuous": {
+        "mean_bias": -0.00028,
+        "mean_std_diff": 0.0533924,
+        "per_text": {
+          "factual_simple": {
+            "mean_difference": 0.0003,
+            "std_difference": 0.00706824,
+            "limits_of_agreement": {
+              "lower": -0.01355374,
+              "upper": 0.01415374
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 99.5
+          },
+          "sentiment_positive": {
+            "mean_difference": -0.0014,
+            "std_difference": 0.06915796,
+            "limits_of_agreement": {
+              "lower": -0.13694959,
+              "upper": 0.13414959
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.5
+          },
+          "sentiment_negative": {
+            "mean_difference": 0.0008,
+            "std_difference": 0.02449408,
+            "limits_of_agreement": {
+              "lower": -0.0472084,
+              "upper": 0.0488084
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 98.8
+          },
+          "ambiguous": {
+            "mean_difference": 0.0023,
+            "std_difference": 0.10166142,
+            "limits_of_agreement": {
+              "lower": -0.19695639,
+              "upper": 0.20155639
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 94.9
+          },
+          "medical_clinical": {
+            "mean_difference": -0.0032,
+            "std_difference": 0.07221478,
+            "limits_of_agreement": {
+              "lower": -0.14474098,
+              "upper": 0.13834098
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.3
+          },
+          "negation_heavy": {
+            "mean_difference": 0.0,
+            "std_difference": 0.01265544,
+            "limits_of_agreement": {
+              "lower": -0.02480466,
+              "upper": 0.02480466
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 99.6
+          },
+          "imperative_action": {
+            "mean_difference": 0.0014,
+            "std_difference": 0.09233941,
+            "limits_of_agreement": {
+              "lower": -0.17958524,
+              "upper": 0.18238524
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 95.5
+          },
+          "abstract_philosophical": {
+            "mean_difference": 0.0003,
+            "std_difference": 0.02346189,
+            "limits_of_agreement": {
+              "lower": -0.04568531,
+              "upper": 0.04628531
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.2
+          },
+          "narrative_paragraph": {
+            "mean_difference": 0.0,
+            "std_difference": 0.02145834,
+            "limits_of_agreement": {
+              "lower": -0.04205835,
+              "upper": 0.04205835
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 97.5
+          },
+          "technical_ml": {
+            "mean_difference": -0.0033,
+            "std_difference": 0.10941244,
+            "limits_of_agreement": {
+              "lower": -0.21774837,
+              "upper": 0.21114837
+            },
+            "n_comparisons": 1000,
+            "pct_within_loa": 94.9
+          }
+        }
+      }
+    },
+    "scale_degradation_regression": {
+      "overall": {
+        "slope": 5.386e-05,
+        "intercept": 0.00307961,
+        "r_squared": 0.002806,
+        "p_value": 0.947032,
+        "mean_variances_by_scale": {
+          "binary": 0.002413,
+          "ternary": 0.003241,
+          "quaternary": 0.004974,
+          "continuous": 0.002014
+        },
+        "interpretation": "positive slope = variance increases with scale granularity"
+      },
+      "per_text": {
+        "factual_simple": {
+          "slope": -5.675e-05,
+          "intercept": 0.00093138,
+          "r_squared": 0.005387,
+          "p_value": 0.926601,
+          "mean_variances": [
+            0.0,
+            0.002,
+            0.001361,
+            2.4e-05
+          ]
+        },
+        "sentiment_positive": {
+          "slope": -0.00034336,
+          "intercept": 0.00306664,
+          "r_squared": 0.051729,
+          "p_value": 0.77256,
+          "mean_variances": [
+            0.0045,
+            0.0,
+            0.003526,
+            0.00218
+          ]
+        },
+        "sentiment_negative": {
+          "slope": -0.00106625,
+          "intercept": 0.0045025,
+          "r_squared": 0.059377,
+          "p_value": 0.756326,
+          "mean_variances": [
+            0.0,
+            0.011375,
+            0.0,
+            0.000237
+          ]
+        },
+        "ambiguous": {
+          "slope": 0.00015953,
+          "intercept": 0.00861641,
+          "r_squared": 0.001426,
+          "p_value": 0.962241,
+          "mean_variances": [
+            0.006875,
+            0.007469,
+            0.016774,
+            0.004305
+          ]
+        },
+        "medical_clinical": {
+          "slope": 0.00051159,
+          "intercept": 0.00334659,
+          "r_squared": 0.033229,
+          "p_value": 0.817712,
+          "mean_variances": [
+            0.0,
+            0.007969,
+            0.006188,
+            0.002299
+          ]
+        },
+        "negation_heavy": {
+          "slope": -0.003084,
+          "intercept": 0.0072435,
+          "r_squared": 0.59263,
+          "p_value": 0.230175,
+          "mean_variances": [
+            0.010375,
+            0.0,
+            0.0,
+            9.5e-05
+          ]
+        },
+        "imperative_action": {
+          "slope": 0.0015506,
+          "intercept": -0.00071877,
+          "r_squared": 0.86863,
+          "p_value": 0.067997,
+          "mean_variances": [
+            0.0,
+            0.0,
+            0.00189,
+            0.004539
+          ]
+        },
+        "abstract_philosophical": {
+          "slope": 1.975e-05,
+          "intercept": 0.00018475,
+          "r_squared": 0.008185,
+          "p_value": 0.909529,
+          "mean_variances": [
+            0.0,
+            0.000594,
+            0.0,
+            0.000264
+          ]
+        },
+        "narrative_paragraph": {
+          "slope": 0.00168262,
+          "intercept": 0.00300575,
+          "r_squared": 0.059245,
+          "p_value": 0.756596,
+          "mean_variances": [
+            0.0,
+            0.003,
+            0.018765,
+            0.000354
+          ]
+        },
+        "technical_ml": {
+          "slope": 0.00116487,
+          "intercept": 0.00061737,
+          "r_squared": 0.35761,
+          "p_value": 0.401995,
+          "mean_variances": [
+            0.002375,
+            0.0,
+            0.001239,
+            0.005845
+          ]
+        }
+      }
+    }
+  },
+  "tier3_advanced": {
+    "bootstrap_confidence_intervals": {
+      "binary": {
+        "variance": {
+          "point_estimate": 0.002413,
+          "ci_lower": 0.000475,
+          "ci_upper": 0.004825,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        },
+        "consistency": {
+          "point_estimate": 0.99725,
+          "ci_lower": 0.99425,
+          "ci_upper": 0.9995,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        }
+      },
+      "ternary": {
+        "variance": {
+          "point_estimate": 0.003241,
+          "ci_lower": 0.000737,
+          "ci_upper": 0.006486,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        },
+        "consistency": {
+          "point_estimate": 0.99175,
+          "ci_lower": 0.985,
+          "ci_upper": 0.9975,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        }
+      },
+      "quaternary": {
+        "variance": {
+          "point_estimate": 0.004974,
+          "ci_lower": 0.0026,
+          "ci_upper": 0.007847,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        },
+        "consistency": {
+          "point_estimate": 0.9685,
+          "ci_lower": 0.953244,
+          "ci_upper": 0.981756,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        }
+      },
+      "continuous": {
+        "variance": {
+          "point_estimate": 0.002014,
+          "ci_lower": 0.000707,
+          "ci_upper": 0.003494,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        },
+        "consistency": {
+          "point_estimate": 0.97475,
+          "ci_lower": 0.961244,
+          "ci_upper": 0.98675,
+          "ci_level": 0.95,
+          "n_bootstrap": 1000
+        }
+      }
+    },
+    "friedman_test": {
+      "chi_squared": 39.015113,
+      "p_value": 1.7229165799141653e-08,
+      "df": 3,
+      "n_subjects": 200,
+      "significant_at_005": true,
+      "significant_at_001": true,
+      "interpretation": "Scale granularity significantly affects variance (p < 0.05)"
+    },
+    "effect_sizes_eta_squared": {
+      "by_scale": {
+        "eta_squared": 0.004691,
+        "f_statistic": 1.2505,
+        "p_value": 0.2903291639109763
+      },
+      "by_text": {
+        "eta_squared": 0.020604,
+        "f_statistic": 1.8466,
+        "p_value": 0.05679486895716197
+      },
+      "by_question": {
+        "eta_squared": 0.038963,
+        "f_statistic": 1.6644,
+        "p_value": 0.03708013273845819
+      },
+      "ranking": [
+        {
+          "factor": "by_question",
+          "eta_squared": 0.038963
+        },
+        {
+          "factor": "by_text",
+          "eta_squared": 0.020604
+        },
+        {
+          "factor": "by_scale",
+          "eta_squared": 0.004691
+        }
+      ],
+      "interpretation": "'question' explains the most variance (eta^2 = 0.0390), followed by 'text' (0.0206) and 'scale' (0.0047)"
+    }
+  }
+}

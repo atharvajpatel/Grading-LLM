@@ -157,6 +157,41 @@ const TEXT_IDS = [
   'narrative_paragraph', 'technical_ml',
 ]
 
+// ─── Advanced Stats from First Run (Tier 1-3) ──────────────────────────────
+
+const TIER1_DATA = [
+  { scale: 'binary', cronbachsAlpha: 0.61639, icc: 0.984923, cohensKappa: 0.98471, krippendorffAlpha: 0.984211 },
+  { scale: 'ternary', cronbachsAlpha: 0.340837, icc: 0.975761, cohensKappa: 0.994013, krippendorffAlpha: 0.977118 },
+  { scale: 'quaternary', cronbachsAlpha: -0.1189, icc: 0.954494, cohensKappa: 1.0, krippendorffAlpha: 0.951957 },
+  { scale: 'continuous', cronbachsAlpha: -0.326744, icc: 0.962245, cohensKappa: null, krippendorffAlpha: 0.960552 },
+]
+
+const TIER2_TEST_RETEST = [
+  { scale: 'binary', pearsonR: 0.998346, spearmanRho: 0.981233 },
+  { scale: 'ternary', pearsonR: 0.995565, spearmanRho: 0.98877 },
+  { scale: 'quaternary', pearsonR: 0.995243, spearmanRho: 0.989073 },
+  { scale: 'continuous', pearsonR: 0.998103, spearmanRho: 0.999706 },
+]
+
+const TIER2_BLAND_ALTMAN = [
+  { scale: 'binary', meanBias: -0.0006, meanStdDiff: 0.04180184 },
+  { scale: 'ternary', meanBias: 0.0001, meanStdDiff: 0.06127552 },
+  { scale: 'quaternary', meanBias: 0.001071, meanStdDiff: 0.07513856 },
+  { scale: 'continuous', meanBias: -0.00028, meanStdDiff: 0.0533924 },
+]
+
+const REGRESSION = { slope: 0.00005386, rSquared: 0.002806, pValue: 0.947032 }
+
+const TIER3_BOOTSTRAP = [
+  { scale: 'binary', varPoint: 0.002413, varLower: 0.000475, varUpper: 0.004825, conPoint: 0.99725, conLower: 0.99425, conUpper: 0.9995 },
+  { scale: 'ternary', varPoint: 0.003241, varLower: 0.000737, varUpper: 0.006486, conPoint: 0.99175, conLower: 0.985, conUpper: 0.9975 },
+  { scale: 'quaternary', varPoint: 0.004974, varLower: 0.0026, varUpper: 0.007847, conPoint: 0.9685, conLower: 0.953244, conUpper: 0.981756 },
+  { scale: 'continuous', varPoint: 0.002014, varLower: 0.000707, varUpper: 0.003494, conPoint: 0.97475, conLower: 0.961244, conUpper: 0.98675 },
+]
+
+const FRIEDMAN = { chiSquared: 39.015113, pValue: 1.72e-08, significant: true }
+const ETA_SQUARED = { byScale: 0.004691, byText: 0.020604, byQuestion: 0.038963 }
+
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function varianceToColor(value: number, maxValue: number): string {
@@ -721,6 +756,206 @@ export default function ResearchTab() {
               ))}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* ── Advanced Statistical Analysis ──────────────────────────────────── */}
+      <div className="card bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-purple-500">
+        <div className="flex items-center space-x-3 mb-3">
+          <FlaskConical className="w-7 h-7 text-purple-600" />
+          <h2 className="text-2xl font-bold text-gray-900">
+            Advanced Statistical Analysis
+          </h2>
+        </div>
+        <p className="text-gray-600 leading-relaxed">
+          Standard reliability metrics computed from the 16,000 evaluations. These are the metrics
+          any reviewer of a measurement study would expect to see: internal consistency, inter-rater
+          agreement, test-retest reliability, and effect sizes.
+        </p>
+      </div>
+
+      {/* ── Tier 1: Essential Reliability ──────────────────────────────────── */}
+      <div className="card">
+        <div className="flex items-center space-x-2 mb-4">
+          <CheckCircle className="w-5 h-5 text-green-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Tier 1: Essential Reliability Metrics</h3>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Standard psychometric reliability coefficients. Values above 0.9 indicate excellent agreement.
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">Cronbach's &alpha;</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">ICC(2,1)</th>
+                <th className="text-right py-2 px-3 font-medium text-gray-500">Cohen's &kappa;</th>
+                <th className="text-right py-2 pl-3 font-medium text-gray-500">Krippendorff's &alpha;</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TIER1_DATA.map((row) => (
+                <tr key={row.scale} className="border-b border-gray-100">
+                  <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                    {row.scale}
+                  </td>
+                  <td className={`text-right py-2 px-3 font-mono ${row.cronbachsAlpha < 0 ? 'text-red-600' : ''}`}>
+                    {row.cronbachsAlpha.toFixed(3)}
+                  </td>
+                  <td className="text-right py-2 px-3 font-mono">{row.icc.toFixed(4)}</td>
+                  <td className="text-right py-2 px-3 font-mono">
+                    {row.cohensKappa !== null ? row.cohensKappa.toFixed(4) : 'N/A'}
+                  </td>
+                  <td className="text-right py-2 pl-3 font-mono">{row.krippendorffAlpha.toFixed(4)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm text-purple-800">
+          <p className="font-semibold mb-1">Finding: High agreement but poor internal consistency at fine granularity</p>
+          <p>
+            ICC and Krippendorff's &alpha; stay above 0.95 across all scales (excellent rater agreement).
+            But Cronbach's &alpha; goes <strong>negative</strong> at quaternary (-0.12) and continuous (-0.33),
+            meaning questions become independently unstable in different directions rather than consistently unstable together.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Tier 2: Informative Metrics ────────────────────────────────────── */}
+      <div className="card">
+        <div className="flex items-center space-x-2 mb-4">
+          <TrendingUp className="w-5 h-5 text-blue-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Tier 2: Test-Retest &amp; Agreement</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Test-Retest */}
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-2">Test-Retest Correlation (odd/even split-half)</p>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-1 font-medium text-gray-500">Scale</th>
+                  <th className="text-right py-1 font-medium text-gray-500">Pearson r</th>
+                  <th className="text-right py-1 font-medium text-gray-500">Spearman &rho;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TIER2_TEST_RETEST.map((row) => (
+                  <tr key={row.scale} className="border-b border-gray-100">
+                    <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
+                    <td className="text-right py-1 font-mono">{row.pearsonR.toFixed(4)}</td>
+                    <td className="text-right py-1 font-mono">{row.spearmanRho.toFixed(4)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Bland-Altman */}
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-2">Bland-Altman (limits of agreement)</p>
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-1 font-medium text-gray-500">Scale</th>
+                  <th className="text-right py-1 font-medium text-gray-500">Mean Bias</th>
+                  <th className="text-right py-1 font-medium text-gray-500">Std Diff</th>
+                </tr>
+              </thead>
+              <tbody>
+                {TIER2_BLAND_ALTMAN.map((row) => (
+                  <tr key={row.scale} className="border-b border-gray-100">
+                    <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
+                    <td className="text-right py-1 font-mono">{row.meanBias.toFixed(4)}</td>
+                    <td className="text-right py-1 font-mono">{row.meanStdDiff.toFixed(4)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+          <p className="font-semibold mb-1">Scale Degradation Regression</p>
+          <p>
+            Linear fit (binary=0, ternary=1, quaternary=2, continuous=3): slope={REGRESSION.slope.toFixed(6)},
+            R&sup2;={REGRESSION.rSquared.toFixed(4)}, p={REGRESSION.pValue.toFixed(4)}.
+            Variance does <strong>not</strong> linearly increase with granularity (p=0.95, non-significant).
+            The relationship is non-monotonic: quaternary peaks, continuous drops back.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Tier 3: Advanced ───────────────────────────────────────────────── */}
+      <div className="card">
+        <div className="flex items-center space-x-2 mb-4">
+          <Microscope className="w-5 h-5 text-indigo-600" />
+          <h3 className="text-lg font-semibold text-gray-900">Tier 3: Bootstrap CIs, Friedman Test &amp; Effect Sizes</h3>
+        </div>
+
+        {/* Bootstrap CIs */}
+        <p className="text-sm font-medium text-gray-700 mb-2">Bootstrap 95% Confidence Intervals (1000 resamples)</p>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-1 font-medium text-gray-500">Scale</th>
+                <th className="text-right py-1 font-medium text-gray-500">Variance [95% CI]</th>
+                <th className="text-right py-1 font-medium text-gray-500">Consistency [95% CI]</th>
+              </tr>
+            </thead>
+            <tbody>
+              {TIER3_BOOTSTRAP.map((row) => (
+                <tr key={row.scale} className="border-b border-gray-100">
+                  <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
+                  <td className="text-right py-1 font-mono text-xs">
+                    {row.varPoint.toFixed(4)} [{row.varLower.toFixed(4)}, {row.varUpper.toFixed(4)}]
+                  </td>
+                  <td className="text-right py-1 font-mono text-xs">
+                    {(row.conPoint * 100).toFixed(2)}% [{(row.conLower * 100).toFixed(2)}%, {(row.conUpper * 100).toFixed(2)}%]
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Friedman + Eta-squared */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm">
+            <p className="font-semibold text-indigo-800 mb-1">Friedman Test</p>
+            <p className="text-indigo-700">
+              &chi;&sup2; = {FRIEDMAN.chiSquared.toFixed(2)}, p = {FRIEDMAN.pValue.toExponential(2)}<br />
+              Scale granularity <strong>{FRIEDMAN.significant ? 'significantly' : 'does not significantly'}</strong> affect variance.
+            </p>
+          </div>
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm">
+            <p className="font-semibold text-indigo-800 mb-2">Effect Sizes (&eta;&sup2;)</p>
+            <div className="space-y-2">
+              {[
+                { label: 'Question type', value: ETA_SQUARED.byQuestion, color: '#8b5cf6' },
+                { label: 'Text type', value: ETA_SQUARED.byText, color: '#3b82f6' },
+                { label: 'Scale type', value: ETA_SQUARED.byScale, color: '#f59e0b' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600 w-24">{item.label}</span>
+                  <div className="flex-1 bg-gray-200 rounded-full h-3">
+                    <div
+                      className="h-3 rounded-full"
+                      style={{ width: `${Math.min(item.value / 0.05 * 100, 100)}%`, backgroundColor: item.color }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono text-gray-700 w-16 text-right">{item.value.toFixed(4)}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-indigo-600 text-xs mt-2">
+              Which feature you extract matters 8x more than which scale you use.
+            </p>
+          </div>
         </div>
       </div>
 
