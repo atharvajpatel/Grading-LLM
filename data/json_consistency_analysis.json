@@ -1,0 +1,933 @@
+{
+  "per_question_reliability": {
+    "concreteness": {
+      "stable_count": 32,
+      "unstable_count": 8,
+      "pct_unstable": 20.0,
+      "mean_token_prob": 0.993,
+      "mean_variance": 0.0067984
+    },
+    "negation": {
+      "stable_count": 34,
+      "unstable_count": 6,
+      "pct_unstable": 15.0,
+      "mean_token_prob": 0.9648,
+      "mean_variance": 0.01392
+    },
+    "spatial": {
+      "stable_count": 35,
+      "unstable_count": 5,
+      "pct_unstable": 12.5,
+      "mean_token_prob": 0.9805,
+      "mean_variance": 0.0062534
+    },
+    "intent": {
+      "stable_count": 35,
+      "unstable_count": 5,
+      "pct_unstable": 12.5,
+      "mean_token_prob": 0.9727,
+      "mean_variance": 0.0075094
+    },
+    "actions_events": {
+      "stable_count": 36,
+      "unstable_count": 4,
+      "pct_unstable": 10.0,
+      "mean_token_prob": 0.9799,
+      "mean_variance": 0.003589
+    },
+    "causality": {
+      "stable_count": 36,
+      "unstable_count": 4,
+      "pct_unstable": 10.0,
+      "mean_token_prob": 0.9494,
+      "mean_variance": 0.0045272
+    },
+    "numeric": {
+      "stable_count": 38,
+      "unstable_count": 2,
+      "pct_unstable": 5.0,
+      "mean_token_prob": 0.9137,
+      "mean_variance": 0.0007336
+    },
+    "emotion": {
+      "stable_count": 38,
+      "unstable_count": 2,
+      "pct_unstable": 5.0,
+      "mean_token_prob": 0.9916,
+      "mean_variance": 0.0032424
+    },
+    "social": {
+      "stable_count": 38,
+      "unstable_count": 2,
+      "pct_unstable": 5.0,
+      "mean_token_prob": 0.9753,
+      "mean_variance": 0.0006224
+    },
+    "dialogue": {
+      "stable_count": 38,
+      "unstable_count": 2,
+      "pct_unstable": 5.0,
+      "mean_token_prob": 0.9857,
+      "mean_variance": 0.01
+    },
+    "identity": {
+      "stable_count": 38,
+      "unstable_count": 2,
+      "pct_unstable": 5.0,
+      "mean_token_prob": 0.9585,
+      "mean_variance": 0.008
+    },
+    "uncertainty": {
+      "stable_count": 39,
+      "unstable_count": 1,
+      "pct_unstable": 2.5,
+      "mean_token_prob": 0.971,
+      "mean_variance": 0.0001
+    },
+    "sentiment": {
+      "stable_count": 39,
+      "unstable_count": 1,
+      "pct_unstable": 2.5,
+      "mean_token_prob": 0.9162,
+      "mean_variance": 0.0015
+    },
+    "first_person": {
+      "stable_count": 39,
+      "unstable_count": 1,
+      "pct_unstable": 2.5,
+      "mean_token_prob": 0.9254,
+      "mean_variance": 0.004
+    },
+    "comparison": {
+      "stable_count": 39,
+      "unstable_count": 1,
+      "pct_unstable": 2.5,
+      "mean_token_prob": 0.9641,
+      "mean_variance": 4e-05
+    },
+    "named_entities": {
+      "stable_count": 40,
+      "unstable_count": 0,
+      "pct_unstable": 0.0,
+      "mean_token_prob": 0.9958,
+      "mean_variance": 0.0
+    },
+    "temporal": {
+      "stable_count": 40,
+      "unstable_count": 0,
+      "pct_unstable": 0.0,
+      "mean_token_prob": 0.8954,
+      "mean_variance": 0.0
+    },
+    "modality": {
+      "stable_count": 40,
+      "unstable_count": 0,
+      "pct_unstable": 0.0,
+      "mean_token_prob": 0.9949,
+      "mean_variance": 0.0
+    },
+    "imperative": {
+      "stable_count": 40,
+      "unstable_count": 0,
+      "pct_unstable": 0.0,
+      "mean_token_prob": 0.9934,
+      "mean_variance": 0.0
+    },
+    "normative": {
+      "stable_count": 40,
+      "unstable_count": 0,
+      "pct_unstable": 0.0,
+      "mean_token_prob": 0.9876,
+      "mean_variance": 0.0
+    }
+  },
+  "confidence_vs_stability": {
+    "stable_mean_prob": 0.9679,
+    "unstable_mean_prob": 0.9261,
+    "mann_whitney_p": 0.05911265
+  },
+  "unstable_entries": [
+    {
+      "text": "sentiment_negative",
+      "scale": "binary",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 0.665186,
+      "min_prob": 0.562176,
+      "score_var": 0.24,
+      "scores": [
+        0,
+        1,
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "text": "sentiment_negative",
+      "scale": "ternary",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 0.6893648,
+      "min_prob": 0.562176,
+      "score_var": 0.24,
+      "scores": [
+        1,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "ternary",
+      "q_idx": 12,
+      "family": "dialogue",
+      "stable": false,
+      "mean_prob": 0.9999976,
+      "min_prob": 0.999997,
+      "score_var": 0.24,
+      "scores": [
+        1,
+        1,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "text": "sentiment_positive",
+      "scale": "binary",
+      "q_idx": 13,
+      "family": "first_person",
+      "stable": false,
+      "mean_prob": 0.8224864000000001,
+      "min_prob": 0.679024,
+      "score_var": 0.16,
+      "scores": [
+        0,
+        0,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "binary",
+      "q_idx": 12,
+      "family": "dialogue",
+      "stable": false,
+      "mean_prob": 0.5738540000000001,
+      "min_prob": 0.5,
+      "score_var": 0.16,
+      "scores": [
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "ternary",
+      "q_idx": 19,
+      "family": "identity",
+      "stable": false,
+      "mean_prob": 0.9994698,
+      "min_prob": 0.997511,
+      "score_var": 0.16,
+      "scores": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 19,
+      "family": "identity",
+      "stable": false,
+      "mean_prob": 0.9491712,
+      "min_prob": 0.817573,
+      "score_var": 0.16,
+      "scores": [
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "text": "technical_ml",
+      "scale": "binary",
+      "q_idx": 4,
+      "family": "spatial",
+      "stable": false,
+      "mean_prob": 0.6617772000000001,
+      "min_prob": 0.622421,
+      "score_var": 0.16,
+      "scores": [
+        1,
+        0,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "quaternary",
+      "q_idx": 2,
+      "family": "causality",
+      "stable": false,
+      "mean_prob": 0.9640778000000001,
+      "min_prob": 0.91489,
+      "score_var": 0.104544,
+      "scores": [
+        0.66,
+        0.66,
+        0.66,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 17,
+      "family": "intent",
+      "stable": false,
+      "mean_prob": 0.9998942,
+      "min_prob": 0.999569,
+      "score_var": 0.104544,
+      "scores": [
+        0.66,
+        0.66,
+        0,
+        0,
+        0.66
+      ]
+    },
+    {
+      "text": "technical_ml",
+      "scale": "continuous",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0864,
+      "scores": [
+        0.6,
+        0.0,
+        0.0,
+        0.0,
+        0.6
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "quaternary",
+      "q_idx": 17,
+      "family": "intent",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.069696,
+      "scores": [
+        0,
+        0,
+        0.66,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 10,
+      "family": "emotion",
+      "stable": false,
+      "mean_prob": 0.9999227999999999,
+      "min_prob": 0.999738,
+      "score_var": 0.069696,
+      "scores": [
+        0,
+        0.33,
+        0.66,
+        0.66,
+        0.66
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 0.9767035999999999,
+      "min_prob": 0.932453,
+      "score_var": 0.069696,
+      "scores": [
+        0.66,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "factual_simple",
+      "scale": "ternary",
+      "q_idx": 1,
+      "family": "actions_events",
+      "stable": false,
+      "mean_prob": 0.7277828000000001,
+      "min_prob": 0.622459,
+      "score_var": 0.06,
+      "scores": [
+        0,
+        0,
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "text": "sentiment_positive",
+      "scale": "continuous",
+      "q_idx": 9,
+      "family": "sentiment",
+      "stable": false,
+      "mean_prob": 0.9063367999999998,
+      "min_prob": 0.856731,
+      "score_var": 0.06,
+      "scores": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "ternary",
+      "q_idx": 17,
+      "family": "intent",
+      "stable": false,
+      "mean_prob": 0.9999582,
+      "min_prob": 0.999842,
+      "score_var": 0.06,
+      "scores": [
+        0,
+        0,
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "ternary",
+      "q_idx": 4,
+      "family": "spatial",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.06,
+      "scores": [
+        0.5,
+        1,
+        0.5,
+        1,
+        0.5
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "ternary",
+      "q_idx": 10,
+      "family": "emotion",
+      "stable": false,
+      "mean_prob": 0.9999994000000001,
+      "min_prob": 0.999999,
+      "score_var": 0.06,
+      "scores": [
+        0.5,
+        0,
+        0.5,
+        0.5,
+        0
+      ]
+    },
+    {
+      "text": "abstract_philosophical",
+      "scale": "continuous",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0576,
+      "scores": [
+        0.1,
+        0.1,
+        0.7,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "text": "technical_ml",
+      "scale": "continuous",
+      "q_idx": 2,
+      "family": "causality",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0464,
+      "scores": [
+        0.0,
+        0.4,
+        0.4,
+        0.0,
+        0.5
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "continuous",
+      "q_idx": 17,
+      "family": "intent",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.04,
+      "scores": [
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "continuous",
+      "q_idx": 1,
+      "family": "actions_events",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.04,
+      "scores": [
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "text": "imperative_action",
+      "scale": "continuous",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.04,
+      "scores": [
+        0.5,
+        0.5,
+        0.5,
+        0.5,
+        0.0
+      ]
+    },
+    {
+      "text": "sentiment_positive",
+      "scale": "quaternary",
+      "q_idx": 2,
+      "family": "causality",
+      "stable": false,
+      "mean_prob": 0.9999756,
+      "min_prob": 0.999961,
+      "score_var": 0.027744,
+      "scores": [
+        0.66,
+        1,
+        0.66,
+        1,
+        1
+      ]
+    },
+    {
+      "text": "sentiment_positive",
+      "scale": "quaternary",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 0.9999928,
+      "min_prob": 0.999985,
+      "score_var": 0.027744,
+      "scores": [
+        1,
+        0.66,
+        1,
+        1,
+        0.66
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 5,
+      "family": "numeric",
+      "stable": false,
+      "mean_prob": 0.9411926000000002,
+      "min_prob": 0.849571,
+      "score_var": 0.027744,
+      "scores": [
+        1,
+        0.66,
+        1,
+        1,
+        0.66
+      ]
+    },
+    {
+      "text": "factual_simple",
+      "scale": "quaternary",
+      "q_idx": 1,
+      "family": "actions_events",
+      "stable": false,
+      "mean_prob": 0.9999994000000001,
+      "min_prob": 0.999998,
+      "score_var": 0.026136,
+      "scores": [
+        0.33,
+        0,
+        0.33,
+        0,
+        0
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "quaternary",
+      "q_idx": 4,
+      "family": "spatial",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.026136,
+      "scores": [
+        0.33,
+        0.33,
+        0,
+        0,
+        0.33
+      ]
+    },
+    {
+      "text": "technical_ml",
+      "scale": "quaternary",
+      "q_idx": 17,
+      "family": "intent",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.026136,
+      "scores": [
+        0,
+        0.33,
+        0,
+        0,
+        0.33
+      ]
+    },
+    {
+      "text": "sentiment_negative",
+      "scale": "continuous",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 0.9999978,
+      "min_prob": 0.999997,
+      "score_var": 0.0216,
+      "scores": [
+        0.6,
+        0.6,
+        0.9,
+        0.9,
+        0.6
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "quaternary",
+      "q_idx": 11,
+      "family": "social",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.018496,
+      "scores": [
+        0.66,
+        0.66,
+        0.66,
+        1,
+        0.66
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "quaternary",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.018496,
+      "scores": [
+        0.66,
+        0.66,
+        1,
+        0.66,
+        0.66
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "quaternary",
+      "q_idx": 1,
+      "family": "actions_events",
+      "stable": false,
+      "mean_prob": 0.9999808,
+      "min_prob": 0.999965,
+      "score_var": 0.017424,
+      "scores": [
+        0.66,
+        0.66,
+        0.33,
+        0.66,
+        0.66
+      ]
+    },
+    {
+      "text": "sentiment_positive",
+      "scale": "continuous",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0064,
+      "scores": [
+        0.8,
+        0.6,
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    {
+      "text": "ambiguous",
+      "scale": "continuous",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0064,
+      "scores": [
+        0.9,
+        0.9,
+        0.9,
+        0.7,
+        0.9
+      ]
+    },
+    {
+      "text": "negation_heavy",
+      "scale": "continuous",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0064,
+      "scores": [
+        0.9,
+        0.7,
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "text": "imperative_action",
+      "scale": "continuous",
+      "q_idx": 6,
+      "family": "negation",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0064,
+      "scores": [
+        0.1,
+        0.3,
+        0.1,
+        0.1,
+        0.1
+      ]
+    },
+    {
+      "text": "narrative_paragraph",
+      "scale": "continuous",
+      "q_idx": 11,
+      "family": "social",
+      "stable": false,
+      "mean_prob": 0.41011179999999997,
+      "min_prob": 0.355556,
+      "score_var": 0.0064,
+      "scores": [
+        0.8,
+        0.6,
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "text": "abstract_philosophical",
+      "scale": "continuous",
+      "q_idx": 7,
+      "family": "uncertainty",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.004,
+      "scores": [
+        0.3,
+        0.4,
+        0.5,
+        0.4,
+        0.4
+      ]
+    },
+    {
+      "text": "factual_simple",
+      "scale": "continuous",
+      "q_idx": 4,
+      "family": "spatial",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0024,
+      "scores": [
+        0.7,
+        0.7,
+        0.8,
+        0.8,
+        0.7
+      ]
+    },
+    {
+      "text": "sentiment_negative",
+      "scale": "continuous",
+      "q_idx": 2,
+      "family": "causality",
+      "stable": false,
+      "mean_prob": 0.9999993999999999,
+      "min_prob": 0.999998,
+      "score_var": 0.0024,
+      "scores": [
+        0.8,
+        0.8,
+        0.7,
+        0.7,
+        0.8
+      ]
+    },
+    {
+      "text": "factual_simple",
+      "scale": "continuous",
+      "q_idx": 5,
+      "family": "numeric",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0016,
+      "scores": [
+        0.9,
+        0.8,
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "continuous",
+      "q_idx": 4,
+      "family": "spatial",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0016,
+      "scores": [
+        0.6,
+        0.5,
+        0.5,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "text": "medical_clinical",
+      "scale": "continuous",
+      "q_idx": 18,
+      "family": "concreteness",
+      "stable": false,
+      "mean_prob": 1.0,
+      "min_prob": 1.0,
+      "score_var": 0.0016,
+      "scores": [
+        0.8,
+        0.7,
+        0.7,
+        0.7,
+        0.7
+      ]
+    },
+    {
+      "text": "abstract_philosophical",
+      "scale": "continuous",
+      "q_idx": 15,
+      "family": "comparison",
+      "stable": false,
+      "mean_prob": 0.3126628,
+      "min_prob": 0.278407,
+      "score_var": 0.0016,
+      "scores": [
+        0.7,
+        0.7,
+        0.8,
+        0.7,
+        0.7
+      ]
+    }
+  ]
+}

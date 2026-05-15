@@ -78,4 +78,8 @@ Deploy: [NOT SET]
 Active: [new session]
 Last: [first session]
 
+## Last Session Bridge
+[auto-bridge from context compacting]
+Files: src/grading_llm/json_consistency_experiment.py (create), src/grading_llm/analyze_json_consistency.py (create)
+
 # === END COGNILAYER ===

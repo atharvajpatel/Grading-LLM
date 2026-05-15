@@ -6,11 +6,12 @@ import ResearchTab from './components/ResearchTab'
 import LogprobsTab from './components/LogprobsTab'
 import ComparisonTab from './components/ComparisonTab'
 import NotebookTab from './components/NotebookTab'
+import PresentationTab from './components/PresentationTab'
 
-type TabType = 'analyze' | 'about' | 'batch' | 'research' | 'logprobs' | 'comparison' | 'notebook'
+type TabType = 'presentation' | 'analyze' | 'about' | 'batch' | 'research' | 'logprobs' | 'comparison' | 'notebook'
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('analyze')
+  const [activeTab, setActiveTab] = useState<TabType>('presentation')
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -29,6 +30,12 @@ function App() {
       {/* Tab Navigation */}
       <div className="max-w-7xl mx-auto px-4 mt-6">
         <div className="flex space-x-1 border-b border-gray-200">
+          <button
+            className={`tab-button ${activeTab === 'presentation' ? 'active' : ''}`}
+            onClick={() => setActiveTab('presentation')}
+          >
+            Presentation
+          </button>
           <button
             className={`tab-button ${activeTab === 'analyze' ? 'active' : ''}`}
             onClick={() => setActiveTab('analyze')}
@@ -76,6 +83,7 @@ function App() {
 
       {/* Tab Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
+        {activeTab === 'presentation' && <PresentationTab />}
         {activeTab === 'analyze' && <AnalyzeTab />}
         {activeTab === 'about' && <QuestionsTab />}
         {activeTab === 'batch' && <BatchAnalysisTab />}

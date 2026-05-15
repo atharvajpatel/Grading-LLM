@@ -1,0 +1,370 @@
+% =====================================================================
+%  OVERLEAF QUICK START
+%  1. Create a new blank project on Overleaf and paste this entire file.
+%  2. Upload these PNGs to the project root (same folder as this .tex):
+%        variance_violins.png
+%        question_stability_heatmap.png
+%        text_difficulty_ranking.png
+%     They live in  in the GitHub repo.
+%  3. Compile with pdfLaTeX (Overleaf default). No bib file needed.
+%  4. If you skip uploading images, the \includegraphics lines will warn
+%     but the document still compiles; replace with \fbox{...} if you
+%     want clean placeholders.
+% =====================================================================
+
+\documentclass[11pt]{article}
+
+\usepackage[letterpaper, margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{verbatim}
+
+\hypersetup{
+  colorlinks=true,
+  urlcolor=blue!60!black,
+  linkcolor=black,
+  citecolor=black
+}
+
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\title{\vspace{-2em}Where Does LLM-as-Judge Break?\\\large A Granularity Stress Test for GPT-4o-mini}
+\author{Atharva Patel \\ \small UC Berkeley \quad \texttt{atharvajpatel@berkeley.edu}}
+\date{\small Live demo: \url{https://grading-llm.vercel.app/}}
+
+\begin{document}
+\maketitle
+
+%-----------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+LLM-as-a-judge is now a default building block in evaluation pipelines, but graders are typically trusted at whatever scale the prompt happens to use, binary, Likert, or continuous, without checking whether the model is internally consistent at that granularity. The research question for this capstone is statistical: \emph{when using LLMs to evaluate or label data, at what granularity can we trust the model's judgments?} We measure self-consistency of GPT-4o-mini at \texttt{temperature=0} across four scales, twenty mechanistic semantic probes, and ten archetypal statements; the full sweep is 16{,}000 graded responses per run, and we replicate the entire experiment to bound run-to-run drift. A separate logprob-level pass adds token confidence to the analysis, and a JSON-mode stress test compares byte-identical outputs across repeats. All experiments run live in the public web demo at \url{https://grading-llm.vercel.app/}.
+
+%-----------------------------------------------------------------------
+\section{Methodology}
+\label{sec:method}
+
+\textbf{Model and decoding.} GPT-4o-mini, \texttt{temperature=0}, JSON object response format, top-5 logprobs returned for the confidence pass. Pricing tracked per call (\$0.150 / 1M input tokens, \$0.600 / 1M output tokens).
+
+\textbf{Texts (10).} Hand-curated archetypes designed to span the difficulty surface: \texttt{factual\_simple}, \texttt{sentiment\_positive}, \texttt{sentiment\_negative}, \texttt{ambiguous}, \texttt{medical\_clinical}, \texttt{negation\_heavy}, \texttt{imperative\_action}, \texttt{abstract\_philosophical}, \texttt{narrative\_paragraph}, \texttt{technical\_ml}. Verbatim text in \autoref{app:texts}.
+
+\textbf{Questions (20).} One probe per orthogonal factor family from \texttt{questions\_mech.json}, pruned from a 100-question candidate pool by correlation thresholding ($\rho > 0.85$). Families span surface lexical (\texttt{named\_entities}, \texttt{temporal}, \texttt{numeric}) through pragmatic (\texttt{intent}, \texttt{normative}, \texttt{concreteness}). Full list in \autoref{app:prompts}.
+
+\textbf{Scales (4).} Binary $\{0,1\}$, Ternary $\{0, 0.5, 1\}$, Quaternary $\{0, 0.33, 0.66, 1\}$, Continuous $[0,1]$.
+
+\textbf{Repeats.} 20 samples per (text, question, scale) triple in the main batch; 5 samples in the JSON-mode/logprob pass. Total grades: $10 \times 20 \times 20 \times 4 = 16{,}000$ per main run, replicated.
+
+\textbf{Metrics.} Per-cell variance, Shannon entropy (over the discrete scale support, or 10-bin histogram for continuous), and mode consistency. Reliability: Cronbach's $\alpha$, ICC, Cohen's $\kappa$, Krippendorff's $\alpha$. Inferential: paired Wilcoxon signed-rank for adjacent-scale variance differences (paired by text$\times$question), Mann-Whitney U for stable-vs-unstable confidence. Implementation: \texttt{scripts/advanced\_stats.py} and the analysis notebook in \texttt{notebooks/}. Presets summarized in \autoref{app:presets}.
+
+%-----------------------------------------------------------------------
+\section{Result 1: The Granularity Degradation Curve}
+\label{sec:r1}
+
+The headline result is the variance curve across scales. Mean variance climbs monotonically from binary to quaternary, then drops on continuous (Table~\ref{tab:degradation}). The drop is misleading: continuous has the \emph{lowest} fraction of zero-variance cells (79.5\% vs 87.5\% on quaternary), so it is not more stable, the model simply jitters by small amplitudes on a fine scale rather than flipping bins. Translated to mode consistency, binary still wins (99.6\%), but quaternary loses a full point relative to ternary.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Stability summary across scales (run 2; 16{,}000 grades).}
+\label{tab:degradation}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Scale} & \textbf{Mean Var} & \textbf{Median Var} & \textbf{\% Zero-Var} & \textbf{Mean Mode Consistency} \\
+\midrule
+Binary       & 0.0028 & 0.0000 & 98.5\% & 99.57\% \\
+Ternary      & 0.0035 & 0.0000 & 94.5\% & 98.78\% \\
+Quaternary   & 0.0056 & 0.0000 & 87.5\% & 97.45\% \\
+Continuous   & 0.0016 & 0.0000 & 79.5\% & 97.82\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.78\linewidth]{variance_violins.png}
+\caption{Variance distribution across 200 (text, question) pairs per scale. Quaternary has the heaviest right tail; continuous is densely packed near zero but spreads further than binary.}
+\label{fig:violins}
+\end{figure}
+
+Wilcoxon signed-rank tests (paired by text$\times$question, one-sided $H_1$: scale B more variable than scale A) confirm the binary $\rightarrow$ ternary $\rightarrow$ quaternary increases are statistically significant; the quaternary $\rightarrow$ continuous step reverses, consistent with the small-amplitude-jitter reading.
+
+%-----------------------------------------------------------------------
+\section{Result 2: Where Instability Lives}
+\label{sec:r2}
+
+Instability is not uniform. Aggregating mean variance across scales (\autoref{fig:heatmap_text}), the hardest texts are \texttt{ambiguous} (mean var $0.0099$), \texttt{narrative\_paragraph} ($0.0068$), and \texttt{negation\_heavy} ($0.0040$); the easiest are \texttt{abstract\_philosophical} ($0.0009$), \texttt{imperative\_action}, and \texttt{sentiment\_positive}. By question family, \texttt{concreteness} is unstable on $20\%$ of cells in the JSON-mode pass, followed by \texttt{negation} ($15\%$), \texttt{spatial} ($12.5\%$), and \texttt{intent} ($12.5\%$). Five families, \texttt{named\_entities}, \texttt{temporal}, \texttt{modality}, \texttt{imperative}, \texttt{normative}, hit $0\%$ instability.
+
+The pattern is consistent with a token-level account: surface features the model can spot lexically (proper nouns, dates, modal verbs, imperative mood) collapse to a single confident token; abstract or pragmatic features (concreteness, intent, scoped negation) require integration over the statement and drift across samples even at temperature 0.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}{0.48\linewidth}
+\includegraphics[width=\linewidth]{question_stability_heatmap.png}
+\caption{Per-question, per-scale mean variance across the 10 texts.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\linewidth}
+\includegraphics[width=\linewidth]{text_difficulty_ranking.png}
+\caption{Texts ranked by overall mean variance.}
+\end{subfigure}
+\caption{Where instability concentrates: pragmatic question families, \texttt{ambiguous}, and \texttt{narrative\_paragraph} dominate.}
+\label{fig:heatmap_text}
+\end{figure}
+
+%-----------------------------------------------------------------------
+\section{Result 3: Reproducibility and Confidence}
+\label{sec:r3}
+
+\textbf{Cross-run reproducibility.} Two independent 16{,}000-grade runs were compared cell-by-cell (\texttt{comparison\_metrics.json}). Test-retest Pearson $r \geq 0.995$ on every scale; mean-variance shifts by at most $20\%$ per scale (continuous: $-20.0\%$; binary: $+15.5\%$; ternary: $+6.8\%$; quaternary: $+12.7\%$). The qualitative ordering, binary $<$ ternary $<$ quaternary, is robust; absolute levels are best reported as ranges.
+
+\textbf{Reliability coefficients.} Krippendorff's $\alpha$ is excellent throughout: binary $0.984$, ternary $0.977$, quaternary $0.952$, continuous $0.961$. ICC tracks the same ordering. Cronbach's $\alpha$ is unstable on saturated cells (constant scores produce divide-by-zero or negative values), so we report it for completeness rather than as a primary signal.
+
+\textbf{JSON-mode stress test.} A 5-repeat sweep with byte-level comparison (\texttt{json\_consistency\_results.json}, 200 calls) shows the fraction of texts producing byte-identical JSON outputs falling from $60\%$ (binary) to $50\%$ (ternary) to $40\%$ (quaternary) to $\mathbf{0\%}$ (continuous). Mean top-token probability drops in lockstep ($0.98 \rightarrow 0.94$).
+
+\textbf{Token confidence vs sample stability.} Comparing chosen-token probability for grade-tokens that flip across repeats vs grade-tokens that hold steady gives means $0.926$ (unstable) vs $0.968$ (stable). Mann-Whitney U yields $p = 0.059$. The signal is directional but borderline; logprob-only filtering is not a reliable confidence shield.
+
+%-----------------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+For LLM-judge pipelines, the practical takeaway is to default to binary or ternary unless a downstream consumer needs finer granularity. Quaternary roughly doubles variance over binary while only adding one bin of resolution. Continuous is \emph{not} a free lunch: it appears calm because the variance metric averages small-amplitude jitter, but unique-output rates and reliability coefficients rank it below ternary. Token-level logprobs are not a substitute for replication: at $p = 0.06$, they are too weak to triage individual judgments, though they remain useful as an aggregate signal.
+
+The web demo at \url{https://grading-llm.vercel.app/} reproduces this entire sweep on any user-supplied statement (1{,}600 calls per run), exposes the per-scale histograms, the 3D PCA plot, and the heatmaps used in the figures here, and accepts the user's own OpenAI API key so no server-side credentials are required.
+
+%-----------------------------------------------------------------------
+\section{Limitations and Future Work}
+\label{sec:limits}
+
+This paper covers a single model (gpt-4o-mini, \texttt{temperature=0}). Extending to gpt-4o, Claude, and open-weight Llama variants at multiple temperatures would let us separate model-specific behavior from a general LLM-as-judge phenomenon. The 10 hand-curated texts span obvious archetypes but are not a representative corpus; a held-out per-domain set is the natural next step. The interpretability question bank (\texttt{questions\_interp.json}, \autoref{app:prompts}) is wired into the demo but not analyzed quantitatively here, and the 3D PCA visualization, while exposed in the app, is an exploratory tool rather than a result.
+
+\appendix
+
+%-----------------------------------------------------------------------
+\section{Experiment Presets}
+\label{app:presets}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Preset} & \textbf{Value} \\
+\midrule
+Model                       & \texttt{gpt-4o-mini} \\
+Temperature                 & \texttt{0.0} \\
+Max tokens (single)         & \texttt{500} \\
+Max tokens (batched)        & \texttt{1000} \\
+Response format             & \texttt{\{"type": "json\_object"\}} (JSON-mode pass) \\
+Logprobs                    & \texttt{True}, \texttt{top\_logprobs=5} (JSON-mode pass) \\
+Batch size (questions/call) & \texttt{20} \\
+Max concurrent API calls    & \texttt{10} \\
+Samples per (text, q, scale)& \texttt{20} (main); \texttt{5} (JSON-mode pass) \\
+Texts                       & \texttt{10} \\
+Questions                   & \texttt{20} (mechanistic family pruning, $\rho \le 0.85$) \\
+Scales                      & binary, ternary, quaternary, continuous \\
+Total grades / main run     & \texttt{16{,}000} \\
+Total API calls / main run  & \texttt{800} (20 questions per call) \\
+Pricing (input, output)     & \$0.150 / \$0.600 per 1M tokens \\
+Retry policy                & exp.\ backoff, max 5 attempts, $1$--$60$\,s wait \\
+Random seed                 & not used (relies on \texttt{temperature=0}) \\
+Replication                 & 2 independent main runs + 1 JSON-mode pass \\
+\bottomrule
+\end{tabular}
+\caption{Defaults from \texttt{src/grading\_llm/client.py} and \texttt{json\_consistency\_experiment.py}.}
+\end{table}
+
+\textbf{Scale supports.}
+\begin{itemize}
+\item \emph{Binary}: $\{0, 1\}$. Labels: Absent, Present.
+\item \emph{Ternary}: $\{0, 0.5, 1\}$. Labels: Absent, Peripheral, Central.
+\item \emph{Quaternary}: $\{0, 0.33, 0.66, 1\}$. Labels: Absent, Weak, Moderate, Strong.
+\item \emph{Continuous}: $[0, 1]$. Anchors at $0.0$ (absent), $0.1$--$0.3$ (barely), $0.4$--$0.6$ (moderate), $0.7$--$0.9$ (strong), $1.0$ (deep/central).
+\end{itemize}
+
+%-----------------------------------------------------------------------
+\section{Verbatim Prompts}
+\label{app:prompts}
+
+All prompts below are reproduced byte-for-byte from \texttt{src/grading\_llm/prompts.py} and \texttt{src/grading\_llm/scales.py}. \texttt{\{statement\}}, \texttt{\{question\}}, \texttt{\{questions\_block\}}, \texttt{\{n\_questions\}}, and \texttt{\{scale\_instruction\}} are template placeholders.
+
+\subsection{Single-question prompt (\texttt{create\_single\_question\_prompt})}
+\begin{verbatim}
+You are analyzing a statement for a specific linguistic feature. Score how
+DEEPLY and RELEVANTLY the feature appears.
+
+{scale_instruction}
+
+STATEMENT: "{statement}"
+
+Question: {question}
+
+Consider: Is this feature explicit or implicit? Central or peripheral?
+Strongly or weakly expressed?
+
+Respond with ONLY a JSON object: {"score": <value>}
+\end{verbatim}
+
+\subsection{Batched 20-question prompt (\texttt{create\_batched\_prompt})}
+This is the prompt used for every cell in the main 16{,}000-grade sweep.
+\begin{verbatim}
+You are analyzing a statement for specific linguistic features. For each
+question, score how DEEPLY and RELEVANTLY the feature appears in the
+statement.
+
+{scale_instruction}
+
+STATEMENT TO ANALYZE:
+"{statement}"
+
+For each question, consider:
+- Is the feature explicitly stated or merely implied?
+- Is it central to the statement's meaning or just peripheral/tangential?
+- How strongly is it expressed?
+
+Questions:
+{questions_block}
+
+Respond with ONLY a JSON object containing an array of scores:
+{"scores": [<score_1>, <score_2>, ..., <score_{n_questions}>]}
+\end{verbatim}
+
+\subsection{JSON-mode + logprobs prompt (\texttt{json\_consistency\_experiment.build\_prompt})}
+Identical body to the batched prompt above; the difference is at the API call: \texttt{response\_format=\{"type":"json\_object"\}}, \texttt{logprobs=True}, \texttt{top\_logprobs=5}.
+
+\subsection{Binary pruning prompt (\texttt{create\_binary\_evaluation\_prompt})}
+Used during 100\,$\rightarrow$\,20 question pruning, not in the main sweep.
+\begin{verbatim}
+You are evaluating the following statement:
+"{statement}"
+
+Question: {question}
+
+Respond with ONLY a JSON object: {"answer": 0} or {"answer": 1}
+
+Score must be exactly 0 (no/absent) or 1 (yes/present).
+\end{verbatim}
+
+\subsection{Scale instructions (substituted as \texttt{\{scale\_instruction\}})}
+
+\paragraph{Binary.}
+\begin{verbatim}
+SCORING SCALE - Score based on how DEEPLY and RELEVANTLY the feature appears:
+  - 0 = Absent - not present in the statement
+  - 1 = Present - appears in the statement
+\end{verbatim}
+
+\paragraph{Ternary.}
+\begin{verbatim}
+SCORING SCALE - Score based on how DEEPLY and RELEVANTLY the feature appears:
+  - 0 = Absent - not present at all
+  - 0.5 = Peripheral - present but minor, tangential, or implicit
+  - 1 = Central - clearly and explicitly present
+
+Use intermediate values (0.5) when the feature is:
+  - Present but peripheral/tangential to the main point
+  - Implicit or suggested rather than explicit
+  - Weakly expressed or only partially applicable
+\end{verbatim}
+
+\paragraph{Quaternary.}
+\begin{verbatim}
+SCORING SCALE - Score based on how DEEPLY and RELEVANTLY the feature appears:
+  - 0 = Absent - not present
+  - 0.33 = Weak - barely present, very minor or implicit
+  - 0.66 = Moderate - present but not emphasized
+  - 1 = Strong - clearly present and significant
+
+Use intermediate values (0.33, 0.66) when the feature is:
+  - Present but peripheral/tangential to the main point
+  - Implicit or suggested rather than explicit
+  - Weakly expressed or only partially applicable
+\end{verbatim}
+
+\paragraph{Continuous.}
+\begin{verbatim}
+SCORING SCALE - Rate how STRONGLY this feature appears on a continuous 0-1 scale:
+  - 0.0 = completely absent, no trace of this feature
+  - 0.1-0.3 = barely present, very minor or tangential
+  - 0.4-0.6 = moderately present, somewhat relevant but not central
+  - 0.7-0.9 = strongly present, clearly relevant and significant
+  - 1.0 = deeply and centrally present, core to the statement
+
+You may use ANY decimal value between 0.0 and 1.0 (e.g., 0.15, 0.42, 0.87).
+This is a CONTINUOUS scale - use the full range, not just 0 or 1.
+\end{verbatim}
+
+\subsection{Mechanistic question bank (\texttt{questions\_mech.json})}
+\begin{enumerate}\itemsep0pt
+\item \texttt{named\_entities}: Does the statement mention a specific person by name?
+\item \texttt{actions\_events}: Does the statement describe an action being performed?
+\item \texttt{causality}: Does the statement express a cause-and-effect relationship?
+\item \texttt{temporal}: Does the statement reference a specific time or date?
+\item \texttt{spatial}: Does the statement use spatial prepositions (in, on, under, above)?
+\item \texttt{numeric}: Does the statement contain explicit numbers?
+\item \texttt{negation}: Does the statement contain explicit negation (not, never, no)?
+\item \texttt{uncertainty}: Does the statement express uncertainty (might, maybe, perhaps)?
+\item \texttt{modality}: Does the statement express obligation (should, must, ought)?
+\item \texttt{sentiment}: Does the statement contain evaluative language (good, bad)?
+\item \texttt{emotion}: Does the statement name a specific emotion (happy, sad, angry)?
+\item \texttt{social}: Does the statement describe interaction between people?
+\item \texttt{dialogue}: Does the statement contain quoted speech or dialogue?
+\item \texttt{first\_person}: Does the statement use first-person pronouns (I, me, my, we)?
+\item \texttt{imperative}: Does the statement give instructions or commands?
+\item \texttt{comparison}: Does the statement compare two or more things?
+\item \texttt{normative}: Does the statement make moral or ethical judgments?
+\item \texttt{intent}: Does the statement describe someone's intention or purpose?
+\item \texttt{concreteness}: Does the statement describe concrete, tangible objects?
+\item \texttt{identity}: Does the statement describe someone's identity or role?
+\end{enumerate}
+
+\subsection{Interpretability question bank (\texttt{questions\_interp.json}, demo only)}
+\begin{enumerate}\itemsep0pt
+\item \texttt{implicit\_judgment}: Is someone being judged without it being stated directly?
+\item \texttt{implied\_problem}: Does the text imply that something went wrong?
+\item \texttt{unstated\_reason}: Is there an unstated reason why events unfolded this way?
+\item \texttt{tone\_ambiguity}: Would two readers likely disagree on the tone of this text?
+\item \texttt{pragmatic\_meaning}: Is the speaker communicating more than what is literally written?
+\item \texttt{mental\_state\_inference}: Does understanding this require inferring someone's internal thoughts?
+\item \texttt{social\_tension}: Is there social tension implied in the situation?
+\item \texttt{implicit\_cause}: Does the text suggest a cause without naming it?
+\item \texttt{emotional\_subtext}: Is there a subtle emotional signal that is never named?
+\item \texttt{descriptive\_vs\_evaluative}: Is this text describing events, or implying meaning about them?
+\item \texttt{context\_dependence}: Would this text be interpreted differently depending on context?
+\item \texttt{power\_dynamics}: Is there an implied power dynamic between people?
+\item \texttt{omission}: Is there something important that is not being said?
+\item \texttt{social\_norms}: Does the text rely on shared social norms to be understood?
+\item \texttt{explicit\_vs\_implicit}: Is the main point of the text explicit or implicit?
+\item \texttt{meaning\_shift}: Does the text contain a shift in situation or meaning?
+\item \texttt{indirection}: Is the speaker avoiding saying something directly?
+\item \texttt{implied\_intent}: Does the text imply intent without stating it?
+\item \texttt{event\_ambiguity}: Is there ambiguity about what actually happened?
+\item \texttt{social\_experience}: Would this be difficult to interpret without social experience?
+\end{enumerate}
+
+%-----------------------------------------------------------------------
+\section{Statement Bank}
+\label{app:texts}
+
+The 10 statements (verbatim from \texttt{data/batch\_input\_10.jsonl}):
+
+\begin{enumerate}\itemsep2pt
+\item \textbf{factual\_simple}: ``The Eiffel Tower was completed in 1889 and stands 330 meters tall in Paris, France.''
+\item \textbf{sentiment\_positive}: ``The community garden transformed our neighborhood --- strangers became friends, children learned patience, and even the most skeptical residents admitted the fresh tomatoes were worth the effort.''
+\item \textbf{sentiment\_negative}: ``The project was a catastrophic failure that wasted millions in taxpayer money, displaced vulnerable families, and left behind nothing but empty promises and crumbling infrastructure.''
+\item \textbf{ambiguous}: ``She said she was fine with the decision, but everyone in the room knew that wasn't the whole story.''
+\item \textbf{medical\_clinical}: ``Patient presents with acute onset chest pain radiating to the left arm, diaphoresis, and shortness of breath. ECG shows ST-elevation in leads II, III, and aVF. Troponin levels pending.''
+\item \textbf{negation\_heavy}: ``The study found no significant evidence that the treatment was neither ineffective nor harmful, leaving researchers unable to draw any definitive conclusions.''
+\item \textbf{imperative\_action}: ``Immediately evacuate the building through the nearest emergency exit. Do not use the elevators. Proceed to the designated assembly point and wait for further instructions from emergency personnel.''
+\item \textbf{abstract\_philosophical}: ``Consciousness may be less like a light switch and more like a dimmer --- not something that is simply present or absent, but something that exists in degrees across a spectrum we barely understand.''
+\item \textbf{narrative\_paragraph}: ``Maria had been working at the clinic for twelve years when the new director arrived. Within weeks, he had restructured the scheduling system, fired two senior nurses, and implemented a policy requiring all staff to log their breaks. Morale plummeted. Patients noticed the tension. By March, three more staff members had quietly submitted their resignations.''
+\item \textbf{technical\_ml}: ``The transformer architecture uses multi-head self-attention to compute weighted representations of input tokens, where attention weights are derived from scaled dot-product similarity between query and key projections, enabling the model to capture long-range dependencies without recurrence.''
+\end{enumerate}
+
+\end{document}
