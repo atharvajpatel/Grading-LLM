@@ -506,6 +506,76 @@ export default function PresentationTab() {
             (79.5%). Quiet, distributed noise instead of loud bin-flipping.
           </p>
         </div>
+
+        {/* Metric glossary (always-on, plain English) */}
+        <details className="mt-4 border border-gray-200 rounded-lg overflow-hidden group" open>
+          <summary className="cursor-pointer px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-sm font-semibold text-gray-700 flex items-center justify-between">
+            <span>What every column means (presenter glossary)</span>
+            <span className="text-xs text-gray-400 group-open:hidden">click to expand</span>
+          </summary>
+          <div className="p-4 space-y-3 text-sm text-gray-700 bg-white">
+            <div>
+              <div className="font-semibold text-gray-900">Mean Var</div>
+              <p className="text-gray-600">
+                Variance of the 20 repeats per cell, then averaged across all 200 cells in the
+                scale. Lower means the model gave the same answer every time. Theoretical max on
+                [0, 1] data is 0.25 (a 50/50 flip).
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">% Zero-Var</div>
+              <p className="text-gray-600">
+                Fraction of cells where all 20 repeats returned the exact same number. The cleanest
+                &ldquo;100% consistent&rdquo; indicator. Continuous looks calm on{' '}
+                <em>Mean Var</em> but is the <strong>worst</strong> here (79.5%): it wobbles a
+                tiny bit on almost every cell instead of flipping bins on a few.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">% High-Var</div>
+              <p className="text-gray-600">
+                Fraction of cells with variance &gt; 0.1, i.e. genuinely loud disagreement
+                (a sample like [0, 1, 0, 1, 0]). Quaternary&apos;s 11% is three times worse than
+                binary &mdash; this is the bin-flipping failure mode.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">Mean Mode Consistency</div>
+              <p className="text-gray-600">
+                For each cell, count how many of the 20 repeats matched the most-common answer.
+                Equivalent to &ldquo;if I had to bet on one number, how often would I be right?&rdquo;
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">ICC (Intraclass Correlation)</div>
+              <p className="text-gray-600">
+                Psychometric reliability score. How much of the total variance is real
+                between-cell signal vs noise across repeats. Range 0&ndash;1; &gt; 0.9 is
+                &ldquo;excellent.&rdquo; All four scales pass; the ordering still tracks
+                instability.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">Cohen&apos;s κ (kappa)</div>
+              <p className="text-gray-600">
+                Inter-rater agreement corrected for chance, treating two random repeats as two
+                raters. Range &minus;1 to +1; &gt; 0.8 is &ldquo;almost perfect.&rdquo; Quaternary
+                wins here because when it does flip, it flips between adjacent values &mdash;
+                kappa undercounts that. <em>n/a</em> for continuous (no discrete categories).
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">Krippendorff α</div>
+              <p className="text-gray-600">
+                The honest one. Modern standard for inter-annotator reliability across binary,
+                ordinal, and continuous data. Range &minus;1 to +1; &gt; 0.8 is
+                &ldquo;publishable.&rdquo; The binary &rarr; quaternary dip (0.984 &rarr; 0.952)
+                mirrors the variance story without kappa&apos;s quirks. Use this when you want
+                one defensible reliability number per scale.
+              </p>
+            </div>
+          </div>
+        </details>
       </SlideCard>
 
       {/* ── 8. Finding 1 ─────────────────────────────────────────────────── */}
@@ -541,6 +611,19 @@ export default function PresentationTab() {
             ornamental; it leaks into the sampler.
           </p>
         </div>
+
+        <details className="mt-3 text-sm text-gray-600 border border-gray-200 rounded-lg p-3 bg-gray-50">
+          <summary className="cursor-pointer font-semibold text-gray-800">
+            Why &ldquo;byte-identical&rdquo; is the strictest possible test
+          </summary>
+          <p className="mt-2">
+            Variance smooths over small wobbles. Mode consistency lets one repeat differ. This bar
+            asks: did all 5 of the same prompts return the exact same JSON string &mdash; same
+            scores, same brackets, same whitespace? It bypasses every smoothing trick the math
+            offers. The continuous-scale 0% is the most viscerally honest evidence that the
+            sampler is non-deterministic regardless of <code>temperature=0</code>.
+          </p>
+        </details>
       </SlideCard>
 
       {/* ── 9. Finding 2 ─────────────────────────────────────────────────── */}
@@ -581,6 +664,40 @@ export default function PresentationTab() {
             guarantees.
           </p>
         </div>
+
+        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white space-y-2">
+          <summary className="cursor-pointer font-semibold text-gray-800">
+            How to read each column
+          </summary>
+          <div className="mt-2 space-y-3">
+            <div>
+              <div className="font-semibold text-gray-900">Mean prob ↑</div>
+              <p className="text-gray-600">
+                The probability the model assigned to the token it actually emitted, averaged across
+                every numeric score token in the response. Higher = the model was confident in its
+                pick. Binary 0.98 vs continuous 0.94 means the model is genuinely less certain
+                which decimal to choose.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">Mean entropy ↓</div>
+              <p className="text-gray-600">
+                Shannon entropy: <code>&minus;Σ p log₂ p</code> over the top-5 alternative tokens.
+                Zero entropy = all probability mass on one option (totally sure). Higher entropy =
+                the distribution is spread across multiple plausible tokens. The 3&times; jump
+                from binary (0.06) to continuous (0.20) is the model spreading its bets.
+              </p>
+            </div>
+            <div>
+              <div className="font-semibold text-gray-900">Min prob</div>
+              <p className="text-gray-600">
+                Worst case across the whole run. Binary&apos;s 0.50 is a literal coin flip;
+                continuous&apos;s 0.24 means the model&apos;s favorite token was only its 1-in-4
+                pick. The worst case bounds how much you can trust any single grade.
+              </p>
+            </div>
+          </div>
+        </details>
       </SlideCard>
 
       {/* ── 10. Finding 3 ────────────────────────────────────────────────── */}
@@ -668,6 +785,47 @@ export default function PresentationTab() {
             <strong>Don&apos;t trust confidence alone.</strong>
           </p>
         </div>
+
+        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white">
+          <summary className="cursor-pointer font-semibold text-gray-800">
+            What Mann-Whitney is doing here &middot; and what p = 0.059 actually means
+          </summary>
+          <div className="mt-2 space-y-2">
+            <p>
+              <strong>Mann-Whitney U</strong> is a non-parametric test that asks: do two
+              distributions have different medians? It doesn&apos;t assume normality, which matters
+              because logprob distributions are heavily skewed (most tokens are near probability 1).
+            </p>
+            <p>
+              We split every cell into two buckets &mdash; <em>stable</em> (all repeats agreed) and{' '}
+              <em>unstable</em> (at least one flip) &mdash; then ran the test on their mean
+              chosen-token probabilities.
+            </p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Stable cells mean prob: <strong>0.968</strong></li>
+              <li>Unstable cells mean prob: <strong>0.926</strong></li>
+              <li>Mann-Whitney U test: <strong>p = 0.059</strong></li>
+            </ul>
+            <p>
+              The conventional &ldquo;statistically significant&rdquo; threshold is p &lt; 0.05.
+              We&apos;re at 0.059 &mdash; barely above it. The plain-English read:
+            </p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>Yes, on average, unstable cells have lower confidence than stable ones.</li>
+              <li>
+                No, the difference is not reliably distinguishable from chance at the standard
+                threshold.
+              </li>
+              <li>The effect is tiny: a 4-point gap on a 0&ndash;1 scale.</li>
+            </ul>
+            <p className="font-semibold text-red-800">
+              Engineering takeaway: logprobs correlate with stability in the right direction, but
+              the correlation is too weak to filter on. You cannot say &ldquo;only trust grades
+              where token prob &gt; X.&rdquo; The only honest measure of stability is repeat-and-check
+              &mdash; which is exactly what this whole experiment does.
+            </p>
+          </div>
+        </details>
       </SlideCard>
 
       {/* ── 12. PCA ──────────────────────────────────────────────────────── */}
@@ -745,6 +903,46 @@ export default function PresentationTab() {
             any sentence, and you get the interactive 3-D PCA on your own text.
           </p>
         </div>
+
+        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white">
+          <summary className="cursor-pointer font-semibold text-gray-800">
+            How to read the three PCA plots above
+          </summary>
+          <div className="mt-2 space-y-2">
+            <p>
+              Each plot shows 80 dots for one statement: 20 repeats of each scale. Color = scale
+              (blue binary, green ternary, orange quaternary, pink continuous). The big{' '}
+              <strong>star</strong> is that scale&apos;s centroid (the mean position of its 20
+              repeats).
+            </p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>
+                <strong>Tight color cluster</strong> = the model gave the same 20-question answer
+                vector every time on that scale. Consistent.
+              </li>
+              <li>
+                <strong>Spread color cluster</strong> = the model produced different score
+                vectors across repeats. It&apos;s changing its mind on at least some of the 20
+                questions.
+              </li>
+              <li>
+                <strong>Stars close together</strong> = the four scales agree on what the underlying
+                answer is, even if their precision differs.
+              </li>
+              <li>
+                <strong>Stars far apart</strong> = the scale itself is shifting what the model
+                returns. The choice of scale is changing the verdict, not just the resolution.
+              </li>
+            </ul>
+            <p>
+              The three statements were picked deliberately:
+              <strong> factual_simple</strong> collapses near the origin (easy case),{' '}
+              <strong>ambiguous</strong> sends orange and pink drifting hard from the blue
+              cluster, and <strong>narrative_paragraph</strong> shows the dramatic quaternary
+              spread &mdash; the wobble lives in mid-resolution scales for that text.
+            </p>
+          </div>
+        </details>
       </SlideCard>
 
       {/* ── 13. So what ──────────────────────────────────────────────────── */}
@@ -790,6 +988,28 @@ export default function PresentationTab() {
         title="Try it live. Pick a statement. Watch the model wobble."
         icon={Heart} accent="pink"
       >
+        {/* Presenter cheat sheet — the one-paragraph version */}
+        <div className="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700 leading-relaxed">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">
+            One-paragraph version (for the stranger who just walked up)
+          </div>
+          <p>
+            We grade <strong>10 test statements</strong> with <strong>20 mechanistic semantic
+            probes</strong>, repeating each grade <strong>20 times at temperature 0</strong>, on{' '}
+            <strong>4 answer scales</strong> (binary through continuous). The headline finding is
+            that finer numerical scales let the model spend its degrees of freedom on noise rather
+            than signal &mdash; quaternary is the worst scale by every honest reliability metric
+            (Krippendorff α 0.95 vs 0.98 for binary), and on continuous the model literally never
+            reproduces the same JSON output twice. Token-level confidence correlates with stability
+            in the right direction but is too weak to filter on (Mann-Whitney p = 0.059, effect
+            size 4 points). The instability isn&apos;t uniform &mdash; 5 of 20 question families
+            show zero disagreement, while abstract-integration families like concreteness and
+            intent absorb almost all of it. The honest engineering recipe: pick the coarsest scale
+            your decision actually needs, probe per factor family rather than averaging, and never
+            trust a single grade &mdash; replicate.
+          </p>
+        </div>
+
         <div className="flex flex-col md:flex-row md:items-center gap-4 mt-2">
           <a
             href={DEMO_URL}
