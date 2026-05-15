@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getQuestions, Question, QuestionMode } from '../api/client'
-import { ChevronDown, ChevronRight, HelpCircle, AlertTriangle, Rocket, Calculator } from 'lucide-react'
+import { ChevronDown, ChevronRight, HelpCircle, AlertTriangle, Rocket, Calculator, FileText } from 'lucide-react'
 
 export default function QuestionsTab() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -207,6 +207,68 @@ export default function QuestionsTab() {
             })}
           </div>
         )}
+      </div>
+
+      {/* 10 Statement Archetypes */}
+      <div className="card">
+        <div className="flex items-center space-x-2 mb-4">
+          <FileText className="w-6 h-6 text-emerald-600" />
+          <h2 className="text-xl font-bold text-gray-900">
+            10 Statement Archetypes
+          </h2>
+        </div>
+
+        <p className="text-gray-600 mb-4">
+          The batch experiments on the Research, Logprobs, and Presentation tabs grade these same
+          10 texts. They&apos;re hand-picked archetypes designed to span the difficulty surface
+          (factual, evaluative, ambiguous, clinical, abstract, narrative, technical), not a
+          representative corpus. Source: <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">data/batch_input_10.jsonl</code>.
+        </p>
+
+        <div className="space-y-2">
+          {[
+            { id: 'factual_simple',         tag: 'Factual',     color: 'blue',    text: 'The Eiffel Tower was completed in 1889 and stands 330 meters tall in Paris, France.' },
+            { id: 'sentiment_positive',     tag: 'Evaluative+', color: 'green',   text: 'The community garden transformed our neighborhood — strangers became friends, children learned patience, and even the most skeptical residents admitted the fresh tomatoes were worth the effort.' },
+            { id: 'sentiment_negative',     tag: 'Evaluative−', color: 'red',     text: 'The project was a catastrophic failure that wasted millions in taxpayer money, displaced vulnerable families, and left behind nothing but empty promises and crumbling infrastructure.' },
+            { id: 'ambiguous',              tag: 'Ambiguous',   color: 'amber',   text: 'She said she was fine with the decision, but everyone in the room knew that wasn’t the whole story.' },
+            { id: 'medical_clinical',       tag: 'Clinical',    color: 'pink',    text: 'Patient presents with acute onset chest pain radiating to the left arm, diaphoresis, and shortness of breath. ECG shows ST-elevation in leads II, III, and aVF. Troponin levels pending.' },
+            { id: 'negation_heavy',         tag: 'Negation',    color: 'purple',  text: 'The study found no significant evidence that the treatment was neither ineffective nor harmful, leaving researchers unable to draw any definitive conclusions.' },
+            { id: 'imperative_action',      tag: 'Imperative',  color: 'orange',  text: 'Immediately evacuate the building through the nearest emergency exit. Do not use the elevators. Proceed to the designated assembly point and wait for further instructions from emergency personnel.' },
+            { id: 'abstract_philosophical', tag: 'Abstract',    color: 'indigo',  text: 'Consciousness may be less like a light switch and more like a dimmer — not something that is simply present or absent, but something that exists in degrees across a spectrum we barely understand.' },
+            { id: 'narrative_paragraph',    tag: 'Narrative',   color: 'rose',    text: 'Maria had been working at the clinic for twelve years when the new director arrived. Within weeks, he had restructured the scheduling system, fired two senior nurses, and implemented a policy requiring all staff to log their breaks. Morale plummeted. Patients noticed the tension. By March, three more staff members had quietly submitted their resignations.' },
+            { id: 'technical_ml',           tag: 'Technical',   color: 'cyan',    text: 'The transformer architecture uses multi-head self-attention to compute weighted representations of input tokens, where attention weights are derived from scaled dot-product similarity between query and key projections, enabling the model to capture long-range dependencies without recurrence.' },
+          ].map((t, i) => (
+            <div key={t.id} className="border border-gray-200 rounded-lg p-3 hover:border-gray-300 transition-colors">
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-bold font-mono">
+                  {i + 1}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <code className="text-xs font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{t.id}</code>
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-${t.color}-100 text-${t.color}-700`}>
+                      {t.tag}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">{t.text}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
+          <p className="font-semibold mb-1">N = 10 is a probe, not a benchmark.</p>
+          <p>
+            With 10 texts × 20 questions = 200 paired data points per scale, the Wilcoxon
+            signed-rank tests on scale-degradation are well-powered (p &lt; 0.001 binary→quaternary,
+            replicated across two independent 16,000-grade runs at Pearson r ≥ 0.995). What 10
+            texts can&apos;t support is per-text difficulty generalization (e.g.,{' '}
+            <em>&ldquo;ambiguous text is the hardest type in general&rdquo;</em>) or precise per-family
+            percentages. Scaling to a held-out per-domain set is the natural next experiment; see
+            the Limitations card below.
+          </p>
+        </div>
       </div>
 
       {/* How PCA Works */}

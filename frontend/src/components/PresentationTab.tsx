@@ -186,7 +186,9 @@ export default function PresentationTab() {
             </p>
             <p className="text-sm text-indigo-200 mt-3 max-w-xl">
               Follow along live with the talk. Every chart on this page comes from one of the
-              16,000-evaluation batch runs; you can rerun any of them yourself from the Analyze tab.
+              16,000-evaluation batch runs over <strong>10 statement archetypes × 20 mechanistic
+              questions × 4 scales × 20 repeats</strong>. You can rerun any of it on your own
+              statement from the Analyze tab.
             </p>
           </div>
           <a
@@ -325,6 +327,11 @@ export default function PresentationTab() {
           20 questions × 4 scales × 20 repeats ={' '}
           <strong className="text-blue-700">1,600 API calls</strong> / statement
         </div>
+        <p className="mt-3 text-xs text-gray-500 text-center">
+          All saved batch results on this page use the <strong className="text-blue-700">mechanistic</strong> question
+          bank (<code>data/questions_mech.json</code>). The interpretability bank is wired into the live
+          Analyze tab so you can compare yourself, but is not part of the 16,000-grade dataset shown here.
+        </p>
       </SlideCard>
 
       {/* ── 5. Probes (mech vs interp) ──────────────────────────────────── */}
@@ -393,8 +400,42 @@ export default function PresentationTab() {
       >
         <p className="text-sm text-gray-600 mb-3">
           The top-of-page table from the Research and Logprobs tabs. Each row aggregates 4,000
-          grades (10 texts × 20 questions × 20 samples).
+          grades (10 texts × 20 mechanistic questions × 20 samples). Total = 16,000.
         </p>
+
+        {/* The 10 archetypes that get graded */}
+        <details className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+          <summary className="cursor-pointer px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 flex items-center justify-between">
+            <span>The 10 statement archetypes (click to expand)</span>
+            <span className="text-xs text-gray-400 font-mono">data/batch_input_10.jsonl</span>
+          </summary>
+          <div className="divide-y divide-gray-100">
+            {[
+              { id: 'factual_simple',         tag: 'Factual',     text: 'The Eiffel Tower was completed in 1889 and stands 330 meters tall in Paris, France.' },
+              { id: 'sentiment_positive',     tag: 'Evaluative+', text: 'The community garden transformed our neighborhood — strangers became friends, children learned patience, and even the most skeptical residents admitted the fresh tomatoes were worth the effort.' },
+              { id: 'sentiment_negative',     tag: 'Evaluative−', text: 'The project was a catastrophic failure that wasted millions in taxpayer money, displaced vulnerable families, and left behind nothing but empty promises and crumbling infrastructure.' },
+              { id: 'ambiguous',              tag: 'Ambiguous',   text: 'She said she was fine with the decision, but everyone in the room knew that wasn’t the whole story.' },
+              { id: 'medical_clinical',       tag: 'Clinical',    text: 'Patient presents with acute onset chest pain radiating to the left arm, diaphoresis, and shortness of breath. ECG shows ST-elevation in leads II, III, and aVF. Troponin levels pending.' },
+              { id: 'negation_heavy',         tag: 'Negation',    text: 'The study found no significant evidence that the treatment was neither ineffective nor harmful, leaving researchers unable to draw any definitive conclusions.' },
+              { id: 'imperative_action',      tag: 'Imperative',  text: 'Immediately evacuate the building through the nearest emergency exit. Do not use the elevators. Proceed to the designated assembly point and wait for further instructions from emergency personnel.' },
+              { id: 'abstract_philosophical', tag: 'Abstract',    text: 'Consciousness may be less like a light switch and more like a dimmer — not something that is simply present or absent, but something that exists in degrees across a spectrum we barely understand.' },
+              { id: 'narrative_paragraph',    tag: 'Narrative',   text: 'Maria had been working at the clinic for twelve years when the new director arrived. Within weeks, he had restructured the scheduling system, fired two senior nurses, and implemented a policy requiring all staff to log their breaks. Morale plummeted. Patients noticed the tension. By March, three more staff members had quietly submitted their resignations.' },
+              { id: 'technical_ml',           tag: 'Technical',   text: 'The transformer architecture uses multi-head self-attention to compute weighted representations of input tokens, where attention weights are derived from scaled dot-product similarity between query and key projections, enabling the model to capture long-range dependencies without recurrence.' },
+            ].map((t, i) => (
+              <div key={t.id} className="px-4 py-2.5 text-sm">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-[10px] font-bold font-mono">
+                    {i + 1}
+                  </span>
+                  <code className="text-[11px] font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{t.id}</code>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">{t.tag}</span>
+                </div>
+                <p className="text-gray-700 leading-relaxed pl-7">{t.text}</p>
+              </div>
+            ))}
+          </div>
+        </details>
+
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
