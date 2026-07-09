@@ -2,48 +2,420 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   DESIGN TOKENS — Titan-Dashboard theme
+   Four base colors. Everything else is a tint/shade of these,
+   never a new hue.
+     cream #F5F0E8   page ground
+     ink   #0B1F3F   primary text / strongest mark
+     gold  #C4956A   the one accent
+     mute  #5A5A6E   secondary text
+   ============================================================ */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  --cream: #f5f0e8;
+  --ink: #0b1f3f;
+  --gold: #c4956a;
+  --mute: #5a5a6e;
+
+  /* Derived: shades of the four above, no new hues. */
+  --gold-deep: #a87d55;
+  --gold-badge: #fef3e2;
+  --hair: #e8e4de;
+  --raised-bg: rgba(255, 255, 255, 0.72);
+  --card-border: rgba(11, 31, 63, 0.08);
+  --ink-700: #2a333e;
+  --ink-300: #b6bcc5;
+
+  /* Single-hue gold ramp. Encodes the 4 grading scales by
+     LUMINANCE, not by hue. Ordered light -> dark to mirror
+     binary(2) -> continuous(inf) granularity. Mirrors
+     SCALE_COLORS in src/api/client.ts — keep in sync. */
+  --scale-1: #e0c39b;
+  --scale-2: #c4956a;
+  --scale-3: #9a6f45;
+  --scale-4: #6b4a2b;
+
+  --font-ui: "Inter", system-ui, sans-serif;
+  --font-body: "Open Sans", system-ui, sans-serif;
+  --font-stat: "Roboto Condensed", "Inter", sans-serif;
+
+  --radius-card: 16px;
+  --radius-ctl: 8px;
+  --radius-pill: 999px;
+
+  --shadow-raised: 0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 6px 18px -8px rgba(11, 31, 63, 0.18),
+    0 2px 6px -2px rgba(11, 31, 63, 0.08);
+
+  font-family: var(--font-body);
+  line-height: 1.7;
   font-weight: 400;
-  color: #213547;
-  background-color: #f8fafc;
+  color: var(--ink);
+  background-color: var(--cream);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
 }
 
+/* Atmospheric gold wash. The glass surfaces below are translucent;
+   without something warm diffusing behind them they read as flat
+   white boxes on beige. This layer is what makes the glass glassy. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(24px);
+  opacity: 0.7;
+  background:
+    radial-gradient(900px 520px at 12% -8%, rgba(196, 149, 106, 0.12), transparent 60%),
+    radial-gradient(760px 460px at 100% 0%, rgba(11, 31, 63, 0.05), transparent 55%),
+    radial-gradient(680px 420px at 85% 100%, rgba(196, 149, 106, 0.09), transparent 60%),
+    radial-gradient(560px 380px at 0% 90%, rgba(196, 149, 106, 0.07), transparent 60%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ============================================================
+   SURFACES
+   ============================================================ */
+.card,
+.raised {
+  background: var(--raised-bg);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-raised);
+  padding: 1.5rem;
+}
+
+/* Without backdrop-filter, translucent white over the gold wash
+   turns to low-contrast mush. Fall back to near-opaque. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .card,
+  .raised {
+    background: rgba(255, 255, 255, 0.94);
+  }
+}
+
+/* Frame for matplotlib PNGs, which are rendered on white and would
+   otherwise float unbounded on cream. */
+.plot-frame {
+  background: #ffffff;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-ctl);
+  padding: 0.75rem;
+  overflow: hidden;
+}
+
+.plot-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+.page-title {
+  font-family: var(--font-stat);
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+}
+
+/* Gold, small, wide-tracked, uppercase. The kicker above a section. */
+.panel-title {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 11px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--gold);
+}
+
+.section-title {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.muted {
+  color: var(--mute);
+}
+
+/* Numeric display. Tabular figures stop digits from jittering as
+   values update; the white emboss is Titan's signature on stats. */
+.stat-num {
+  font-family: var(--font-stat);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   TABS — active state signalled by a 2px gold underline.
+   No icons, no hue variety.
+   ============================================================ */
 .tab-button {
-  @apply px-6 py-3 font-medium text-sm rounded-t-lg transition-colors;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.15rem;
+  background: transparent;
+  color: var(--mute);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.tab-button:hover:not(.active) {
+  color: var(--ink);
 }
 
 .tab-button.active {
-  @apply bg-white text-blue-600 border-b-2 border-blue-600;
+  color: var(--ink);
+  border-bottom-color: var(--gold);
 }
 
-.tab-button:not(.active) {
-  @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+.tab-button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
-.card {
-  @apply bg-white rounded-lg shadow-md p-6;
-}
-
+/* ============================================================
+   CONTROLS
+   ============================================================ */
 .input-field {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--hair);
+  border-radius: 10px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.input-field::placeholder {
+  color: var(--ink-300);
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(196, 149, 106, 0.18);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-ctl);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .btn-primary {
-  @apply px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors;
+  background: var(--gold);
+  color: #ffffff;
+  border: 1px solid var(--gold);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 1px 2px rgba(168, 125, 85, 0.4);
 }
 
+.btn-primary:hover:not(:disabled) {
+  background: var(--gold-deep);
+  border-color: var(--gold-deep);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -8px rgba(196, 149, 106, 0.6);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--hair);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+/* Destructive actions (cancel/stop). Signalled by a heavy ink fill
+   and weight, not by red — the palette has no red. */
 .btn-danger {
-  @apply px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors;
+  background: var(--ink);
+  color: #ffffff;
+  border: 1px solid var(--ink);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #0a1830;
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-danger:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   CHIPS / BADGES / METRICS
+   ============================================================ */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--hair);
+  color: var(--mute);
+  background: transparent;
+}
+
+.chip-accent {
+  background: var(--gold-badge);
+  border-color: var(--card-border);
+  color: var(--gold-deep);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.chip-solid {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
 }
 
 .metric-card {
-  @apply p-4 rounded-lg text-center;
+  padding: 1rem 1.15rem;
+  border: 1px solid var(--hair);
+  border-radius: var(--radius-ctl);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* The gold rule under a stat. Titan's substitute for an icon. */
+.metric-rule {
+  width: 34px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--gold);
+  margin-top: 0.625rem;
+}
+
+.metric-label {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ============================================================
+   TABLES — hairline dividers, no zebra, numerics right + tabular
+   ============================================================ */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table thead th {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--mute);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--hair);
+  white-space: nowrap;
+}
+
+.data-table tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--ink);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table tbody tr:hover {
+  background: rgba(196, 149, 106, 0.06);
+}
+
+.data-table .num {
+  text-align: right;
+  font-family: var(--font-stat);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Callout: left gold rule instead of a colored fill + icon. */
+.callout {
+  border-left: 3px solid var(--gold);
+  background: rgba(196, 149, 106, 0.06);
+  border-radius: 0 var(--radius-ctl) var(--radius-ctl) 0;
+  padding: 0.9rem 1.15rem;
+}
+
+.callout-ink {
+  border-left-color: var(--ink);
+  background: rgba(11, 31, 63, 0.04);
 }

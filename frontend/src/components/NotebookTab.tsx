@@ -1,12 +1,10 @@
-import { BookOpen, Code2, FileText } from 'lucide-react'
-
 /* ─── Helper Components ─────────────────────────────────────────────────────── */
 
 /** Renders a markdown-style cell with styled headings, bold, lists, and rules. */
 function MarkdownCell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border border-gray-200 rounded-md mb-2 bg-white">
-      <div className="px-5 py-4 prose prose-sm max-w-none text-gray-800 leading-relaxed">
+    <div className="card mb-2">
+      <div className="prose prose-sm max-w-none text-ink leading-relaxed">
         {children}
       </div>
     </div>
@@ -24,25 +22,25 @@ function CodeCell({
   output?: React.ReactNode
 }) {
   return (
-    <div className="border border-gray-200 rounded-md mb-2 bg-white overflow-hidden">
+    <div className="border border-hair rounded-ctl mb-2 bg-white overflow-hidden">
       {/* Code input */}
       <div className="flex">
-        <div className="flex-shrink-0 w-16 bg-gray-50 border-r border-gray-200 flex items-start justify-end pr-2 pt-3">
-          <span className="text-xs font-mono text-blue-600 font-semibold">
+        <div className="flex-shrink-0 w-16 bg-cream border-r border-hair flex items-start justify-end pr-2 pt-3">
+          <span className="text-xs font-mono text-gold font-semibold">
             [{executionCount}]:
           </span>
         </div>
         <div className="flex-1 overflow-x-auto">
-          <pre className="p-3 text-[13px] leading-[1.45] font-mono text-gray-800 bg-gray-50 m-0 whitespace-pre">
+          <pre className="p-3 text-[13px] leading-[1.45] font-mono text-ink bg-white m-0 whitespace-pre">
             {code}
           </pre>
         </div>
       </div>
       {/* Output */}
       {output && (
-        <div className="border-t border-gray-200">
+        <div className="border-t border-hair">
           <div className="flex">
-            <div className="flex-shrink-0 w-16 bg-white border-r border-gray-200" />
+            <div className="flex-shrink-0 w-16 bg-cream border-r border-hair" />
             <div className="flex-1 p-3 overflow-x-auto">{output}</div>
           </div>
         </div>
@@ -54,7 +52,7 @@ function CodeCell({
 /** Renders a text output block (stdout). */
 function TextOutput({ text }: { text: string }) {
   return (
-    <pre className="text-[13px] leading-[1.45] font-mono text-gray-700 whitespace-pre-wrap m-0">
+    <pre className="text-[13px] leading-[1.45] font-mono text-mute whitespace-pre-wrap m-0">
       {text}
     </pre>
   )
@@ -64,12 +62,14 @@ function TextOutput({ text }: { text: string }) {
 function ImageOutput({ src, alt }: { src: string; alt: string }) {
   return (
     <div className="flex justify-center py-2">
-      <img
-        src={src}
-        alt={alt}
-        className="max-w-full rounded shadow-sm"
-        loading="lazy"
-      />
+      <div className="plot-frame">
+        <img
+          src={src}
+          alt={alt}
+          className="max-w-full rounded shadow-sm"
+          loading="lazy"
+        />
+      </div>
     </div>
   )
 }
@@ -85,28 +85,28 @@ function DegradationTable() {
   ]
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full text-sm font-mono">
+      <table className="data-table min-w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-300">
-            <th className="text-left py-2 pr-4 font-semibold text-gray-700">Scale</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">Mean Var</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">Median Var</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">% Zero-Var</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">% High-Var</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">Med Entropy</th>
-            <th className="text-right py-2 px-3 font-semibold text-gray-700">Mean Consistency</th>
+          <tr>
+            <th className="text-left">Scale</th>
+            <th className="num">Mean Var</th>
+            <th className="num">Median Var</th>
+            <th className="num">% Zero-Var</th>
+            <th className="num">% High-Var</th>
+            <th className="num">Med Entropy</th>
+            <th className="num">Mean Consistency</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.scale} className="border-b border-gray-100">
-              <td className="py-1.5 pr-4 font-semibold text-gray-800">{r.scale}</td>
-              <td className="py-1.5 px-3 text-right">{r.meanVar}</td>
-              <td className="py-1.5 px-3 text-right">{r.medianVar}</td>
-              <td className="py-1.5 px-3 text-right">{r.zeroVar}</td>
-              <td className="py-1.5 px-3 text-right">{r.highVar}</td>
-              <td className="py-1.5 px-3 text-right">{r.medianEntropy}</td>
-              <td className="py-1.5 px-3 text-right">{r.meanConsistency}</td>
+            <tr key={r.scale}>
+              <td className="font-semibold text-ink">{r.scale}</td>
+              <td className="num">{r.meanVar}</td>
+              <td className="num">{r.medianVar}</td>
+              <td className="num">{r.zeroVar}</td>
+              <td className="num">{r.highVar}</td>
+              <td className="num">{r.medianEntropy}</td>
+              <td className="num">{r.meanConsistency}</td>
             </tr>
           ))}
         </tbody>
@@ -122,43 +122,35 @@ export default function NotebookTab() {
     <div className="space-y-1 max-w-5xl mx-auto">
       {/* Header */}
       <div className="card mb-6">
-        <div className="flex items-center gap-3 mb-3">
-          <BookOpen className="w-6 h-6 text-orange-600" />
-          <h2 className="text-xl font-bold text-gray-900">
-            Analysis Notebook
-          </h2>
-        </div>
-        <p className="text-sm text-gray-600">
+        <div className="panel-title mb-1">Notebook</div>
+        <h2 className="page-title mb-3">Analysis Notebook</h2>
+        <p className="text-sm text-mute">
           Read-only rendering of{' '}
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">
+          <code className="bg-cream px-1.5 py-0.5 rounded-ctl text-xs font-mono text-ink">
             capstone_analysis.ipynb
           </code>{' '}
           — the full statistical analysis notebook prepared for the AI Capstone.
         </p>
-        <div className="flex gap-4 mt-3 text-xs text-gray-500">
-          <span className="flex items-center gap-1">
-            <FileText className="w-3.5 h-3.5" /> 11 markdown cells
-          </span>
-          <span className="flex items-center gap-1">
-            <Code2 className="w-3.5 h-3.5" /> 11 code cells
-          </span>
-          <span>Python 3 · GPT-4o-mini · 16,000 evaluations</span>
+        <div className="flex gap-2 mt-3 flex-wrap">
+          <span className="chip">11 markdown cells</span>
+          <span className="chip">11 code cells</span>
+          <span className="chip">Python 3 · GPT-4o-mini · 16,000 evaluations</span>
         </div>
       </div>
 
       {/* ─── Cell 0: Title & Methodology (Markdown) ──────────────────────────── */}
       <MarkdownCell>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">
+        <h1 className="text-2xl font-bold text-ink mb-1">
           LLM Grading Consistency Analysis
         </h1>
-        <h2 className="text-lg font-semibold text-gray-700 mt-0 mb-3">
+        <h2 className="text-lg font-semibold text-mute mt-0 mb-3">
           Measuring the Statistical Boundary for Calibrated LLM-as-Judge
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-mute mb-4">
           <strong>Prepared for:</strong> AI Capstone, UC Berkeley
         </p>
-        <hr className="my-4 border-gray-200" />
-        <h3 className="text-base font-semibold text-gray-800 mt-4 mb-2">
+        <hr className="my-4 border-hair" />
+        <h3 className="text-base font-semibold text-ink mt-4 mb-2">
           Research Question
         </h3>
         <p>
@@ -167,7 +159,7 @@ export default function NotebookTab() {
           generally accurate, but at what point does multi-class or continuous
           scoring degrade into noise?
         </p>
-        <h3 className="text-base font-semibold text-gray-800 mt-4 mb-2">
+        <h3 className="text-base font-semibold text-ink mt-4 mb-2">
           Methodology
         </h3>
         <ul className="list-disc pl-5 space-y-1 text-sm">
@@ -333,8 +325,8 @@ Total data points per scale: 200 = 10×20`}
 
       {/* ─── Cell 4: Section Header — Degradation Table (Markdown) ────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.1 — Degradation Table
         </h2>
         <p className="text-sm">
@@ -380,8 +372,8 @@ print(f'\\nSaved to {FIGURES_DIR / "degradation_table.csv"}')`}
 
       {/* ─── Cell 6: Section Header — Heatmap (Markdown) ─────────────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.2 — Question Stability Heatmap
         </h2>
         <p className="text-sm">
@@ -430,8 +422,8 @@ print(f'Saved to {FIGURES_DIR / "question_stability_heatmap.png"}')`}
 
       {/* ─── Cell 8: Section Header — Wilcoxon Tests (Markdown) ──────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.3 — Wilcoxon Signed-Rank Tests
         </h2>
         <p className="text-sm">
@@ -502,8 +494,8 @@ Binary       → Continuous  : W=     131.0, p=0.217213 ns`}
 
       {/* ─── Cell 10: Section Header — Violin Plot (Markdown) ────────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.4 — Variance Distribution Violin Plot
         </h2>
         <p className="text-sm">
@@ -549,8 +541,8 @@ plt.show()`}
 
       {/* ─── Cell 12: Section Header — Per-Text Lines (Markdown) ─────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.5 — Per-Text Degradation Lines
         </h2>
         <p className="text-sm">
@@ -590,8 +582,8 @@ plt.show()`}
 
       {/* ─── Cell 14: Section Header — Entropy vs Variance (Markdown) ────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.6 — Entropy vs Variance Scatter
         </h2>
         <p className="text-sm">
@@ -628,8 +620,8 @@ plt.show()`}
 
       {/* ─── Cell 16: Section Header — Mode Consistency (Markdown) ────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.7 — Mode Consistency Bar Chart
         </h2>
         <p className="text-sm">
@@ -672,8 +664,8 @@ plt.show()`}
 
       {/* ─── Cell 18: Section Header — Text Difficulty (Markdown) ─────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.8 — Text Difficulty Ranking
         </h2>
         <p className="text-sm">
@@ -738,8 +730,8 @@ plt.show()`}
 
       {/* ─── Cell 20: Section Header — Summary (Markdown) ────────────────── */}
       <MarkdownCell>
-        <hr className="my-3 border-gray-200" />
-        <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <hr className="my-3 border-hair" />
+        <h2 className="text-lg font-bold text-ink mb-2">
           4.9 — Summary Statistics
         </h2>
         <p className="text-sm">Key findings for the AI Capstone presentation.</p>

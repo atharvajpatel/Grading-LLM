@@ -1,7 +1,28 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Text } from '@react-three/drei'
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import { SCALE_COLORS, SCALE_ORDER } from '../api/client'
+import { SCALE_MARKER, CHART, PALETTE } from '../theme/palette'
+
+// Marker geometry per scale. Shape is a second, orthogonal identity channel
+// (rotation-invariant, survives overlap) so the four gold tints no longer
+// carry scale identity alone. Sizes are tuned to read at a comparable
+// visual weight to the original 0.04-radius sphere.
+function MarkerGeometry({ scale, large = false }: { scale: string; large?: boolean }) {
+  const marker = SCALE_MARKER[scale] || 'sphere'
+  const k = large ? 3 : 1
+  switch (marker) {
+    case 'box':
+      return <boxGeometry args={[0.07 * k, 0.07 * k, 0.07 * k]} />
+    case 'octahedron':
+      return <octahedronGeometry args={[0.055 * k]} />
+    case 'tetrahedron':
+      return <tetrahedronGeometry args={[0.06 * k]} />
+    case 'sphere':
+    default:
+      return <sphereGeometry args={[0.04 * k, 16, 16]} />
+  }
+}
 
 interface Props {
   coords: number[][]
@@ -73,11 +94,11 @@ function Points({ coords, scaleLabels }: { coords: number[][]; scaleLabels: stri
           })
           return (
             <mesh key={`${scale}-${i}`} position={position as [number, number, number]}>
-              <sphereGeometry args={[0.04, 16, 16]} />
+              <MarkerGeometry scale={scale} />
               <meshStandardMaterial
                 color={color}
                 emissive={color}
-                emissiveIntensity={0.4}
+                emissiveIntensity={0.1}
                 opacity={0.95}
                 transparent
               />
@@ -140,8 +161,8 @@ function Centroids({ coords, scaleLabels }: { coords: number[][]; scaleLabels: s
 
         return (
           <mesh key={`centroid-${scale}`} position={position as [number, number, number]}>
-            <octahedronGeometry args={[0.12]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.5} />
+            <MarkerGeometry scale={scale} large />
+            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.15} />
           </mesh>
         )
       })}
@@ -210,7 +231,7 @@ function Grid() {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color="#ccc" transparent opacity={0.3} />
+          <lineBasicMaterial color={CHART.grid} transparent opacity={0.3} />
         </line>
       ))}
     </>
@@ -235,10 +256,10 @@ function AxisTicks({ explainedVariance: _explainedVariance }: { explainedVarianc
                 itemSize={3}
               />
             </bufferGeometry>
-            <lineBasicMaterial color="#aaa" />
+            <lineBasicMaterial color={CHART.axis} />
           </line>
           {displayTicks.includes(v) && (
-            <Text position={[v * SCENE_SCALE, -0.2, 0]} fontSize={0.12} color="#666">
+            <Text position={[v * SCENE_SCALE, -0.2, 0]} fontSize={0.12} color={CHART.label}>
               {v}
             </Text>
           )}
@@ -257,10 +278,10 @@ function AxisTicks({ explainedVariance: _explainedVariance }: { explainedVarianc
                 itemSize={3}
               />
             </bufferGeometry>
-            <lineBasicMaterial color="#aaa" />
+            <lineBasicMaterial color={CHART.axis} />
           </line>
           {displayTicks.includes(v) && v !== 0 && (
-            <Text position={[-0.2, v * SCENE_SCALE, 0]} fontSize={0.12} color="#666">
+            <Text position={[-0.2, v * SCENE_SCALE, 0]} fontSize={0.12} color={CHART.label}>
               {v}
             </Text>
           )}
@@ -279,10 +300,10 @@ function AxisTicks({ explainedVariance: _explainedVariance }: { explainedVarianc
                 itemSize={3}
               />
             </bufferGeometry>
-            <lineBasicMaterial color="#aaa" />
+            <lineBasicMaterial color={CHART.axis} />
           </line>
           {displayTicks.includes(v) && v !== 0 && (
-            <Text position={[0, -0.2, v * SCENE_SCALE]} fontSize={0.12} color="#666">
+            <Text position={[0, -0.2, v * SCENE_SCALE]} fontSize={0.12} color={CHART.label}>
               {v}
             </Text>
           )}
@@ -305,12 +326,12 @@ function Axes({ explainedVariance }: { explainedVariance: number[] }) {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#666" />
+        <lineBasicMaterial color={CHART.axis} />
       </line>
       <Text
         position={[SCENE_SCALE + 0.3, 0, 0]}
         fontSize={0.15}
-        color="#444"
+        color={CHART.label}
       >
         PC1 ({(explainedVariance[0] * 100).toFixed(0)}%)
       </Text>
@@ -325,12 +346,12 @@ function Axes({ explainedVariance }: { explainedVariance: number[] }) {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#666" />
+        <lineBasicMaterial color={CHART.axis} />
       </line>
       <Text
         position={[0, SCENE_SCALE + 0.3, 0]}
         fontSize={0.15}
-        color="#444"
+        color={CHART.label}
       >
         PC2 ({(explainedVariance[1] * 100).toFixed(0)}%)
       </Text>
@@ -345,12 +366,12 @@ function Axes({ explainedVariance }: { explainedVariance: number[] }) {
             itemSize={3}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#666" />
+        <lineBasicMaterial color={CHART.axis} />
       </line>
       <Text
         position={[0, 0, SCENE_SCALE + 0.3]}
         fontSize={0.15}
-        color="#444"
+        color={CHART.label}
       >
         PC3 ({(explainedVariance[2] * 100).toFixed(0)}%)
       </Text>
@@ -358,23 +379,75 @@ function Axes({ explainedVariance }: { explainedVariance: number[] }) {
       {/* Origin marker */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[0.04, 8, 8]} />
-        <meshStandardMaterial color="#999" />
+        <meshStandardMaterial color={PALETTE.mute} />
       </mesh>
     </>
   )
 }
 
+// Small CSS shape hint for the legend, tinted with the scale color.
+// Rotation-invariant silhouettes mirror the 3D marker geometry:
+// circle=sphere, square=box, diamond=octahedron, triangle=tetrahedron.
+function LegendShape({ scale }: { scale: string }) {
+  const marker = SCALE_MARKER[scale] || 'sphere'
+  const color = SCALE_COLORS[scale]
+  const base: CSSProperties = {
+    width: 12,
+    height: 12,
+    flexShrink: 0,
+    display: 'inline-block',
+    backgroundColor: color,
+    border: `1px solid ${PALETTE.hair}`,
+  }
+  if (marker === 'sphere') return <span style={{ ...base, borderRadius: '50%' }} />
+  if (marker === 'box') return <span style={{ ...base, borderRadius: 2 }} />
+  if (marker === 'octahedron')
+    return <span style={{ ...base, transform: 'rotate(45deg)' }} />
+  // tetrahedron -> triangle via clip-path
+  return (
+    <span
+      style={{ ...base, border: 'none', clipPath: 'polygon(50% 0, 100% 100%, 0 100%)' }}
+    />
+  )
+}
+
 export default function PCAPlot3D({ coords, scaleLabels, explainedVariance }: Props) {
   return (
-    <Canvas camera={{ position: [4, 4, 4], fov: 50 }}>
-      <ambientLight intensity={0.6} />
-      <pointLight position={[10, 10, 10]} />
-      <Grid />
-      <AxisTicks explainedVariance={explainedVariance} />
-      <Points coords={coords} scaleLabels={scaleLabels} />
-      <Centroids coords={coords} scaleLabels={scaleLabels} />
-      <Axes explainedVariance={explainedVariance} />
-      <OrbitControls enablePan enableZoom enableRotate target={[0, 0, 0]} />
-    </Canvas>
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <Canvas
+        camera={{ position: [4, 4, 4], fov: 50 }}
+        style={{ background: PALETTE.cream }}
+      >
+        <ambientLight intensity={0.6} />
+        <pointLight position={[10, 10, 10]} />
+        <Grid />
+        <AxisTicks explainedVariance={explainedVariance} />
+        <Points coords={coords} scaleLabels={scaleLabels} />
+        <Centroids coords={coords} scaleLabels={scaleLabels} />
+        <Axes explainedVariance={explainedVariance} />
+        <OrbitControls enablePan enableZoom enableRotate target={[0, 0, 0]} />
+      </Canvas>
+
+      {/* Legend: shape + tint -> scale. Sits over the cream canvas. */}
+      <div
+        className="card"
+        style={{
+          position: 'absolute',
+          top: 12,
+          right: 12,
+          padding: '8px 10px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+        }}
+      >
+        {SCALE_ORDER.map((scale) => (
+          <div key={scale} className="chip" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <LegendShape scale={scale} />
+            <span className="metric-label capitalize">{scale}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

@@ -3,17 +3,12 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, LineChart, Line,
 } from 'recharts'
 import {
-  GitCompare, BarChart3, Target, CheckCircle, AlertTriangle, ChevronDown, ChevronUp, Zap, Shield,
-} from 'lucide-react'
+  PALETTE, magnitudeColor, onMagnitude, divergingColor, onDiverging, dashFor, CHART,
+} from '../theme/palette'
+import { SCALE_COLORS } from '../api/client'
 
 // ─── Shared Constants ────────────────────────────────────────────────────────
 
-const SCALE_COLORS: Record<string, string> = {
-  binary: '#2196F3',
-  ternary: '#4CAF50',
-  quaternary: '#FF9800',
-  continuous: '#E91E63',
-}
 const SCALE_ORDER = ['binary', 'ternary', 'quaternary', 'continuous']
 
 // ─── Section 1: Run-to-Run Reproducibility ──────────────────────────────────
@@ -189,42 +184,21 @@ const AGREEMENT_PER_SCALE = [
 
 // ─── Utility Functions ──────────────────────────────────────────────────────
 
+// Diverging scale for signed variance deltas (Run2 − Run1):
+// negative → navy, zero → cream, positive → gold. Normalization unchanged
+// (magnitude saturates at 0.025); only the endpoint colors changed.
 function diffToColor(value: number): string {
-  if (value === 0) return '#ffffff'
-  if (value < 0) {
-    // Green for negative (Run 2 improved)
-    const intensity = Math.min(Math.abs(value) / 0.025, 1)
-    const r = Math.round(255 - intensity * 221)
-    const g = Math.round(255 - intensity * 58)
-    const b = Math.round(255 - intensity * 161)
-    return `rgb(${r},${g},${b})`
-  }
-  // Red for positive (Run 2 worse)
-  const intensity = Math.min(value / 0.025, 1)
-  const r = Math.round(255 - intensity * 16)
-  const g = Math.round(255 - intensity * 187)
-  const b = Math.round(255 - intensity * 187)
-  return `rgb(${r},${g},${b})`
+  const t = Math.max(-1, Math.min(value / 0.025, 1))
+  return divergingColor(t)
 }
 
+// Single-hue magnitude ramp for confidence (near 1.0 = strong).
 function confidenceToColor(value: number): string {
-  // Green for high confidence (near 1.0), red for low confidence (near 0.5)
-  if (value >= 0.99) return 'rgb(34,197,94)'      // bright green
-  if (value >= 0.95) return 'rgb(74,222,128)'      // green
-  if (value >= 0.90) return 'rgb(134,239,172)'     // light green
-  if (value >= 0.85) return 'rgb(187,247,208)'     // very light green
-  if (value >= 0.80) return 'rgb(254,240,138)'     // light yellow
-  if (value >= 0.75) return 'rgb(253,224,71)'      // yellow
-  if (value >= 0.70) return 'rgb(251,191,36)'      // amber
-  return 'rgb(239,68,68)'                           // red
+  return magnitudeColor(value)
 }
 
 function confidenceBarColor(value: number): string {
-  if (value >= 0.95) return '#22c55e'
-  if (value >= 0.90) return '#84cc16'
-  if (value >= 0.80) return '#f59e0b'
-  if (value >= 0.70) return '#f97316'
-  return '#ef4444'
+  return magnitudeColor(value)
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -260,21 +234,18 @@ export default function ComparisonTab() {
       {/* ═══════════════════════════════════════════════════════════════════════
           HEADER
           ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="card bg-gradient-to-br from-teal-50 to-cyan-50 border-l-4 border-teal-500">
-        <div className="flex items-center space-x-3 mb-3">
-          <GitCompare className="w-7 h-7 text-teal-600" />
-          <h2 className="text-2xl font-bold text-gray-900">
-            Run-to-Run Comparison: 32,000 Evaluations
-          </h2>
-        </div>
-        <p className="text-gray-600 leading-relaxed">
+      <div className="card">
+        <h2 className="page-title">
+          Run-to-Run Comparison: 32,000 Evaluations
+        </h2>
+        <p className="muted leading-relaxed mt-2">
           Side-by-side comparison of two independent batch runs on identical prompts and texts.
           Run 2 additionally captures logprob confidence scores for every evaluation, enabling
           a first test of whether token-level confidence predicts multi-sample instability.
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
-          <span className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full font-medium">Run 1: Feb 2026</span>
-          <span className="px-3 py-1 bg-teal-100 text-teal-700 rounded-full font-medium">Run 2: Mar 2026 (Logprobs)</span>
+          <span className="chip">Run 1: Feb 2026</span>
+          <span className="chip">Run 2: Mar 2026 (Logprobs)</span>
         </div>
       </div>
 
@@ -283,49 +254,49 @@ export default function ComparisonTab() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="card">
         <button
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full text-left"
           onClick={() => setShowSection1(!showSection1)}
         >
-          <div className="flex items-center space-x-2">
-            <GitCompare className="w-5 h-5 text-teal-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Section 1: Run-to-Run Reproducibility</h3>
+          <div>
+            <div className="panel-title">Section 1</div>
+            <h3 className="section-title">Run-to-Run Reproducibility</h3>
           </div>
-          {showSection1 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="btn-secondary">{showSection1 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showSection1 && (
           <div className="mt-4 space-y-6">
             {/* 1b. Side-by-side delta table */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Variance &amp; Consistency Deltas by Scale</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Variance &amp; Consistency Deltas by Scale</h4>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 1 Var</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 2 Var</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Delta %</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 1 Consistency</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">Run 2 Consistency</th>
+                    <tr className="border-b border-hair">
+                      <th className="text-left py-2 pr-4 font-medium text-mute">Scale</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 1 Var</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 2 Var</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Delta %</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 1 Consistency</th>
+                      <th className="text-right py-2 pl-3 font-medium text-mute">Run 2 Consistency</th>
                     </tr>
                   </thead>
                   <tbody>
                     {SCALE_DELTAS.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
+                      <tr key={row.scale} className="border-b border-hair">
                         <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{row.run1MeanVar.toFixed(4)}</td>
-                        <td className="text-right py-2 px-3 font-mono">{row.run2MeanVar.toFixed(4)}</td>
+                        <td className="text-right py-2 px-3 num">{row.run1MeanVar.toFixed(4)}</td>
+                        <td className="text-right py-2 px-3 num">{row.run2MeanVar.toFixed(4)}</td>
                         <td
-                          className="text-right py-2 px-3 font-mono font-semibold"
-                          style={{ color: row.deltaPct < 0 ? '#16a34a' : '#dc2626' }}
+                          className="text-right py-2 px-3 num font-semibold"
+                          style={{ color: row.deltaPct < 0 ? PALETTE.ink : PALETTE.gold }}
                         >
-                          {row.deltaPct > 0 ? '+' : ''}{row.deltaPct.toFixed(1)}%
+                          {row.deltaPct > 0 ? '+' : row.deltaPct < 0 ? '−' : ''}{Math.abs(row.deltaPct).toFixed(1)}%
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{(row.run1Consistency * 100).toFixed(2)}%</td>
-                        <td className="text-right py-2 pl-3 font-mono">{(row.run2Consistency * 100).toFixed(2)}%</td>
+                        <td className="text-right py-2 px-3 num">{(row.run1Consistency * 100).toFixed(2)}%</td>
+                        <td className="text-right py-2 pl-3 num">{(row.run2Consistency * 100).toFixed(2)}%</td>
                       </tr>
                     ))}
                   </tbody>
@@ -335,40 +306,39 @@ export default function ComparisonTab() {
 
             {/* 1c. Heatmap diff */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-1">Variance Diff Heatmap (Run 2 &minus; Run 1)</h4>
-              <p className="text-xs text-gray-500 mb-3">
-                Green = Run 2 improved (lower variance). Red = Run 2 worse. White = no change.
+              <h4 className="text-sm font-semibold text-ink mb-1">Variance Diff Heatmap (Run 2 &minus; Run 1)</h4>
+              <p className="text-xs muted mb-3">
+                Navy = Run 2 improved (lower variance). Gold = Run 2 worse. Cream = no change. The signed number is shown in each cell.
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr>
-                      <th className="text-left py-1 pr-2 font-medium text-gray-500 w-36">Question</th>
+                      <th className="text-left py-1 pr-2 font-medium text-mute w-36">Question</th>
                       {SCALE_ORDER.map((s) => (
-                        <th key={s} className="py-1 px-2 font-medium text-gray-500 capitalize text-center w-28">{s}</th>
+                        <th key={s} className="py-1 px-2 font-medium text-mute capitalize text-center w-28">{s}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {HEATMAP_DIFF.map((row) => (
                       <tr key={row.question}>
-                        <td className="py-1 pr-2 font-medium text-gray-700 text-xs">{row.question}</td>
+                        <td className="py-1 pr-2 font-medium text-ink text-xs">{row.question}</td>
                         {SCALE_ORDER.map((s) => {
                           const val = (row as any)[s] as number
+                          const t = Math.max(-1, Math.min(val / 0.025, 1))
                           const bg = diffToColor(val)
-                          const absMax = 0.025
-                          const textDark = Math.abs(val) / absMax > 0.5
                           return (
                             <td key={s} className="py-1 px-2">
                               <div
                                 className="rounded px-2 py-1 text-center font-mono"
                                 style={{
                                   backgroundColor: bg,
-                                  color: textDark ? '#fff' : '#1f2937',
+                                  color: onDiverging(t),
                                 }}
-                                title={`${row.question} / ${s}: ${val >= 0 ? '+' : ''}${val.toFixed(6)}`}
+                                title={`${row.question} / ${s}: ${val > 0 ? '+' : val < 0 ? '−' : ''}${Math.abs(val).toFixed(6)}`}
                               >
-                                {val >= 0 ? '+' : ''}{val.toFixed(4)}
+                                {val > 0 ? '+' : val < 0 ? '−' : ''}{Math.abs(val).toFixed(4)}
                               </div>
                             </td>
                           )
@@ -381,7 +351,7 @@ export default function ComparisonTab() {
             </div>
 
             {/* 1d. Callout */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+            <div className="callout text-sm">
               <p className="font-semibold mb-1">Variance Scatter: Pearson r = {SCATTER_CORRELATION.pearsonR}</p>
               <p>
                 Across {SCATTER_CORRELATION.n} points, instability patterns are moderately reproducible &mdash; the same
@@ -398,42 +368,42 @@ export default function ComparisonTab() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="card">
         <button
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full text-left"
           onClick={() => setShowSection2(!showSection2)}
         >
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="w-5 h-5 text-indigo-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Section 2: Advanced Stats Comparison</h3>
+          <div>
+            <div className="panel-title">Section 2</div>
+            <h3 className="section-title">Advanced Stats Comparison</h3>
           </div>
-          {showSection2 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="btn-secondary">{showSection2 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showSection2 && (
           <div className="mt-4 space-y-6">
             {/* 2a. Reliability comparison table */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Reliability Metrics: ICC &amp; Krippendorff&apos;s Alpha</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Reliability Metrics: ICC &amp; Krippendorff&apos;s Alpha</h4>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 1 ICC</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 2 ICC</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Run 1 Kripp &alpha;</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">Run 2 Kripp &alpha;</th>
+                    <tr className="border-b border-hair">
+                      <th className="text-left py-2 pr-4 font-medium text-mute">Scale</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 1 ICC</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 2 ICC</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Run 1 Kripp &alpha;</th>
+                      <th className="text-right py-2 pl-3 font-medium text-mute">Run 2 Kripp &alpha;</th>
                     </tr>
                   </thead>
                   <tbody>
                     {TIER1_COMPARISON.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
+                      <tr key={row.scale} className="border-b border-hair">
                         <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{row.run1ICC.toFixed(4)}</td>
-                        <td className="text-right py-2 px-3 font-mono">{row.run2ICC.toFixed(4)}</td>
-                        <td className="text-right py-2 px-3 font-mono">{row.run1Kripp.toFixed(4)}</td>
-                        <td className="text-right py-2 pl-3 font-mono">{row.run2Kripp.toFixed(4)}</td>
+                        <td className="text-right py-2 px-3 num">{row.run1ICC.toFixed(4)}</td>
+                        <td className="text-right py-2 px-3 num">{row.run2ICC.toFixed(4)}</td>
+                        <td className="text-right py-2 px-3 num">{row.run1Kripp.toFixed(4)}</td>
+                        <td className="text-right py-2 pl-3 num">{row.run2Kripp.toFixed(4)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -443,20 +413,23 @@ export default function ComparisonTab() {
 
             {/* 2b. Eta-squared comparison */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Eta-Squared (&eta;&sup2;) by Factor</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Eta-Squared (&eta;&sup2;) by Factor</h4>
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={etaBarData} layout="vertical" margin={{ left: 110 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(v: number) => v.toFixed(3)} />
-                  <YAxis type="category" dataKey="factor" width={100} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => v.toFixed(6)} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                  <XAxis type="number" tickFormatter={(v: number) => v.toFixed(3)} tick={{ fill: CHART.tick }} />
+                  <YAxis type="category" dataKey="factor" width={100} tick={{ fontSize: 12, fill: CHART.tick }} />
+                  <Tooltip
+                    formatter={(v: number) => v.toFixed(6)}
+                    contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: 8, color: CHART.label }}
+                  />
                   <Legend />
-                  <Bar dataKey="Run 1" fill="#6366f1" barSize={14} />
-                  <Bar dataKey="Run 2" fill="#14b8a6" barSize={14} />
+                  <Bar dataKey="Run 1" fill={PALETTE.gold} barSize={14} />
+                  <Bar dataKey="Run 2" fill={PALETTE.ink} barSize={14} stroke={PALETTE.ink} strokeDasharray={dashFor(1)} />
                 </BarChart>
               </ResponsiveContainer>
 
-              <div className="mt-4 bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-indigo-800">
+              <div className="mt-4 callout text-sm">
                 <p className="font-semibold mb-1">Both runs confirm: question type explains 4-5x more variance than scale type.</p>
                 <p>
                   Question type &eta;&sup2; = {ETA_COMPARISON[0].run1.toFixed(4)} (Run 1) vs {ETA_COMPARISON[0].run2.toFixed(4)} (Run 2).
@@ -474,40 +447,40 @@ export default function ComparisonTab() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="card">
         <button
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full text-left"
           onClick={() => setShowSection3(!showSection3)}
         >
-          <div className="flex items-center space-x-2">
-            <Zap className="w-5 h-5 text-yellow-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Section 3: Logprob Confidence Analysis</h3>
+          <div>
+            <div className="panel-title">Section 3</div>
+            <h3 className="section-title">Logprob Confidence Analysis</h3>
           </div>
-          {showSection3 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="btn-secondary">{showSection3 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showSection3 && (
           <div className="mt-4 space-y-6">
             {/* 3b. Confidence by scale - table */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Confidence by Scale</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Confidence by Scale</h4>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Confidence</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">% Below 90%</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">% Below 50%</th>
+                    <tr className="border-b border-hair">
+                      <th className="text-left py-2 pr-4 font-medium text-mute">Scale</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Mean Confidence</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">% Below 90%</th>
+                      <th className="text-right py-2 pl-3 font-medium text-mute">% Below 50%</th>
                     </tr>
                   </thead>
                   <tbody>
                     {CONFIDENCE_BY_SCALE.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
+                      <tr key={row.scale} className="border-b border-hair">
                         <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{(row.meanConf * 100).toFixed(2)}%</td>
-                        <td className="text-right py-2 px-3 font-mono">{row.pctBelow90.toFixed(2)}%</td>
-                        <td className="text-right py-2 pl-3 font-mono">{row.pctBelow50.toFixed(1)}%</td>
+                        <td className="text-right py-2 px-3 num">{(row.meanConf * 100).toFixed(2)}%</td>
+                        <td className="text-right py-2 px-3 num">{row.pctBelow90.toFixed(2)}%</td>
+                        <td className="text-right py-2 pl-3 num">{row.pctBelow50.toFixed(1)}%</td>
                       </tr>
                     ))}
                   </tbody>
@@ -518,13 +491,16 @@ export default function ComparisonTab() {
               <div className="mt-4">
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={CONFIDENCE_BY_SCALE}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="scale" />
-                    <YAxis domain={[0.9, 1.0]} tickFormatter={(v: number) => (v * 100).toFixed(0) + '%'} />
-                    <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                    <XAxis dataKey="scale" tick={{ fill: CHART.tick }} />
+                    <YAxis domain={[0.9, 1.0]} tickFormatter={(v: number) => (v * 100).toFixed(0) + '%'} tick={{ fill: CHART.tick }} />
+                    <Tooltip
+                      formatter={(v: number) => (v * 100).toFixed(2) + '%'}
+                      contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: 8, color: CHART.label }}
+                    />
                     <Bar dataKey="meanConf" name="Mean Confidence">
                       {CONFIDENCE_BY_SCALE.map((entry) => (
-                        <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale]} />
+                        <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale]} stroke={CHART.grid} strokeWidth={1} />
                       ))}
                     </Bar>
                   </BarChart>
@@ -534,35 +510,34 @@ export default function ComparisonTab() {
 
             {/* 3c. Confidence heatmap */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-1">Confidence Heatmap (continuous scale shown)</h4>
-              <p className="text-xs text-gray-500 mb-3">
-                Mean logprob confidence per question &times; scale. Green = high confidence (near 1.0). Red = low confidence.
+              <h4 className="text-sm font-semibold text-ink mb-1">Confidence Heatmap (continuous scale shown)</h4>
+              <p className="text-xs muted mb-3">
+                Mean logprob confidence per question &times; scale. Darker gold = high confidence (near 1.0). Pale = low confidence.
               </p>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr>
-                      <th className="text-left py-1 pr-2 font-medium text-gray-500 w-36">Question</th>
+                      <th className="text-left py-1 pr-2 font-medium text-mute w-36">Question</th>
                       {SCALE_ORDER.map((s) => (
-                        <th key={s} className="py-1 px-2 font-medium text-gray-500 capitalize text-center w-28">{s}</th>
+                        <th key={s} className="py-1 px-2 font-medium text-mute capitalize text-center w-28">{s}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {CONFIDENCE_HEATMAP.map((row) => (
                       <tr key={row.question}>
-                        <td className="py-1 pr-2 font-medium text-gray-700 text-xs">{row.question}</td>
+                        <td className="py-1 pr-2 font-medium text-ink text-xs">{row.question}</td>
                         {SCALE_ORDER.map((s) => {
                           const val = (row as any)[s] as number
                           const bg = confidenceToColor(val)
-                          const textDark = val < 0.85
                           return (
                             <td key={s} className="py-1 px-2">
                               <div
                                 className="rounded px-2 py-1 text-center font-mono"
                                 style={{
                                   backgroundColor: bg,
-                                  color: textDark ? '#fff' : '#1f2937',
+                                  color: onMagnitude(val),
                                 }}
                                 title={`${row.question} / ${s}: ${(val * 100).toFixed(2)}%`}
                               >
@@ -580,16 +555,19 @@ export default function ComparisonTab() {
 
             {/* 3d. Question confidence ranking */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Question Confidence Ranking (Continuous Scale, Lowest First)</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Question Confidence Ranking (Continuous Scale, Lowest First)</h4>
               <ResponsiveContainer width="100%" height={520}>
                 <BarChart data={QUESTION_CONFIDENCE_RANKING} layout="vertical" margin={{ left: 120 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" domain={[0.6, 1.0]} tickFormatter={(v: number) => (v * 100).toFixed(0) + '%'} />
-                  <YAxis type="category" dataKey="question" width={110} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                  <XAxis type="number" domain={[0.6, 1.0]} tickFormatter={(v: number) => (v * 100).toFixed(0) + '%'} tick={{ fill: CHART.tick }} />
+                  <YAxis type="category" dataKey="question" width={110} tick={{ fontSize: 11, fill: CHART.tick }} />
+                  <Tooltip
+                    formatter={(v: number) => (v * 100).toFixed(2) + '%'}
+                    contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: 8, color: CHART.label }}
+                  />
                   <Bar dataKey="meanConf" name="Mean Confidence">
                     {QUESTION_CONFIDENCE_RANKING.map((entry) => (
-                      <Cell key={entry.question} fill={confidenceBarColor(entry.meanConf)} />
+                      <Cell key={entry.question} fill={confidenceBarColor(entry.meanConf)} stroke={CHART.grid} strokeWidth={1} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -598,16 +576,16 @@ export default function ComparisonTab() {
 
             {/* 3e. Confidence distribution */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Confidence Distribution by Scale</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Confidence Distribution by Scale</h4>
               <div className="flex flex-wrap gap-2 mb-4">
                 {SCALE_ORDER.map((s) => (
                   <button
                     key={s}
                     onClick={() => setConfDistScale(s)}
-                    className={`px-3 py-1 rounded-full text-sm font-medium capitalize transition-colors ${
+                    className={`px-3 py-1 rounded-full text-sm font-medium capitalize transition-colors border ${
                       confDistScale === s
-                        ? 'text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gold text-white border-transparent'
+                        : 'bg-transparent text-mute border-hair'
                     }`}
                     style={confDistScale === s ? { backgroundColor: SCALE_COLORS[s] } : undefined}
                   >
@@ -617,18 +595,19 @@ export default function ComparisonTab() {
               </div>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={CONFIDENCE_DISTRIBUTION[confDistScale]}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="bin" />
-                  <YAxis tickFormatter={(v: number) => v.toFixed(0) + '%'} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                  <XAxis dataKey="bin" tick={{ fill: CHART.tick }} />
+                  <YAxis tickFormatter={(v: number) => v.toFixed(0) + '%'} tick={{ fill: CHART.tick }} />
                   <Tooltip
                     formatter={(v: number, name: string) => {
                       if (name === 'pct') return v.toFixed(1) + '%'
                       return v
                     }}
+                    contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: 8, color: CHART.label }}
                   />
                   <Bar dataKey="pct" name="% of Evaluations" fill={SCALE_COLORS[confDistScale]}>
                     {CONFIDENCE_DISTRIBUTION[confDistScale].map((_, idx) => (
-                      <Cell key={idx} fill={SCALE_COLORS[confDistScale]} opacity={0.6 + idx * 0.06} />
+                      <Cell key={idx} fill={SCALE_COLORS[confDistScale]} opacity={0.6 + idx * 0.06} stroke={CHART.grid} strokeWidth={1} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -636,7 +615,7 @@ export default function ComparisonTab() {
             </div>
 
             {/* 3f. Callout */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800">
+            <div className="callout text-sm">
               <p className="font-semibold mb-1">Confidence vs Variance Correlation</p>
               <p>
                 Pearson r = {CONF_VS_VAR_CORRELATION.pearsonR}, Spearman &rho; = {CONF_VS_VAR_CORRELATION.spearmanR}.
@@ -653,20 +632,20 @@ export default function ComparisonTab() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="card">
         <button
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full text-left"
           onClick={() => setShowSection4(!showSection4)}
         >
-          <div className="flex items-center space-x-2">
-            <Target className="w-5 h-5 text-red-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Section 4: Can Logprobs Replace Multi-Sample Testing?</h3>
+          <div>
+            <div className="panel-title">Section 4</div>
+            <h3 className="section-title">Can Logprobs Replace Multi-Sample Testing?</h3>
           </div>
-          {showSection4 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="btn-secondary">{showSection4 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showSection4 && (
           <div className="mt-4 space-y-6">
             {/* 4b. Summary card */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700">
+            <div className="callout text-sm">
               <p>
                 <strong>Base rate:</strong> {PREDICTIVE.baseRate}% of (text, question, scale) triples show variance &gt; 0
                 across 20 samples ({PREDICTIVE.nUnstable} unstable out of {PREDICTIVE.nTotal} total).
@@ -676,16 +655,16 @@ export default function ComparisonTab() {
 
             {/* 4c. ROC-style table */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">Threshold Sweep: Precision / Recall / F1</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">Threshold Sweep: Precision / Recall / F1</h4>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-3 font-medium text-gray-500">Threshold</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Precision</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Recall</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">F1</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">Accuracy</th>
+                    <tr className="border-b border-hair">
+                      <th className="text-left py-2 pr-3 font-medium text-mute">Threshold</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Precision</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">Recall</th>
+                      <th className="text-right py-2 px-3 font-medium text-mute">F1</th>
+                      <th className="text-right py-2 pl-3 font-medium text-mute">Accuracy</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -694,18 +673,18 @@ export default function ComparisonTab() {
                       return (
                         <tr
                           key={row.threshold}
-                          className={`border-b border-gray-100 ${isBest ? 'bg-amber-50' : ''}`}
+                          className={`border-b border-hair ${isBest ? 'bg-gold-badge font-semibold' : ''}`}
                         >
-                          <td className={`py-2 pr-3 font-mono ${isBest ? 'font-bold text-amber-700' : ''}`}>
+                          <td className={`py-2 pr-3 font-mono ${isBest ? 'font-semibold text-ink' : ''}`}>
                             {row.threshold}
-                            {isBest && <span className="ml-2 text-xs text-amber-600">(best F1)</span>}
+                            {isBest && <span className="ml-2 text-xs text-gold">(best F1)</span>}
                           </td>
-                          <td className="text-right py-2 px-3 font-mono">{row.precision.toFixed(4)}</td>
-                          <td className="text-right py-2 px-3 font-mono">{row.recall.toFixed(4)}</td>
-                          <td className={`text-right py-2 px-3 font-mono ${isBest ? 'font-bold text-amber-700' : ''}`}>
+                          <td className="text-right py-2 px-3 num">{row.precision.toFixed(4)}</td>
+                          <td className="text-right py-2 px-3 num">{row.recall.toFixed(4)}</td>
+                          <td className={`text-right py-2 px-3 num ${isBest ? 'font-semibold text-ink' : ''}`}>
                             {row.f1.toFixed(4)}
                           </td>
-                          <td className="text-right py-2 pl-3 font-mono">{row.accuracy.toFixed(4)}</td>
+                          <td className="text-right py-2 pl-3 num">{row.accuracy.toFixed(4)}</td>
                         </tr>
                       )
                     })}
@@ -716,41 +695,44 @@ export default function ComparisonTab() {
 
             {/* 4d. ROC curve */}
             <div>
-              <h4 className="text-sm font-semibold text-gray-700 mb-3">ROC Curve</h4>
+              <h4 className="text-sm font-semibold text-ink mb-3">ROC Curve</h4>
               <ResponsiveContainer width="100%" height={350}>
                 <LineChart data={rocCurveData} margin={{ left: 10, right: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
                   <XAxis
                     dataKey="fpr"
                     type="number"
                     domain={[0, 1]}
                     tickFormatter={(v: number) => v.toFixed(1)}
-                    label={{ value: 'False Positive Rate', position: 'insideBottom', offset: -5, fontSize: 12 }}
+                    tick={{ fill: CHART.tick }}
+                    label={{ value: 'False Positive Rate', position: 'insideBottom', offset: -5, fontSize: 12, fill: CHART.label }}
                   />
                   <YAxis
                     type="number"
                     domain={[0, 1]}
                     tickFormatter={(v: number) => v.toFixed(1)}
-                    label={{ value: 'True Positive Rate', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                    tick={{ fill: CHART.tick }}
+                    label={{ value: 'True Positive Rate', angle: -90, position: 'insideLeft', fontSize: 12, fill: CHART.label }}
                   />
                   <Tooltip
                     formatter={(v: number, name: string) => [v.toFixed(4), name]}
                     labelFormatter={(l: number) => `FPR: ${l.toFixed(4)}`}
+                    contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: 8, color: CHART.label }}
                   />
                   <Legend />
                   <Line
                     type="monotone"
                     dataKey="tpr"
                     name="Logprob Classifier"
-                    stroke="#ef4444"
+                    stroke={PALETTE.gold}
                     strokeWidth={2}
-                    dot={{ r: 4, fill: '#ef4444' }}
+                    dot={{ r: 4, fill: PALETTE.gold }}
                   />
                   <Line
                     type="monotone"
                     dataKey="random"
                     name="Random (diagonal)"
-                    stroke="#9ca3af"
+                    stroke={CHART.reference}
                     strokeWidth={1}
                     strokeDasharray="5 5"
                     dot={false}
@@ -760,13 +742,10 @@ export default function ComparisonTab() {
             </div>
 
             {/* 4e. Verdict callout */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800">
-              <div className="flex items-center space-x-2 mb-2">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <p className="font-semibold">Verdict: AUC = {PREDICTIVE.auc}</p>
-              </div>
+            <div className="callout-ink text-sm">
+              <p className="font-semibold mb-2">Verdict: AUC = {PREDICTIVE.auc}</p>
               <p>
-                Logprobs from a single sample are <strong>NOT</strong> a reliable predictor of multi-sample instability
+                Logprobs from a single sample are <strong>not</strong> a reliable predictor of multi-sample instability
                 at the individual question level. The model can be confident in its answer AND still give a different
                 answer next time. This is because instability at temperature=0 comes from sampling noise in the softmax,
                 not from the model&apos;s token-level confidence.
@@ -781,14 +760,14 @@ export default function ComparisonTab() {
           ═══════════════════════════════════════════════════════════════════════ */}
       <div className="card">
         <button
-          className="flex items-center justify-between w-full"
+          className="flex items-center justify-between w-full text-left"
           onClick={() => setShowSection5(!showSection5)}
         >
-          <div className="flex items-center space-x-2">
-            <Shield className="w-5 h-5 text-green-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Section 5: Cross-Run Score Agreement</h3>
+          <div>
+            <div className="panel-title">Section 5</div>
+            <h3 className="section-title">Cross-Run Score Agreement</h3>
           </div>
-          {showSection5 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="btn-secondary">{showSection5 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showSection5 && (
@@ -796,17 +775,17 @@ export default function ComparisonTab() {
             {/* 5b. Agreement summary cards */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               {/* Overall stat */}
-              <div className="md:col-span-1 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 text-center">
-                <p className="text-xs text-green-600 font-medium mb-1">Overall Agreement</p>
-                <p className="text-3xl font-bold text-green-700">{AGREEMENT.overallAgreePct}%</p>
-                <p className="text-xs text-green-500 mt-1">{AGREEMENT.totalPairs} triples</p>
+              <div className="metric-card md:col-span-1 text-center">
+                <p className="metric-label mb-1">Overall Agreement</p>
+                <p className="stat-num">{AGREEMENT.overallAgreePct}%</p>
+                <p className="text-xs muted mt-1">{AGREEMENT.totalPairs} triples</p>
               </div>
 
               {/* Per-scale cards */}
               {AGREEMENT_PER_SCALE.map((row) => (
                 <div
                   key={row.scale}
-                  className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center"
+                  className="metric-card text-center"
                 >
                   <p
                     className="text-xs font-medium mb-1 capitalize"
@@ -814,8 +793,8 @@ export default function ComparisonTab() {
                   >
                     {row.scale}
                   </p>
-                  <p className="text-2xl font-bold text-gray-800">{row.agreePct}%</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="stat-num text-2xl text-ink">{row.agreePct}%</p>
+                  <p className="text-xs muted mt-1">
                     {row.disagreeCount} / 200 disagree
                   </p>
                 </div>
@@ -823,11 +802,8 @@ export default function ComparisonTab() {
             </div>
 
             {/* 5c. Callout */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
-              <div className="flex items-center space-x-2 mb-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <p className="font-semibold">98.9% modal score agreement across runs</p>
-              </div>
+            <div className="callout text-sm">
+              <p className="font-semibold mb-2">98.9% modal score agreement across runs</p>
               <p>
                 Only 9 out of {AGREEMENT.totalPairs} (text, question, scale) triples have different modal scores between
                 Run 1 and Run 2. The LLM&apos;s &quot;opinion&quot; is highly stable &mdash; it&apos;s the variance around

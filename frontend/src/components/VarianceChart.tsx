@@ -9,6 +9,7 @@ import {
   Cell,
 } from 'recharts'
 import { SCALE_ORDER, SCALE_COLORS } from '../api/client'
+import { CHART, PALETTE } from '../theme/palette'
 
 interface ScaleMetrics {
   avg_variance: number
@@ -31,20 +32,20 @@ export default function VarianceChart({ scaleMetrics }: Props) {
     <div className="h-64">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="name" tick={{ fill: '#6b7280' }} />
-          <YAxis tick={{ fill: '#6b7280' }} />
+          <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+          <XAxis dataKey="name" tick={{ fill: CHART.tick }} />
+          <YAxis tick={{ fill: CHART.tick }} />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'white',
-              border: '1px solid #e5e7eb',
+              backgroundColor: CHART.tooltipBg,
+              border: `1px solid ${CHART.tooltipBorder}`,
               borderRadius: '8px',
             }}
             formatter={(value: number) => [value.toFixed(4), 'Variance']}
           />
           <Bar dataKey="variance" radius={[4, 4, 0, 0]}>
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell key={`cell-${index}`} fill={entry.color} stroke={PALETTE.hair} strokeWidth={1} />
             ))}
           </Bar>
         </BarChart>

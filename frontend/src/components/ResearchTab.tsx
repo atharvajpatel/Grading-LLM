@@ -13,30 +13,15 @@ import {
   Cell,
 } from 'recharts'
 import {
-  BookOpen,
-  BarChart3,
-  Layers,
-  TrendingUp,
-  Lightbulb,
-  FlaskConical,
-  ChevronDown,
-  ChevronUp,
-  Microscope,
-  AlertTriangle,
-  CheckCircle,
-  Target,
-  GitBranch,
-  Grid3X3,
-} from 'lucide-react'
+  magnitudeColor,
+  onMagnitude,
+  seriesColor,
+  dashFor,
+  CHART,
+} from '../theme/palette'
+import { SCALE_COLORS } from '../api/client'
 
 // ─── Hardcoded Data from 16,000 Evaluations (Feb 15, 2026) ───────────────────
-
-const SCALE_COLORS: Record<string, string> = {
-  binary: '#2196F3',
-  ternary: '#4CAF50',
-  quaternary: '#FF9800',
-  continuous: '#E91E63',
-}
 
 const SCALE_ORDER = ['binary', 'ternary', 'quaternary', 'continuous']
 
@@ -146,11 +131,6 @@ const PER_TEXT_TABLE = [
   { textId: 'technical_ml',           scale: 'continuous', avgVariance: 0.005845, avgConsistency: 0.9575, avgEntropy: 0.1279, uniqueVectors: 6  },
 ]
 
-const TEXT_PALETTE = [
-  '#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6',
-  '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16',
-]
-
 const TEXT_IDS = [
   'factual_simple', 'sentiment_positive', 'sentiment_negative', 'ambiguous',
   'medical_clinical', 'negation_heavy', 'imperative_action', 'abstract_philosophical',
@@ -195,14 +175,7 @@ const ETA_SQUARED = { byScale: 0.004691, byText: 0.020604, byQuestion: 0.038963 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function varianceToColor(value: number, maxValue: number): string {
-  if (maxValue === 0) return '#22c55e'
-  const ratio = Math.min(value / maxValue, 1)
-  if (ratio < 0.5) {
-    const t = ratio * 2
-    return `rgb(${Math.round(34 + t * 211)},${Math.round(197 + t * -39)},${Math.round(94 + t * -83)})`
-  }
-  const t = (ratio - 0.5) * 2
-  return `rgb(${Math.round(245 + t * -6)},${Math.round(158 + t * -90)},${Math.round(11 + t * 57)})`
+  return magnitudeColor(maxValue > 0 ? value / maxValue : 0)
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -218,43 +191,40 @@ export default function ResearchTab() {
   return (
     <div className="space-y-8">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="card bg-gradient-to-br from-indigo-50 to-blue-50 border-l-4 border-indigo-500">
-        <div className="flex items-center space-x-3 mb-3">
-          <BookOpen className="w-7 h-7 text-indigo-600" />
-          <h2 className="text-2xl font-bold text-gray-900">
+      <div className="card">
+        <div className="mb-3">
+          <p className="panel-title">Research</p>
+          <h2 className="section-title">
             LLM Feature Extraction Reliability: 16,000 Evaluations
           </h2>
         </div>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="muted leading-relaxed">
           This page presents hardcoded results from a completed batch analysis of 10 texts &times; 20
           questions &times; 4 scales &times; 20 samples = <strong>16,000 individual LLM evaluations</strong> on
           GPT-4o-mini at temperature=0. Run the <strong>Batch Analysis</strong> tab to replicate these
           results on your own data.
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">GPT-4o-mini</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">Temperature = 0</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">20 repeated samples</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">Feb 2026</span>
+          <span className="chip">GPT-4o-mini</span>
+          <span className="chip">Temperature = 0</span>
+          <span className="chip">20 repeated samples</span>
+          <span className="chip">Feb 2026</span>
         </div>
       </div>
 
       {/* ── The Problem ────────────────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <AlertTriangle className="w-5 h-5 text-amber-600" />
-          <h3 className="text-lg font-semibold text-gray-900">The Problem</h3>
-        </div>
-        <div className="text-gray-700 space-y-3 leading-relaxed">
+        <h3 className="section-title mb-4">The Problem</h3>
+        <div className="text-ink space-y-3 leading-relaxed">
           <p>
             LLMs are increasingly used as zero-shot feature extractors for unstructured data at scale.
             A single prompt can extract dozens of feature dimensions simultaneously &mdash; named entities,
             sentiment, causality, intent, emotion &mdash; replacing what would otherwise require a
             separate classifier for each dimension.
           </p>
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="font-semibold text-amber-800">Nobody is checking which of those features are reliable.</p>
-            <p className="text-sm text-amber-700 mt-1">
+          <div className="callout-ink">
+            <p className="font-semibold text-ink">Nobody is checking which of those features are reliable.</p>
+            <p className="text-sm text-mute mt-1">
               Teams extract features on Monday, build downstream models on the output, and discover weeks later
               that their model degraded &mdash; without knowing which feature dimension drifted between runs.
             </p>
@@ -269,11 +239,8 @@ export default function ResearchTab() {
 
       {/* ── Experimental Design Matrix ────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Grid3X3 className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Experimental Design</h3>
-        </div>
-        <p className="text-sm text-gray-600 mb-5">
+        <h3 className="section-title mb-4">Experimental Design</h3>
+        <p className="text-sm text-mute mb-5">
           Each cell is one (text, question) pair. Within each cell, GPT-4o-mini grades at 4 scale
           granularities. The entire sheet is repeated <strong>20 times</strong> to measure consistency.
         </p>
@@ -285,19 +252,19 @@ export default function ResearchTab() {
             {/* Axis labels */}
             <div className="flex">
               <div className="w-24 flex-shrink-0" />
-              <div className="flex-1 text-center text-xs font-semibold text-gray-500 mb-1">
+              <div className="flex-1 text-center text-xs font-semibold text-mute mb-1">
                 20 Questions (semantic factor families)
               </div>
             </div>
             <div className="flex">
               {/* Y-axis label */}
               <div className="w-24 flex-shrink-0 flex items-center justify-center">
-                <span className="text-xs font-semibold text-gray-500 -rotate-90 whitespace-nowrap">
+                <span className="text-xs font-semibold text-mute -rotate-90 whitespace-nowrap">
                   10 Texts
                 </span>
               </div>
               {/* Grid */}
-              <div className="flex-1 border border-gray-300 rounded-lg overflow-hidden bg-white">
+              <div className="flex-1 border border-hair rounded-lg overflow-hidden bg-white">
                 {Array.from({ length: 10 }).map((_, rowIdx) => (
                   <div key={rowIdx} className="flex">
                     {Array.from({ length: 20 }).map((_, colIdx) => {
@@ -309,15 +276,15 @@ export default function ResearchTab() {
                         return (
                           <div
                             key={colIdx}
-                            className="relative flex-1 aspect-square border border-purple-400 bg-purple-50 flex flex-col items-center justify-center gap-[1px] p-[2px]"
+                            className="relative flex-1 aspect-square border border-gold bg-cream flex flex-col items-center justify-center gap-[1px] p-[2px]"
                             title={`Text ${rowIdx + 1} × Q${colIdx + 1}`}
                           >
-                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#2196F3' }} />
-                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#4CAF50' }} />
-                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#FF9800' }} />
-                            <div className="w-full h-[3px] rounded-sm" style={{ background: '#E91E63' }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: SCALE_COLORS.binary }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: SCALE_COLORS.ternary }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: SCALE_COLORS.quaternary }} />
+                            <div className="w-full h-[3px] rounded-sm" style={{ background: SCALE_COLORS.continuous }} />
                             {!isSecondZoom && (
-                              <div className="absolute -right-1 -top-1 w-2 h-2 bg-purple-500 rounded-full" />
+                              <div className="absolute -right-1 -top-1 w-2 h-2 bg-gold rounded-full" />
                             )}
                           </div>
                         )
@@ -326,7 +293,7 @@ export default function ResearchTab() {
                       return (
                         <div
                           key={colIdx}
-                          className="flex-1 aspect-square border border-gray-100 bg-gray-50 hover:bg-gray-100 transition-colors"
+                          className="flex-1 aspect-square border border-hair bg-cream hover:bg-hair transition-colors"
                           title={`Text ${rowIdx + 1} × Q${colIdx + 1}`}
                         />
                       )
@@ -338,7 +305,7 @@ export default function ResearchTab() {
             {/* Row labels (text names on left, abbreviated) */}
             <div className="flex mt-1">
               <div className="w-24 flex-shrink-0" />
-              <div className="flex-1 flex justify-between text-[9px] text-gray-400 px-0.5">
+              <div className="flex-1 flex justify-between text-[9px] text-mute px-0.5">
                 <span>Q1</span>
                 <span>Q5</span>
                 <span>Q10</span>
@@ -351,24 +318,24 @@ export default function ResearchTab() {
           {/* Zoomed cell explanation + stacked sheets */}
           <div className="flex-shrink-0 w-full lg:w-72 space-y-4">
             {/* Zoomed cell */}
-            <div className="border-2 border-purple-400 rounded-lg p-3 bg-purple-50">
-              <p className="text-xs font-semibold text-purple-700 mb-2">Each cell contains 4 measurements:</p>
+            <div className="border border-gold rounded-lg p-3 bg-white">
+              <p className="text-xs font-semibold text-ink mb-2">Each cell contains 4 measurements:</p>
               <div className="space-y-1.5">
                 {[
-                  { label: 'Binary', value: '{0, 1}', color: '#2196F3', example: '→ 1' },
-                  { label: 'Ternary', value: '{0, 0.5, 1}', color: '#4CAF50', example: '→ 0.5' },
-                  { label: 'Quaternary', value: '{0, .33, .66, 1}', color: '#FF9800', example: '→ 0.66' },
-                  { label: 'Continuous', value: '[0, 1]', color: '#E91E63', example: '→ 0.73' },
+                  { label: 'Binary', value: '{0, 1}', color: SCALE_COLORS.binary, example: '→ 1' },
+                  { label: 'Ternary', value: '{0, 0.5, 1}', color: SCALE_COLORS.ternary, example: '→ 0.5' },
+                  { label: 'Quaternary', value: '{0, .33, .66, 1}', color: SCALE_COLORS.quaternary, example: '→ 0.66' },
+                  { label: 'Continuous', value: '[0, 1]', color: SCALE_COLORS.continuous, example: '→ 0.73' },
                 ].map((s) => (
                   <div key={s.label} className="flex items-center gap-2 text-xs">
-                    <div className="w-3 h-3 rounded-sm flex-shrink-0" style={{ background: s.color }} />
-                    <span className="font-semibold text-gray-700 w-20">{s.label}</span>
-                    <span className="text-gray-500 font-mono text-[10px]">{s.value}</span>
-                    <span className="text-gray-400 font-mono text-[10px] ml-auto">{s.example}</span>
+                    <div className="w-3 h-3 rounded-sm flex-shrink-0 border border-hair" style={{ background: s.color }} />
+                    <span className="font-semibold text-ink w-20">{s.label}</span>
+                    <span className="text-mute font-mono text-[10px]">{s.value}</span>
+                    <span className="text-mute font-mono text-[10px] ml-auto">{s.example}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-2 pt-2 border-t border-purple-200 text-[10px] text-purple-600">
+              <div className="mt-2 pt-2 border-t border-hair text-[10px] text-mute">
                 = 10 &times; 20 &times; 4 = <strong>800 scores</strong> per sample
               </div>
             </div>
@@ -378,7 +345,7 @@ export default function ResearchTab() {
               {[4, 3, 2, 1, 0].map((i) => (
                 <div
                   key={i}
-                  className="absolute border border-gray-300 rounded bg-white shadow-sm"
+                  className="absolute border border-hair rounded bg-white shadow-sm"
                   style={{
                     width: '85%',
                     height: '70%',
@@ -389,10 +356,10 @@ export default function ResearchTab() {
                   }}
                 >
                   {i === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-xs text-gray-500">
+                    <div className="flex flex-col items-center justify-center h-full text-xs text-mute">
                       <div className="grid grid-cols-5 gap-[2px] mb-2">
                         {Array.from({ length: 15 }).map((_, j) => (
-                          <div key={j} className="w-2 h-1.5 bg-gray-200 rounded-[1px]" />
+                          <div key={j} className="w-2 h-1.5 bg-hair rounded-[1px]" />
                         ))}
                       </div>
                       <span className="font-mono text-[10px]">10 &times; 20 sheet</span>
@@ -404,17 +371,17 @@ export default function ResearchTab() {
                 className="absolute flex items-center gap-1"
                 style={{ bottom: 0, right: 0, zIndex: 10 }}
               >
-                <span className="text-xs font-bold text-gray-700 bg-white px-1.5 py-0.5 rounded border border-gray-200 shadow-sm">
+                <span className="text-xs font-bold text-ink bg-white px-1.5 py-0.5 rounded border border-hair shadow-sm">
                   &times;20 samples
                 </span>
               </div>
             </div>
 
             {/* Final calculation */}
-            <div className="bg-gray-50 rounded-lg p-3 text-center">
-              <div className="text-xs text-gray-500 space-y-0.5">
+            <div className="bg-white border border-hair rounded-lg p-3 text-center">
+              <div className="text-xs text-mute space-y-0.5">
                 <div>10 texts &times; 20 questions &times; 4 scales &times; 20 samples</div>
-                <div className="text-lg font-bold text-gray-900">=&nbsp;16,000 evaluations</div>
+                <div className="text-lg font-bold text-ink">=&nbsp;16,000 evaluations</div>
               </div>
             </div>
           </div>
@@ -423,24 +390,21 @@ export default function ResearchTab() {
 
       {/* ── Scale Degradation Summary ──────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Layers className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Scale Degradation Summary</h3>
-        </div>
+        <h3 className="section-title mb-4">Scale Degradation Summary</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% Zero-Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% High-Var</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Mean Mode Consistency</th>
+              <tr className="border-b border-hair">
+                <th className="text-left py-2 pr-4 font-medium text-mute">Scale</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Mean Var</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">% Zero-Var</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">% High-Var</th>
+                <th className="text-right py-2 pl-3 font-medium text-mute">Mean Mode Consistency</th>
               </tr>
             </thead>
             <tbody>
               {SCALE_SUMMARY.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
+                <tr key={row.scale} className="border-b border-hair">
                   <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                     {row.scale}
                   </td>
@@ -455,8 +419,8 @@ export default function ResearchTab() {
         </div>
 
         {/* Key finding callout */}
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <p className="font-semibold mb-1">Finding: Variance is non-monotonic across scales</p>
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Finding: Variance is non-monotonic across scales</p>
           <p>
             Quaternary is the <strong>worst</strong> scale by mean variance (0.0050) and zero-variance rate (88.5%).
             Continuous has the <strong>lowest</strong> mean variance (0.0020) &mdash; lower than binary &mdash;
@@ -467,16 +431,13 @@ export default function ResearchTab() {
 
       {/* ── Mean Variance by Scale (bar chart) ─────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <BarChart3 className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Mean Variance by Scale</h3>
-        </div>
+        <h3 className="section-title mb-4">Mean Variance by Scale</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={SCALE_SUMMARY}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="scale" />
-            <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="scale" tick={{ fill: CHART.tick }} />
+            <YAxis tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Bar dataKey="meanVar" name="Mean Variance">
               {SCALE_SUMMARY.map((entry) => (
                 <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale]} />
@@ -488,12 +449,9 @@ export default function ResearchTab() {
 
       {/* ── Question Stability Heatmap ─────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <Microscope className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Question Stability Across Scales</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
-          Mean variance per question across all 10 texts. Green = stable (zero variance). Red = unstable.
+        <h3 className="section-title mb-2">Question Stability Across Scales</h3>
+        <p className="text-sm text-mute mb-4">
+          Mean variance per question across all 10 texts. Pale = stable (zero variance); dark = unstable.
         </p>
 
         {/* Interactive heatmap */}
@@ -501,16 +459,16 @@ export default function ResearchTab() {
           <table className="w-full text-xs">
             <thead>
               <tr>
-                <th className="text-left py-1 pr-2 font-medium text-gray-500 w-36">Question</th>
+                <th className="text-left py-1 pr-2 font-medium text-mute w-36">Question</th>
                 {SCALE_ORDER.map((s) => (
-                  <th key={s} className="py-1 px-2 font-medium text-gray-500 capitalize text-center w-28">{s}</th>
+                  <th key={s} className="py-1 px-2 font-medium text-mute capitalize text-center w-28">{s}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {HEATMAP_DATA.map((row) => (
                 <tr key={row.question}>
-                  <td className="py-1 pr-2 font-medium text-gray-700 text-xs">{row.question}</td>
+                  <td className="py-1 pr-2 font-medium text-ink text-xs">{row.question}</td>
                   {SCALE_ORDER.map((s) => {
                     const val = (row as any)[s] as number
                     return (
@@ -519,7 +477,7 @@ export default function ResearchTab() {
                           className="rounded px-2 py-1 text-center font-mono"
                           style={{
                             backgroundColor: varianceToColor(val, heatmapMaxVar),
-                            color: val / heatmapMaxVar > 0.5 ? '#fff' : '#1f2937',
+                            color: onMagnitude(val / heatmapMaxVar),
                           }}
                           title={`${row.question} / ${s}: ${val.toFixed(6)}`}
                         >
@@ -535,22 +493,21 @@ export default function ResearchTab() {
         </div>
 
         {/* Static matplotlib figure */}
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <p className="text-xs text-gray-400 mb-2">High-resolution matplotlib figure:</p>
-          <img
-            src="/research/question_stability_heatmap.png"
-            alt="Question stability heatmap — 20 questions x 4 scales"
-            className="w-full rounded-lg border border-gray-200"
-          />
+        <div className="mt-4 border-t border-hair pt-4">
+          <p className="text-xs text-mute mb-2">High-resolution matplotlib figure:</p>
+          <div className="plot-frame">
+            <img
+              src="/research/question_stability_heatmap.png"
+              alt="Question stability heatmap — 20 questions x 4 scales"
+              className="w-full"
+            />
+          </div>
         </div>
 
         {/* Finding callout */}
-        <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
-          <div className="flex items-center space-x-2 mb-1">
-            <CheckCircle className="w-4 h-4 text-green-600" />
-            <p className="font-semibold text-green-800">Finding: Reliability varies dramatically by feature type</p>
-          </div>
-          <p className="text-green-700">
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Finding: Reliability varies dramatically by feature type</p>
+          <p className="text-mute">
             <strong>Perfectly stable</strong> (zero variance): Named Entities, First Person, Emotion, Social, Normative.
             <br />
             <strong>Unstable</strong>: Intent (0.0188 at quaternary), Concreteness (0.0159 quaternary / 0.0145 continuous),
@@ -561,37 +518,35 @@ export default function ResearchTab() {
 
       {/* ── Variance Distribution Violins ──────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <BarChart3 className="w-5 h-5 text-orange-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Variance Distribution by Scale</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-2">Variance Distribution by Scale</h3>
+        <p className="text-sm text-mute mb-4">
           Distribution of variance values across all 200 text &times; question pairs, grouped by scale.
         </p>
-        <img
-          src="/research/variance_violins.png"
-          alt="Violin plots showing variance distribution per scale"
-          className="w-full rounded-lg border border-gray-200"
-        />
+        <div className="plot-frame">
+          <img
+            src="/research/variance_violins.png"
+            alt="Violin plots showing variance distribution per scale"
+            className="w-full"
+          />
+        </div>
       </div>
 
       {/* ── Entropy vs Variance Scatter ────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <FlaskConical className="w-5 h-5 text-pink-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Entropy vs Variance</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-2">Entropy vs Variance</h3>
+        <p className="text-sm text-mute mb-4">
           800 data points (200 per scale). Reveals distinct noise signatures: quaternary is high-variance + high-entropy
           (label flips), continuous is low-variance + moderate-entropy (feature drift).
         </p>
-        <img
-          src="/research/entropy_vs_variance.png"
-          alt="Entropy vs variance scatter plot — 800 points colored by scale"
-          className="w-full rounded-lg border border-gray-200"
-        />
-        <div className="mt-4 bg-pink-50 border border-pink-200 rounded-lg p-4 text-sm text-pink-800">
-          <p className="font-semibold mb-1">Finding: Different noise structures per scale</p>
+        <div className="plot-frame">
+          <img
+            src="/research/entropy_vs_variance.png"
+            alt="Entropy vs variance scatter plot — 800 points colored by scale"
+            className="w-full"
+          />
+        </div>
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Finding: Different noise structures per scale</p>
           <p>
             <strong>Quaternary</strong> instability = label flips (recommendation gets categorized differently between runs).
             <strong> Continuous</strong> instability = feature drift (value shifts slightly, may or may not cross a decision threshold).
@@ -601,26 +556,24 @@ export default function ResearchTab() {
 
       {/* ── Variance Degradation by Text Type (line chart) ─────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Variance Degradation by Text Type</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-2">Variance Degradation by Text Type</h3>
+        <p className="text-sm text-mute mb-4">
           How each text's mean variance changes across scales (binary &rarr; continuous).
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={DEGRADATION_DATA}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="scale" />
-            <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="scale" tick={{ fill: CHART.tick }} />
+            <YAxis tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Legend />
             {TEXT_IDS.map((id, idx) => (
               <Line
                 key={id}
                 type="monotone"
                 dataKey={id}
-                stroke={TEXT_PALETTE[idx % TEXT_PALETTE.length]}
+                stroke={seriesColor(idx)}
+                strokeDasharray={dashFor(idx)}
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />
@@ -629,31 +582,30 @@ export default function ResearchTab() {
         </ResponsiveContainer>
 
         {/* Static matplotlib figure */}
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <p className="text-xs text-gray-400 mb-2">High-resolution matplotlib figure:</p>
-          <img
-            src="/research/per_text_degradation.png"
-            alt="Variance degradation line chart per text type"
-            className="w-full rounded-lg border border-gray-200"
-          />
+        <div className="mt-4 border-t border-hair pt-4">
+          <p className="text-xs text-mute mb-2">High-resolution matplotlib figure:</p>
+          <div className="plot-frame">
+            <img
+              src="/research/per_text_degradation.png"
+              alt="Variance degradation line chart per text type"
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
 
       {/* ── Text Difficulty Ranking ────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <Target className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Text Difficulty Ranking</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-2">Text Difficulty Ranking</h3>
+        <p className="text-sm text-mute mb-4">
           Texts ranked by overall mean variance. Longer bar = more unstable. 44&times; difference between hardest and easiest.
         </p>
         <ResponsiveContainer width="100%" height={360}>
           <BarChart data={TEXT_DIFFICULTY} layout="vertical" margin={{ left: 140 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} />
-            <YAxis type="category" dataKey="id" width={130} tick={{ fontSize: 12 }} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} />
+            <YAxis type="category" dataKey="id" width={130} tick={{ fontSize: 12, fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Bar dataKey="meanVariance" name="Mean Variance">
               {TEXT_DIFFICULTY.map((entry) => {
                 const maxVar = TEXT_DIFFICULTY[0].meanVariance
@@ -661,7 +613,7 @@ export default function ResearchTab() {
                 return (
                   <Cell
                     key={entry.id}
-                    fill={ratio < 0.33 ? '#22c55e' : ratio < 0.66 ? '#f59e0b' : '#ef4444'}
+                    fill={magnitudeColor(ratio)}
                   />
                 )
               })}
@@ -669,18 +621,20 @@ export default function ResearchTab() {
           </BarChart>
         </ResponsiveContainer>
 
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <p className="text-xs text-gray-400 mb-2">High-resolution matplotlib figure:</p>
-          <img
-            src="/research/text_difficulty_ranking.png"
-            alt="Text difficulty ranking horizontal bar chart"
-            className="w-full rounded-lg border border-gray-200"
-          />
+        <div className="mt-4 border-t border-hair pt-4">
+          <p className="text-xs text-mute mb-2">High-resolution matplotlib figure:</p>
+          <div className="plot-frame">
+            <img
+              src="/research/text_difficulty_ranking.png"
+              alt="Text difficulty ranking horizontal bar chart"
+              className="w-full"
+            />
+          </div>
         </div>
 
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
-          <p className="font-semibold mb-1">Finding: Text difficulty interacts with feature type</p>
-          <p>
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Finding: Text difficulty interacts with feature type</p>
+          <p className="text-mute">
             Ambiguous text (0.0088) is 44&times; more unstable than abstract philosophical (0.0002).
             Texts with pragmatic subtext and multi-sentence narratives cluster at the top.
           </p>
@@ -689,19 +643,16 @@ export default function ResearchTab() {
 
       {/* ── Mode Consistency by Text and Scale ─────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <BarChart3 className="w-5 h-5 text-green-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Mode Consistency by Text and Scale</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-2">Mode Consistency by Text and Scale</h3>
+        <p className="text-sm text-mute mb-4">
           Mean mode consistency across 20 questions. 1.0 = all 20 samples identical.
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={MODE_CONSISTENCY_DATA}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="id" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={60} />
-            <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} />
-            <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="id" tick={{ fontSize: 11, fill: CHART.tick }} angle={-30} textAnchor="end" height={60} />
+            <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Legend />
             {SCALE_ORDER.map((scale) => (
               <Bar key={scale} dataKey={scale} name={scale} fill={SCALE_COLORS[scale]} />
@@ -709,39 +660,38 @@ export default function ResearchTab() {
           </BarChart>
         </ResponsiveContainer>
 
-        <div className="mt-4 border-t border-gray-200 pt-4">
-          <p className="text-xs text-gray-400 mb-2">High-resolution matplotlib figure:</p>
-          <img
-            src="/research/mode_consistency_bars.png"
-            alt="Mode consistency grouped bar chart by text and scale"
-            className="w-full rounded-lg border border-gray-200"
-          />
+        <div className="mt-4 border-t border-hair pt-4">
+          <p className="text-xs text-mute mb-2">High-resolution matplotlib figure:</p>
+          <div className="plot-frame">
+            <img
+              src="/research/mode_consistency_bars.png"
+              alt="Mode consistency grouped bar chart by text and scale"
+              className="w-full"
+            />
+          </div>
         </div>
       </div>
 
       {/* ── Per-Text Scale Metrics ─────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Layers className="w-5 h-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Per-Text Scale Metrics</h3>
-        </div>
+        <h3 className="section-title mb-4">Per-Text Scale Metrics</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-3 font-medium text-gray-500">Text</th>
-                <th className="text-left py-2 px-3 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Variance</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Consistency</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Entropy</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Unique Vectors</th>
+              <tr className="border-b border-hair">
+                <th className="text-left py-2 pr-3 font-medium text-mute">Text</th>
+                <th className="text-left py-2 px-3 font-medium text-mute">Scale</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Avg Variance</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Avg Consistency</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Avg Entropy</th>
+                <th className="text-right py-2 pl-3 font-medium text-mute">Unique Vectors</th>
               </tr>
             </thead>
             <tbody>
               {PER_TEXT_TABLE.map((row, idx) => (
-                <tr key={`${row.textId}-${row.scale}`} className={idx % 4 === 3 ? 'border-b border-gray-200' : ''}>
+                <tr key={`${row.textId}-${row.scale}`} className={idx % 4 === 3 ? 'border-b border-hair' : ''}>
                   {idx % 4 === 0 && (
-                    <td className="py-1.5 pr-3 font-medium text-gray-700 font-mono text-xs" rowSpan={4}>
+                    <td className="py-1.5 pr-3 font-medium text-ink font-mono text-xs" rowSpan={4}>
                       {row.textId}
                     </td>
                   )}
@@ -760,14 +710,14 @@ export default function ResearchTab() {
       </div>
 
       {/* ── Advanced Statistical Analysis ──────────────────────────────────── */}
-      <div className="card bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-purple-500">
-        <div className="flex items-center space-x-3 mb-3">
-          <FlaskConical className="w-7 h-7 text-purple-600" />
-          <h2 className="text-2xl font-bold text-gray-900">
+      <div className="card">
+        <div className="mb-3">
+          <p className="panel-title">Advanced</p>
+          <h2 className="section-title">
             Advanced Statistical Analysis
           </h2>
         </div>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="muted leading-relaxed">
           Standard reliability metrics computed from the 16,000 evaluations. These are the metrics
           any reviewer of a measurement study would expect to see: internal consistency, inter-rater
           agreement, test-retest reliability, and effect sizes.
@@ -776,32 +726,30 @@ export default function ResearchTab() {
 
       {/* ── Tier 1: Essential Reliability ──────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <CheckCircle className="w-5 h-5 text-green-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Tier 1: Essential Reliability Metrics</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="section-title mb-4">Tier 1: Essential Reliability Metrics</h3>
+        <p className="text-sm text-mute mb-4">
           Standard psychometric reliability coefficients. Values above 0.9 indicate excellent agreement.
+          A negative Cronbach's &alpha; (flagged &ldquo;below zero&rdquo;) signals broken internal consistency.
         </p>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Cronbach's &alpha;</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">ICC(2,1)</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Cohen's &kappa;</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Krippendorff's &alpha;</th>
+              <tr className="border-b border-hair">
+                <th className="text-left py-2 pr-4 font-medium text-mute">Scale</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Cronbach's &alpha;</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">ICC(2,1)</th>
+                <th className="text-right py-2 px-3 font-medium text-mute">Cohen's &kappa;</th>
+                <th className="text-right py-2 pl-3 font-medium text-mute">Krippendorff's &alpha;</th>
               </tr>
             </thead>
             <tbody>
               {TIER1_DATA.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
+                <tr key={row.scale} className="border-b border-hair">
                   <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                     {row.scale}
                   </td>
-                  <td className={`text-right py-2 px-3 font-mono ${row.cronbachsAlpha < 0 ? 'text-red-600' : ''}`}>
-                    {row.cronbachsAlpha.toFixed(3)}
+                  <td className={`text-right py-2 px-3 font-mono ${row.cronbachsAlpha < 0 ? 'text-ink font-semibold' : ''}`}>
+                    {row.cronbachsAlpha.toFixed(3)}{row.cronbachsAlpha < 0 ? ' (below zero)' : ''}
                   </td>
                   <td className="text-right py-2 px-3 font-mono">{row.icc.toFixed(4)}</td>
                   <td className="text-right py-2 px-3 font-mono">
@@ -813,8 +761,8 @@ export default function ResearchTab() {
             </tbody>
           </table>
         </div>
-        <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm text-purple-800">
-          <p className="font-semibold mb-1">Finding: High agreement but poor internal consistency at fine granularity</p>
+        <div className="callout-ink mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Finding: High agreement but poor internal consistency at fine granularity</p>
           <p>
             ICC and Krippendorff's &alpha; stay above 0.95 across all scales (excellent rater agreement).
             But Cronbach's &alpha; goes <strong>negative</strong> at quaternary (-0.12) and continuous (-0.33),
@@ -825,29 +773,26 @@ export default function ResearchTab() {
 
       {/* ── Tier 2: Informative Metrics ────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Tier 2: Test-Retest &amp; Agreement</h3>
-        </div>
+        <h3 className="section-title mb-4">Tier 2: Test-Retest &amp; Agreement</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Test-Retest */}
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Test-Retest Correlation (odd/even split-half)</p>
-            <table className="w-full text-sm">
+            <p className="text-sm font-medium text-mute mb-2">Test-Retest Correlation (odd/even split-half)</p>
+            <table className="data-table w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-1 font-medium text-gray-500">Scale</th>
-                  <th className="text-right py-1 font-medium text-gray-500">Pearson r</th>
-                  <th className="text-right py-1 font-medium text-gray-500">Spearman &rho;</th>
+                <tr className="border-b border-hair">
+                  <th className="text-left py-1 font-medium text-mute">Scale</th>
+                  <th className="text-right py-1 font-medium text-mute">Pearson r</th>
+                  <th className="text-right py-1 font-medium text-mute">Spearman &rho;</th>
                 </tr>
               </thead>
               <tbody>
                 {TIER2_TEST_RETEST.map((row) => (
-                  <tr key={row.scale} className="border-b border-gray-100">
+                  <tr key={row.scale} className="border-b border-hair">
                     <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
-                    <td className="text-right py-1 font-mono">{row.pearsonR.toFixed(4)}</td>
-                    <td className="text-right py-1 font-mono">{row.spearmanRho.toFixed(4)}</td>
+                    <td className="num text-right py-1 font-mono">{row.pearsonR.toFixed(4)}</td>
+                    <td className="num text-right py-1 font-mono">{row.spearmanRho.toFixed(4)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -856,21 +801,21 @@ export default function ResearchTab() {
 
           {/* Bland-Altman */}
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Bland-Altman (limits of agreement)</p>
-            <table className="w-full text-sm">
+            <p className="text-sm font-medium text-mute mb-2">Bland-Altman (limits of agreement)</p>
+            <table className="data-table w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-1 font-medium text-gray-500">Scale</th>
-                  <th className="text-right py-1 font-medium text-gray-500">Mean Bias</th>
-                  <th className="text-right py-1 font-medium text-gray-500">Std Diff</th>
+                <tr className="border-b border-hair">
+                  <th className="text-left py-1 font-medium text-mute">Scale</th>
+                  <th className="text-right py-1 font-medium text-mute">Mean Bias</th>
+                  <th className="text-right py-1 font-medium text-mute">Std Diff</th>
                 </tr>
               </thead>
               <tbody>
                 {TIER2_BLAND_ALTMAN.map((row) => (
-                  <tr key={row.scale} className="border-b border-gray-100">
+                  <tr key={row.scale} className="border-b border-hair">
                     <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
-                    <td className="text-right py-1 font-mono">{row.meanBias.toFixed(4)}</td>
-                    <td className="text-right py-1 font-mono">{row.meanStdDiff.toFixed(4)}</td>
+                    <td className="num text-right py-1 font-mono">{row.meanBias.toFixed(4)}</td>
+                    <td className="num text-right py-1 font-mono">{row.meanStdDiff.toFixed(4)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -878,8 +823,8 @@ export default function ResearchTab() {
           </div>
         </div>
 
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-          <p className="font-semibold mb-1">Scale Degradation Regression</p>
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold text-ink mb-1">Scale Degradation Regression</p>
           <p>
             Linear fit (binary=0, ternary=1, quaternary=2, continuous=3): slope={REGRESSION.slope.toFixed(6)},
             R&sup2;={REGRESSION.rSquared.toFixed(4)}, p={REGRESSION.pValue.toFixed(4)}.
@@ -891,30 +836,27 @@ export default function ResearchTab() {
 
       {/* ── Tier 3: Advanced ───────────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Microscope className="w-5 h-5 text-indigo-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Tier 3: Bootstrap CIs, Friedman Test &amp; Effect Sizes</h3>
-        </div>
+        <h3 className="section-title mb-4">Tier 3: Bootstrap CIs, Friedman Test &amp; Effect Sizes</h3>
 
         {/* Bootstrap CIs */}
-        <p className="text-sm font-medium text-gray-700 mb-2">Bootstrap 95% Confidence Intervals (1000 resamples)</p>
+        <p className="text-sm font-medium text-mute mb-2">Bootstrap 95% Confidence Intervals (1000 resamples)</p>
         <div className="overflow-x-auto mb-4">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-1 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-1 font-medium text-gray-500">Variance [95% CI]</th>
-                <th className="text-right py-1 font-medium text-gray-500">Consistency [95% CI]</th>
+              <tr className="border-b border-hair">
+                <th className="text-left py-1 font-medium text-mute">Scale</th>
+                <th className="text-right py-1 font-medium text-mute">Variance [95% CI]</th>
+                <th className="text-right py-1 font-medium text-mute">Consistency [95% CI]</th>
               </tr>
             </thead>
             <tbody>
               {TIER3_BOOTSTRAP.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
+                <tr key={row.scale} className="border-b border-hair">
                   <td className="py-1 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>{row.scale}</td>
-                  <td className="text-right py-1 font-mono text-xs">
+                  <td className="num text-right py-1 font-mono text-xs">
                     {row.varPoint.toFixed(4)} [{row.varLower.toFixed(4)}, {row.varUpper.toFixed(4)}]
                   </td>
-                  <td className="text-right py-1 font-mono text-xs">
+                  <td className="num text-right py-1 font-mono text-xs">
                     {(row.conPoint * 100).toFixed(2)}% [{(row.conLower * 100).toFixed(2)}%, {(row.conUpper * 100).toFixed(2)}%]
                   </td>
                 </tr>
@@ -925,34 +867,34 @@ export default function ResearchTab() {
 
         {/* Friedman + Eta-squared */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm">
-            <p className="font-semibold text-indigo-800 mb-1">Friedman Test</p>
-            <p className="text-indigo-700">
+          <div className="callout text-sm">
+            <p className="font-semibold text-ink mb-1">Friedman Test</p>
+            <p className="text-mute">
               &chi;&sup2; = {FRIEDMAN.chiSquared.toFixed(2)}, p = {FRIEDMAN.pValue.toExponential(2)}<br />
               Scale granularity <strong>{FRIEDMAN.significant ? 'significantly' : 'does not significantly'}</strong> affect variance.
             </p>
           </div>
-          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm">
-            <p className="font-semibold text-indigo-800 mb-2">Effect Sizes (&eta;&sup2;)</p>
+          <div className="callout text-sm">
+            <p className="font-semibold text-ink mb-2">Effect Sizes (&eta;&sup2;)</p>
             <div className="space-y-2">
               {[
-                { label: 'Question type', value: ETA_SQUARED.byQuestion, color: '#8b5cf6' },
-                { label: 'Text type', value: ETA_SQUARED.byText, color: '#3b82f6' },
-                { label: 'Scale type', value: ETA_SQUARED.byScale, color: '#f59e0b' },
+                { label: 'Question type', value: ETA_SQUARED.byQuestion, color: seriesColor(0) },
+                { label: 'Text type', value: ETA_SQUARED.byText, color: seriesColor(1) },
+                { label: 'Scale type', value: ETA_SQUARED.byScale, color: seriesColor(2) },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
-                  <span className="text-xs text-gray-600 w-24">{item.label}</span>
-                  <div className="flex-1 bg-gray-200 rounded-full h-3">
+                  <span className="text-xs text-mute w-24">{item.label}</span>
+                  <div className="flex-1 bg-hair rounded-full h-3">
                     <div
                       className="h-3 rounded-full"
                       style={{ width: `${Math.min(item.value / 0.05 * 100, 100)}%`, backgroundColor: item.color }}
                     />
                   </div>
-                  <span className="text-xs font-mono text-gray-700 w-16 text-right">{item.value.toFixed(4)}</span>
+                  <span className="num text-xs font-mono text-mute w-16 text-right">{item.value.toFixed(4)}</span>
                 </div>
               ))}
             </div>
-            <p className="text-indigo-600 text-xs mt-2">
+            <p className="text-mute text-xs mt-2">
               Which feature you extract matters 8x more than which scale you use.
             </p>
           </div>
@@ -961,14 +903,11 @@ export default function ResearchTab() {
 
       {/* ── Implications ───────────────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Lightbulb className="w-5 h-5 text-yellow-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Implications for Production Feature Extraction</h3>
-        </div>
-        <div className="space-y-4 text-sm text-gray-700">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <p className="font-semibold text-gray-800 mb-2">The Batch-to-Batch Reliability Problem</p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600">
+        <h3 className="section-title mb-4">Implications for Production Feature Extraction</h3>
+        <div className="space-y-4 text-sm text-mute">
+          <div className="callout">
+            <p className="font-semibold text-ink mb-2">The Batch-to-Batch Reliability Problem</p>
+            <ul className="list-disc list-inside space-y-1 text-mute">
               <li><strong>Week 1:</strong> Extract intent for 10M items &rarr; 200K items near the decision boundary get label A</li>
               <li><strong>Week 2:</strong> Re-extract &rarr; those same 200K items get label B</li>
               <li><strong>Week 3:</strong> Downstream model retrains on new features &rarr; performance shifts</li>
@@ -977,23 +916,23 @@ export default function ResearchTab() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <p className="font-semibold text-green-800 mb-2">Tier 1: Deploy and Trust</p>
-              <p className="text-green-700 text-xs">
+            <div className="callout">
+              <p className="font-semibold text-ink mb-2">Tier 1: Deploy and Trust</p>
+              <p className="text-mute text-xs">
                 Named entities, temporal, spatial, modality, imperative, comparison, normative.
                 Zero variance across all scales and text types.
               </p>
             </div>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="font-semibold text-yellow-800 mb-2">Tier 2: Deploy with Monitoring</p>
-              <p className="text-yellow-700 text-xs">
+            <div className="callout-ink">
+              <p className="font-semibold text-ink mb-2">Tier 2: Deploy with Monitoring</p>
+              <p className="text-mute text-xs">
                 Actions/events, sentiment, social, first person, numeric.
                 Low but non-zero variance on specific text types.
               </p>
             </div>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="font-semibold text-red-800 mb-2">Tier 3: Deploy with Calibration</p>
-              <p className="text-red-700 text-xs">
+            <div className="callout-ink">
+              <p className="font-semibold text-ink mb-2">Tier 3: Deploy with Calibration</p>
+              <p className="text-mute text-xs">
                 Intent, emotion, concreteness, causality, identity, negation, dialogue.
                 Meaningful variance depending on text type and scale.
               </p>
@@ -1008,37 +947,34 @@ export default function ResearchTab() {
           className="flex items-center justify-between w-full"
           onClick={() => setShowMethodology(!showMethodology)}
         >
-          <div className="flex items-center space-x-2">
-            <FlaskConical className="w-5 h-5 text-gray-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Methodology Details</h3>
-          </div>
-          {showMethodology ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <h3 className="section-title">Methodology Details</h3>
+          <span className="btn-secondary">{showMethodology ? 'Hide' : 'Show'}</span>
         </button>
 
         {showMethodology && (
-          <div className="mt-4 space-y-4 text-sm text-gray-700">
+          <div className="mt-4 space-y-4 text-sm text-mute">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="metric-card bg-gray-50">
-                <p className="text-xs text-gray-500">Model</p>
-                <p className="text-lg font-bold text-gray-800">GPT-4o-mini</p>
+              <div className="metric-card">
+                <p className="text-xs text-mute">Model</p>
+                <p className="text-lg font-bold text-ink">GPT-4o-mini</p>
               </div>
-              <div className="metric-card bg-gray-50">
-                <p className="text-xs text-gray-500">Temperature</p>
-                <p className="text-lg font-bold text-gray-800">0</p>
+              <div className="metric-card">
+                <p className="text-xs text-mute">Temperature</p>
+                <p className="text-lg font-bold text-ink">0</p>
               </div>
-              <div className="metric-card bg-gray-50">
-                <p className="text-xs text-gray-500">Total API Calls</p>
-                <p className="text-lg font-bold text-gray-800">~800</p>
+              <div className="metric-card">
+                <p className="text-xs text-mute">Total API Calls</p>
+                <p className="text-lg font-bold text-ink">~800</p>
               </div>
-              <div className="metric-card bg-gray-50">
-                <p className="text-xs text-gray-500">Total Evaluations</p>
-                <p className="text-lg font-bold text-gray-800">16,000</p>
+              <div className="metric-card">
+                <p className="text-xs text-mute">Total Evaluations</p>
+                <p className="text-lg font-bold text-ink">16,000</p>
               </div>
             </div>
 
             <div>
-              <p className="font-semibold text-gray-800 mb-2">Metrics Definitions</p>
-              <ul className="list-disc list-inside space-y-1 text-gray-600">
+              <p className="font-semibold text-ink mb-2">Metrics Definitions</p>
+              <ul className="list-disc list-inside space-y-1 text-mute">
                 <li><strong>Variance:</strong> Computed across 20 repeated samples for each text &times; question &times; scale triple. Zero = perfectly deterministic.</li>
                 <li><strong>Mode Consistency:</strong> Percentage of 20 samples matching the most frequent value. 100% = all identical.</li>
                 <li><strong>Shannon Entropy:</strong> Information-theoretic diversity measure. Zero = all identical. Higher = more spread.</li>
@@ -1047,7 +983,7 @@ export default function ResearchTab() {
             </div>
 
             <div>
-              <p className="font-semibold text-gray-800 mb-2">Experiment Design</p>
+              <p className="font-semibold text-ink mb-2">Experiment Design</p>
               <p>
                 10 texts &times; 20 questions &times; 4 scales &times; 20 samples = 16,000 evaluations.
                 Each text &times; question &times; scale combination was evaluated 20 times at temperature=0.
@@ -1057,12 +993,12 @@ export default function ResearchTab() {
             </div>
 
             <div>
-              <p className="font-semibold text-gray-800 mb-2">Reproducibility</p>
-              <p className="text-gray-600">
+              <p className="font-semibold text-ink mb-2">Reproducibility</p>
+              <p className="text-mute">
                 All code, data, and analysis scripts are open source. Run the Batch Analysis tab to replicate,
                 or use the CLI:
               </p>
-              <code className="block mt-2 bg-gray-100 p-3 rounded-lg text-xs font-mono text-gray-700">
+              <code className="block mt-2 bg-cream p-3 rounded-lg text-xs font-mono text-mute">
                 python -m grading_llm.run_batch --input corpus.jsonl --samples 20
               </code>
             </div>
@@ -1072,10 +1008,7 @@ export default function ResearchTab() {
 
       {/* ── Roadmap ────────────────────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <GitBranch className="w-5 h-5 text-indigo-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Roadmap</h3>
-        </div>
+        <h3 className="section-title mb-4">Roadmap</h3>
         <div className="space-y-3 text-sm">
           {[
             { phase: 'Phase 2', title: 'Multi-Model Comparison', desc: 'GPT-4o, Claude 3.5 Sonnet, Llama 3 70B. Test if reliability profile is model-specific or structural.' },
@@ -1083,13 +1016,13 @@ export default function ResearchTab() {
             { phase: 'Phase 4', title: 'Downstream Impact', desc: 'Train classifier on batch 1, evaluate on batch 2. Quantify how instability propagates.' },
             { phase: 'Phase 5', title: 'Calibration Framework', desc: 'Formal statistical methodology. Collaboration with UC Berkeley Dept. of Statistics.' },
           ].map((item) => (
-            <div key={item.phase} className="flex items-start space-x-3 bg-gray-50 p-3 rounded-lg">
-              <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded whitespace-nowrap">
+            <div key={item.phase} className="flex items-start space-x-3 bg-cream p-3 rounded-lg">
+              <span className="chip-accent text-xs font-mono font-bold whitespace-nowrap">
                 {item.phase}
               </span>
               <div>
-                <p className="font-medium text-gray-800">{item.title}</p>
-                <p className="text-gray-600 text-xs">{item.desc}</p>
+                <p className="font-medium text-ink">{item.title}</p>
+                <p className="text-mute text-xs">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -1097,7 +1030,7 @@ export default function ResearchTab() {
       </div>
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
-      <div className="text-center text-xs text-gray-400 pb-4">
+      <div className="text-center text-xs text-mute pb-4">
         <p>Last updated: February 2026. Based on 16,000 evaluations conducted February 15, 2026.</p>
         <p className="mt-1">
           Run the <strong>Batch Analysis</strong> tab to replicate these results on your own data.

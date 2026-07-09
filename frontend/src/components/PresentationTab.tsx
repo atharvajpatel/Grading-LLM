@@ -2,20 +2,14 @@ import { useEffect, useState } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList,
 } from 'recharts'
-import {
-  ExternalLink, Presentation, AlertTriangle, HelpCircle, Workflow, Microscope, Sliders,
-  TrendingDown, Gauge, GitBranch, AlertOctagon, Box, Sparkles, Heart,
-  ChevronLeft, ChevronRight,
-} from 'lucide-react'
 
-/* ─── Shared palette (matches the rest of the site) ─────────────────────── */
-
-const SCALE_COLORS: Record<string, string> = {
-  binary: '#2196F3',
-  ternary: '#4CAF50',
-  quaternary: '#FF9800',
-  continuous: '#E91E63',
-}
+/* ─── Shared palette (single source of truth) ───────────────────────────── */
+/* SCALE_COLORS now comes from the api client (gold luminance ramp), so this  */
+/* page's legend stays in sync with every other tab. magnitudeColor gives a   */
+/* monotonic-luminance ramp for the family instability chart; PALETTE + CHART  */
+/* supply the data-mark and structural chart colors.                          */
+import { SCALE_COLORS } from '../api/client'
+import { PALETTE, magnitudeColor, CHART } from '../theme/palette'
 
 /* ─── Data from data/json_consistency_results.json (5-repeat run) ───────── */
 
@@ -101,42 +95,40 @@ const DEMO_URL = 'https://grading-llm.vercel.app/'
 /* ─── Tiny helpers ──────────────────────────────────────────────────────── */
 
 function SlideCard({
-  id, num, total, kicker, title, icon: Icon, accent = 'indigo', children,
+  id, num, total, kicker, title, icon: _icon, accent: _accent = 'indigo', children,
 }: {
+  // `icon` and `accent` are retained for call-site compatibility only; they no
+  // longer affect styling (dynamic accent classes + icons were removed so every
+  // slide gets the same cream/ink/gold treatment).
   id: string; num: number; total: number; kicker?: string; title: string
-  icon: any; accent?: string; children: React.ReactNode
+  icon?: any; accent?: string; children: React.ReactNode
 }) {
+  void _icon; void _accent
   return (
     <section id={id} className="scroll-mt-32">
       <div className="card relative overflow-hidden">
         {/* Slide number ribbon */}
-        <div className="absolute top-0 right-0 px-3 py-1 text-[11px] font-mono text-gray-400 bg-gray-50 rounded-bl-lg border-l border-b border-gray-100">
+        <div className="absolute top-0 right-0 px-3 py-1 text-[11px] font-mono text-mute bg-cream rounded-bl-lg border-l border-b border-hair">
           {num} / {total}
         </div>
-        <div className="flex items-start gap-3 mb-4">
-          <div className={`p-2 rounded-lg bg-${accent}-50`}>
-            <Icon className={`w-5 h-5 text-${accent}-600`} />
-          </div>
-          <div className="flex-1 pr-16">
-            {kicker && (
-              <div className={`text-[11px] font-semibold uppercase tracking-wider text-${accent}-600 mb-1`}>
-                {kicker}
-              </div>
-            )}
-            <h2 className="text-xl font-bold text-gray-900 leading-tight">{title}</h2>
-          </div>
+        <div className="mb-4 pr-16">
+          {kicker && <div className="panel-title mb-1.5">{kicker}</div>}
+          <h2 className="section-title text-xl">{title}</h2>
+          <div className="metric-rule" />
         </div>
-        <div className="text-gray-700 leading-relaxed">{children}</div>
+        <div className="text-ink leading-relaxed">{children}</div>
       </div>
     </section>
   )
 }
 
-function Stat({ value, label, accent = 'indigo' }: { value: string; label: string; accent?: string }) {
+function Stat({ value, label, accent: _accent = 'indigo' }: { value: string; label: string; accent?: string }) {
+  // `accent` retained for call-site compatibility only; valence now lives in the label text.
+  void _accent
   return (
-    <div className={`bg-${accent}-50 border border-${accent}-200 rounded-lg px-4 py-3 text-center`}>
-      <div className={`text-3xl font-bold text-${accent}-700 leading-none`}>{value}</div>
-      <div className="text-xs text-gray-600 mt-1.5">{label}</div>
+    <div className="border border-hair rounded-ctl px-4 py-3 text-center bg-cream">
+      <div className="stat-num text-3xl leading-none">{value}</div>
+      <div className="text-xs muted mt-1.5">{label}</div>
     </div>
   )
 }
@@ -173,18 +165,17 @@ export default function PresentationTab() {
   return (
     <div className="space-y-6">
       {/* ── Hero / link banner ──────────────────────────────────────────── */}
-      <div className="card bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-600 text-white border-none">
+      <div className="card border-none" style={{ background: PALETTE.ink }}>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-100 mb-2">
-              <Presentation className="w-4 h-4" />
+            <div className="panel-title mb-2">
               Symposium walkthrough · 14 sections
             </div>
-            <h1 className="text-3xl font-bold leading-tight">Grading-LLM</h1>
-            <p className="text-indigo-100 mt-1">
+            <h1 className="text-3xl font-bold leading-tight" style={{ color: PALETTE.cream }}>Grading-LLM</h1>
+            <p className="mt-1" style={{ color: PALETTE.cream }}>
               Measuring an LLM&apos;s consistency across answer granularities
             </p>
-            <p className="text-sm text-indigo-200 mt-3 max-w-xl">
+            <p className="text-sm mt-3 max-w-xl" style={{ color: PALETTE.hair }}>
               Follow along live with the talk. Every chart on this page comes from one of the
               16,000-evaluation batch runs over <strong>10 statement archetypes × 20 mechanistic
               questions × 4 scales × 20 repeats</strong>. You can rerun any of it on your own
@@ -195,24 +186,23 @@ export default function PresentationTab() {
             href={DEMO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-3 bg-white text-indigo-700 font-semibold rounded-lg hover:bg-indigo-50 transition-colors shadow-md"
+            className="btn-primary"
           >
-            <ExternalLink className="w-4 h-4" />
             grading-llm.vercel.app
           </a>
         </div>
       </div>
 
       {/* ── Sticky slide nav ─────────────────────────────────────────────── */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-200 -mx-4 px-4 py-2">
+      <div className="sticky top-0 z-20 bg-cream/95 backdrop-blur border-b border-hair -mx-4 px-4 py-2">
         <div className="flex items-center gap-2">
           <button
             disabled={!prev}
             onClick={() => prev && goTo(prev.id)}
-            className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-2 py-1 text-[11px] font-medium rounded-ctl text-mute hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
             title={prev ? `Previous: ${prev.label}` : ''}
           >
-            <ChevronLeft className="w-4 h-4" />
+            Prev
           </button>
           <div className="flex-1 overflow-x-auto">
             <div className="flex gap-1.5 min-w-max">
@@ -220,10 +210,10 @@ export default function PresentationTab() {
                 <button
                   key={s.id}
                   onClick={() => goTo(s.id)}
-                  className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors whitespace-nowrap ${
+                  className={`px-2.5 py-1 text-[11px] font-medium rounded-ctl transition-colors whitespace-nowrap ${
                     active === s.id
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-gold text-white'
+                      : 'text-mute hover:text-ink'
                   }`}
                 >
                   {s.label}
@@ -234,10 +224,10 @@ export default function PresentationTab() {
           <button
             disabled={!next}
             onClick={() => next && goTo(next.id)}
-            className="p-1.5 rounded hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="px-2 py-1 text-[11px] font-medium rounded-ctl text-mute hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
             title={next ? `Next: ${next.label}` : ''}
           >
-            <ChevronRight className="w-4 h-4" />
+            Next
           </button>
         </div>
       </div>
@@ -245,19 +235,17 @@ export default function PresentationTab() {
       {/* ── 1. Cover ─────────────────────────────────────────────────────── */}
       <SlideCard id="cover" num={1} total={14} kicker="STAT 298 · Interpretability research"
         title="If an LLM grades the same statement twice, does it agree with itself?"
-        icon={Presentation} accent="indigo"
       >
         <p>
           We probe <strong>1,600 evaluations per statement</strong> to find out where, and why, the
           model changes its mind, even at temperature 0.
         </p>
-        <p className="mt-3 text-sm text-gray-500">Atharva Patel · Spring 2026</p>
+        <p className="mt-3 text-sm muted">Atharva Patel · Spring 2026</p>
       </SlideCard>
 
       {/* ── 2. Problem ───────────────────────────────────────────────────── */}
       <SlideCard id="problem" num={2} total={14} kicker="The problem"
         title="LLMs are unreliable judges, even at temperature 0"
-        icon={AlertTriangle} accent="amber"
       >
         <p>
           Researchers increasingly use LLMs to grade other models, rate alignment, score rubrics,
@@ -265,38 +253,37 @@ export default function PresentationTab() {
           <strong>every downstream metric inherits that noise.</strong>
         </p>
         <div className="mt-4 grid md:grid-cols-3 gap-3">
-          <div className="border border-gray-200 rounded-lg p-3">
-            <div className="text-xs font-mono text-gray-400 mb-1">01</div>
-            <div className="font-semibold text-gray-900 text-sm">Where does it change its mind?</div>
+          <div className="border border-hair rounded-ctl p-3">
+            <div className="text-xs font-mono text-mute mb-1">01</div>
+            <div className="font-semibold text-ink text-sm">Where does it change its mind?</div>
           </div>
-          <div className="border border-gray-200 rounded-lg p-3">
-            <div className="text-xs font-mono text-gray-400 mb-1">02</div>
-            <div className="font-semibold text-gray-900 text-sm">Does finer granularity make it worse?</div>
+          <div className="border border-hair rounded-ctl p-3">
+            <div className="text-xs font-mono text-mute mb-1">02</div>
+            <div className="font-semibold text-ink text-sm">Does finer granularity make it worse?</div>
           </div>
-          <div className="border border-gray-200 rounded-lg p-3">
-            <div className="text-xs font-mono text-gray-400 mb-1">03</div>
-            <div className="font-semibold text-gray-900 text-sm">Can token-level confidence catch it?</div>
+          <div className="border border-hair rounded-ctl p-3">
+            <div className="text-xs font-mono text-mute mb-1">03</div>
+            <div className="font-semibold text-ink text-sm">Can token-level confidence catch it?</div>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <Stat value="60%" label="of binary-scale runs reproduce the same JSON byte-for-byte" accent="green" />
-          <Stat value="0%" label="for the continuous scale" accent="red" />
+          <Stat value="60%" label="reproduce identical JSON — binary scale" />
+          <Stat value="0%" label="reproduce identical JSON — continuous scale" />
         </div>
       </SlideCard>
 
       {/* ── 3. Research Question ─────────────────────────────────────────── */}
       <SlideCard id="question" num={3} total={14} kicker="Research question"
         title="Does answer granularity predict where the judge becomes unstable?"
-        icon={HelpCircle} accent="purple"
       >
         <p>
           And can PCA recover those unstable directions as interpretable semantic axes?
         </p>
-        <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-purple-700 mb-1.5">
+        <div className="mt-4 callout">
+          <div className="panel-title mb-1.5">
             Hypothesis
           </div>
-          <p className="text-purple-900">
+          <p className="text-ink">
             Finer scales offer more numerical degrees of freedom, so the model spends those degrees
             on noise rather than signal, and PCA on grading vectors reveals which factor families
             absorb the wobble.
@@ -307,7 +294,6 @@ export default function PresentationTab() {
       {/* ── 4. Method ────────────────────────────────────────────────────── */}
       <SlideCard id="method" num={4} total={14} kicker="Method"
         title="1,600 graded responses per statement"
-        icon={Workflow} accent="blue"
       >
         <div className="grid md:grid-cols-4 gap-3">
           {[
@@ -316,19 +302,19 @@ export default function PresentationTab() {
             { n: '3', title: '4 Scales × 20 reps', desc: 'Binary / Ternary / Quat. / Continuous' },
             { n: '4', title: 'Analyze', desc: 'Variance, entropy, mode, 3-D PCA' },
           ].map((s) => (
-            <div key={s.n} className="border border-gray-200 rounded-lg p-3">
-              <div className="text-2xl font-bold text-blue-600 mb-1">{s.n}</div>
-              <div className="font-semibold text-gray-900 text-sm">{s.title}</div>
-              <div className="text-xs text-gray-500 mt-1">{s.desc}</div>
+            <div key={s.n} className="border border-hair rounded-ctl p-3">
+              <div className="text-2xl font-bold text-gold mb-1">{s.n}</div>
+              <div className="font-semibold text-ink text-sm">{s.title}</div>
+              <div className="text-xs muted mt-1">{s.desc}</div>
             </div>
           ))}
         </div>
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center font-mono text-sm">
+        <div className="mt-4 callout text-center font-mono text-sm">
           20 questions × 4 scales × 20 repeats ={' '}
-          <strong className="text-blue-700">1,600 API calls</strong> / statement
+          <strong className="text-ink">1,600 API calls</strong> / statement
         </div>
-        <p className="mt-3 text-xs text-gray-500 text-center">
-          All saved batch results on this page use the <strong className="text-blue-700">mechanistic</strong> question
+        <p className="mt-3 text-xs muted text-center">
+          All saved batch results on this page use the <strong className="text-ink">mechanistic</strong> question
           bank (<code>data/questions_mech.json</code>). The interpretability bank is wired into the live
           Analyze tab so you can compare yourself, but is not part of the 16,000-grade dataset shown here.
         </p>
@@ -337,15 +323,14 @@ export default function PresentationTab() {
       {/* ── 5. Probes (mech vs interp) ──────────────────────────────────── */}
       <SlideCard id="probes" num={5} total={14} kicker="Probe design"
         title="Two question modes: surface form vs inferred meaning"
-        icon={Microscope} accent="purple"
       >
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="border border-blue-200 rounded-lg p-4 bg-blue-50/40">
-            <div className="text-xs font-semibold uppercase tracking-wider text-blue-700 mb-1">
+          <div className="callout p-4">
+            <div className="panel-title mb-1">
               Mechanistic mode
             </div>
-            <div className="font-semibold text-gray-900 mb-2">Explicit linguistic features</div>
-            <ul className="text-sm space-y-1.5 text-gray-700 list-disc pl-5">
+            <div className="font-semibold text-ink mb-2">Explicit linguistic features</div>
+            <ul className="text-sm space-y-1.5 text-ink list-disc pl-5">
               <li>Does it mention a specific person by name?</li>
               <li>Does it contain explicit negation?</li>
               <li>Does it use first-person pronouns?</li>
@@ -353,12 +338,12 @@ export default function PresentationTab() {
               <li>Does it contain explicit numbers?</li>
             </ul>
           </div>
-          <div className="border border-pink-200 rounded-lg p-4 bg-pink-50/40">
-            <div className="text-xs font-semibold uppercase tracking-wider text-pink-700 mb-1">
+          <div className="callout-ink callout p-4">
+            <div className="panel-title mb-1" style={{ color: PALETTE.ink }}>
               Interpretability mode
             </div>
-            <div className="font-semibold text-gray-900 mb-2">Implicit meaning &amp; inference</div>
-            <ul className="text-sm space-y-1.5 text-gray-700 list-disc pl-5">
+            <div className="font-semibold text-ink mb-2">Implicit meaning &amp; inference</div>
+            <ul className="text-sm space-y-1.5 text-ink list-disc pl-5">
               <li>Is the speaker&apos;s tone ambiguous?</li>
               <li>What unstated reasons are implied?</li>
               <li>Is there an implicit power dynamic?</li>
@@ -372,7 +357,6 @@ export default function PresentationTab() {
       {/* ── 6. Scales ────────────────────────────────────────────────────── */}
       <SlideCard id="scales" num={6} total={14} kicker="Answer granularity"
         title="Four scales, one prompt, more numerical freedom"
-        icon={Sliders} accent="orange"
       >
         <div className="grid md:grid-cols-4 gap-3">
           {[
@@ -381,14 +365,24 @@ export default function PresentationTab() {
             { name: 'Quaternary', opts: '4 options', vals: '{0, 0.33, 0.66, 1}',  c: SCALE_COLORS.quaternary },
             { name: 'Continuous', opts: '∞ options', vals: '[0, 1]',              c: SCALE_COLORS.continuous },
           ].map((s) => (
-            <div key={s.name} className="border-2 rounded-lg p-3" style={{ borderColor: s.c }}>
-              <div className="font-bold text-lg" style={{ color: s.c }}>{s.name}</div>
-              <div className="text-xs text-gray-500 mb-2">{s.opts}</div>
-              <div className="text-xs font-mono text-gray-700">{s.vals}</div>
+            <div
+              key={s.name}
+              className="rounded-ctl p-3"
+              style={{ border: `2px solid ${s.c}`, boxShadow: `inset 0 0 0 1px ${PALETTE.hair}` }}
+            >
+              <div className="font-bold text-lg flex items-center gap-2" style={{ color: PALETTE.ink }}>
+                <span
+                  className="inline-block w-3 h-3 rounded-full"
+                  style={{ background: s.c, border: `1px solid ${PALETTE.hair}` }}
+                />
+                {s.name}
+              </div>
+              <div className="text-xs muted mb-2">{s.opts}</div>
+              <div className="text-xs font-mono text-ink">{s.vals}</div>
             </div>
           ))}
         </div>
-        <p className="mt-4 text-sm text-gray-500 italic">
+        <p className="mt-4 text-sm muted italic">
           Same prompt, same temperature: only the allowed numeric vocabulary changes.
         </p>
       </SlideCard>
@@ -396,20 +390,19 @@ export default function PresentationTab() {
       {/* ── 7. Headline table (Research-tab top table) ──────────────────── */}
       <SlideCard id="summary" num={7} total={14} kicker="Headline table"
         title="Scale degradation summary (16,000 evaluations)"
-        icon={TrendingDown} accent="blue"
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm muted mb-3">
           The top-of-page table from the Research and Logprobs tabs. Each row aggregates 4,000
           grades (10 texts × 20 mechanistic questions × 20 samples). Total = 16,000.
         </p>
 
         {/* The 10 archetypes that get graded */}
-        <details className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
-          <summary className="cursor-pointer px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-sm font-medium text-gray-700 flex items-center justify-between">
+        <details className="mb-4 border border-hair rounded-ctl overflow-hidden">
+          <summary className="cursor-pointer px-4 py-2.5 bg-cream hover:bg-hair text-sm font-medium text-ink flex items-center justify-between">
             <span>The 10 statement archetypes (click to expand)</span>
-            <span className="text-xs text-gray-400 font-mono">data/batch_input_10.jsonl</span>
+            <span className="text-xs muted font-mono">data/batch_input_10.jsonl</span>
           </summary>
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-hair">
             {[
               { id: 'factual_simple',         tag: 'Factual',     text: 'The Eiffel Tower was completed in 1889 and stands 330 meters tall in Paris, France.' },
               { id: 'sentiment_positive',     tag: 'Evaluative+', text: 'The community garden transformed our neighborhood — strangers became friends, children learned patience, and even the most skeptical residents admitted the fresh tomatoes were worth the effort.' },
@@ -424,39 +417,43 @@ export default function PresentationTab() {
             ].map((t, i) => (
               <div key={t.id} className="px-4 py-2.5 text-sm">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="w-5 h-5 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-[10px] font-bold font-mono">
+                  <span className="w-5 h-5 rounded-full bg-cream text-ink flex items-center justify-center text-[10px] font-bold font-mono border border-hair">
                     {i + 1}
                   </span>
-                  <code className="text-[11px] font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{t.id}</code>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">{t.tag}</span>
+                  <code className="text-[11px] font-mono text-ink bg-cream px-1.5 py-0.5 rounded">{t.id}</code>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider muted">{t.tag}</span>
                 </div>
-                <p className="text-gray-700 leading-relaxed pl-7">{t.text}</p>
+                <p className="text-ink leading-relaxed pl-7">{t.text}</p>
               </div>
             ))}
           </div>
         </details>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% Zero-Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% High-Var</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Mean Mode Consistency</th>
+              <tr>
+                <th>Scale</th>
+                <th className="num">Mean Var</th>
+                <th className="num">% Zero-Var</th>
+                <th className="num">% High-Var</th>
+                <th className="num">Mean Mode Consistency</th>
               </tr>
             </thead>
             <tbody>
               {SCALE_SUMMARY.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
-                  <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                <tr key={row.scale}>
+                  <td className="capitalize font-medium">
+                    <span
+                      className="inline-block w-2.5 h-2.5 rounded-full mr-2 align-middle"
+                      style={{ background: SCALE_COLORS[row.scale], border: `1px solid ${PALETTE.hair}` }}
+                    />
                     {row.scale}
                   </td>
-                  <td className="text-right py-2 px-3 font-mono">{row.meanVar.toFixed(4)}</td>
-                  <td className="text-right py-2 px-3 font-mono">{row.zeroVarPct.toFixed(1)}%</td>
-                  <td className="text-right py-2 px-3 font-mono">{row.highVarPct.toFixed(1)}%</td>
-                  <td className="text-right py-2 pl-3 font-mono">{(row.meanConsistency * 100).toFixed(2)}%</td>
+                  <td className="num">{row.meanVar.toFixed(4)}</td>
+                  <td className="num">{row.zeroVarPct.toFixed(1)}%</td>
+                  <td className="num">{row.highVarPct.toFixed(1)}%</td>
+                  <td className="num">{(row.meanConsistency * 100).toFixed(2)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -464,41 +461,45 @@ export default function PresentationTab() {
         </div>
 
         <div className="mt-5">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+          <div className="panel-title mb-2">
             Reliability coefficients (logprobs run)
           </div>
-          <table className="w-full text-sm">
+          <table className="data-table">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">ICC</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Cohen&apos;s κ</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Krippendorff α</th>
+              <tr>
+                <th>Scale</th>
+                <th className="num">ICC</th>
+                <th className="num">Cohen&apos;s κ</th>
+                <th className="num">Krippendorff α</th>
               </tr>
             </thead>
             <tbody>
               {RELIABILITY.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
-                  <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                <tr key={row.scale}>
+                  <td className="capitalize font-medium">
+                    <span
+                      className="inline-block w-2.5 h-2.5 rounded-full mr-2 align-middle"
+                      style={{ background: SCALE_COLORS[row.scale], border: `1px solid ${PALETTE.hair}` }}
+                    />
                     {row.scale}
                   </td>
-                  <td className="text-right py-2 px-3 font-mono">{row.icc.toFixed(3)}</td>
-                  <td className="text-right py-2 px-3 font-mono">
-                    {row.kappa === null ? <span className="text-gray-400">n/a</span> : row.kappa.toFixed(3)}
+                  <td className="num">{row.icc.toFixed(3)}</td>
+                  <td className="num">
+                    {row.kappa === null ? <span className="muted">n/a</span> : row.kappa.toFixed(3)}
                   </td>
-                  <td className="text-right py-2 pl-3 font-mono">{row.kAlpha.toFixed(3)}</td>
+                  <td className="num">{row.kAlpha.toFixed(3)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="mt-2 text-xs text-gray-500">
+          <p className="mt-2 text-xs muted">
             Cohen&apos;s κ is undefined for continuous (no discrete categories). Cronbach&apos;s α
             is omitted here because it divides by zero on saturated cells; see the Logprobs tab for
             the full Tier 1-3 panel.
           </p>
         </div>
 
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+        <div className="mt-4 callout text-sm text-ink">
           <p className="font-semibold mb-1">Read this row by row.</p>
           <p>
             Variance rises binary → ternary → quaternary, then{' '}
@@ -508,23 +509,23 @@ export default function PresentationTab() {
         </div>
 
         {/* Metric glossary (always-on, plain English) */}
-        <details className="mt-4 border border-gray-200 rounded-lg overflow-hidden group" open>
-          <summary className="cursor-pointer px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-sm font-semibold text-gray-700 flex items-center justify-between">
+        <details className="mt-4 border border-hair rounded-ctl overflow-hidden group" open>
+          <summary className="cursor-pointer px-4 py-2.5 bg-cream hover:bg-hair text-sm font-semibold text-ink flex items-center justify-between">
             <span>What every column means (presenter glossary)</span>
-            <span className="text-xs text-gray-400 group-open:hidden">click to expand</span>
+            <span className="text-xs muted group-open:hidden">click to expand</span>
           </summary>
-          <div className="p-4 space-y-3 text-sm text-gray-700 bg-white">
+          <div className="p-4 space-y-3 text-sm text-ink bg-white">
             <div>
-              <div className="font-semibold text-gray-900">Mean Var</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Mean Var</div>
+              <p className="muted">
                 Variance of the 20 repeats per cell, then averaged across all 200 cells in the
                 scale. Lower means the model gave the same answer every time. Theoretical max on
                 [0, 1] data is 0.25 (a 50/50 flip).
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">% Zero-Var</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">% Zero-Var</div>
+              <p className="muted">
                 Fraction of cells where all 20 repeats returned the exact same number. The cleanest
                 &ldquo;100% consistent&rdquo; indicator. Continuous looks calm on{' '}
                 <em>Mean Var</em> but is the <strong>worst</strong> here (79.5%): it wobbles a
@@ -532,23 +533,23 @@ export default function PresentationTab() {
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">% High-Var</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">% High-Var</div>
+              <p className="muted">
                 Fraction of cells with variance &gt; 0.1, i.e. genuinely loud disagreement
                 (a sample like [0, 1, 0, 1, 0]). Quaternary&apos;s 11% is three times worse than
                 binary &mdash; this is the bin-flipping failure mode.
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Mean Mode Consistency</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Mean Mode Consistency</div>
+              <p className="muted">
                 For each cell, count how many of the 20 repeats matched the most-common answer.
                 Equivalent to &ldquo;if I had to bet on one number, how often would I be right?&rdquo;
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">ICC (Intraclass Correlation)</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">ICC (Intraclass Correlation)</div>
+              <p className="muted">
                 Psychometric reliability score. How much of the total variance is real
                 between-cell signal vs noise across repeats. Range 0&ndash;1; &gt; 0.9 is
                 &ldquo;excellent.&rdquo; All four scales pass; the ordering still tracks
@@ -556,8 +557,8 @@ export default function PresentationTab() {
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Cohen&apos;s κ (kappa)</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Cohen&apos;s κ (kappa)</div>
+              <p className="muted">
                 Inter-rater agreement corrected for chance, treating two random repeats as two
                 raters. Range &minus;1 to +1; &gt; 0.8 is &ldquo;almost perfect.&rdquo; Quaternary
                 wins here because when it does flip, it flips between adjacent values &mdash;
@@ -565,8 +566,8 @@ export default function PresentationTab() {
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Krippendorff α</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Krippendorff α</div>
+              <p className="muted">
                 The honest one. Modern standard for inter-annotator reliability across binary,
                 ordinal, and continuous data. Range &minus;1 to +1; &gt; 0.8 is
                 &ldquo;publishable.&rdquo; The binary &rarr; quaternary dip (0.984 &rarr; 0.952)
@@ -581,17 +582,16 @@ export default function PresentationTab() {
       {/* ── 8. Finding 1 ─────────────────────────────────────────────────── */}
       <SlideCard id="finding1" num={8} total={14} kicker="Finding 01"
         title="More numerical choices → fewer identical re-runs"
-        icon={TrendingDown} accent="orange"
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm muted mb-3">
           Percent of (text × scale) pairs where 5 repeats produced byte-identical JSON.
-          <span className="ml-2 text-gray-400">
+          <span className="ml-2 muted">
             Source: <code>json_consistency_results.json</code>
           </span>
         </p>
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={IDENTICAL_JSON_DATA} margin={{ top: 24, right: 12, left: 0, bottom: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
             <XAxis dataKey="scale" />
             <YAxis tickFormatter={(v) => `${v}%`} domain={[0, 100]} />
             <Tooltip formatter={(v: number) => `${v}%`} />
@@ -599,11 +599,11 @@ export default function PresentationTab() {
               {IDENTICAL_JSON_DATA.map((entry) => (
                 <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale.toLowerCase()]} />
               ))}
-              <LabelList dataKey="pct" position="top" formatter={(v: number) => `${v}%`} fill="#374151" fontSize={12} />
+              <LabelList dataKey="pct" position="top" formatter={(v: number) => `${v}%`} fill={CHART.label} fontSize={12} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div className="mt-4 bg-orange-50 border border-orange-200 rounded-lg p-4 text-sm text-orange-900">
+        <div className="mt-4 callout text-sm text-ink">
           <p className="font-semibold mb-1">Reproducibility collapses</p>
           <p>
             Even with <code>temperature=0</code> and <code>response_format=json_object</code>, the
@@ -612,8 +612,8 @@ export default function PresentationTab() {
           </p>
         </div>
 
-        <details className="mt-3 text-sm text-gray-600 border border-gray-200 rounded-lg p-3 bg-gray-50">
-          <summary className="cursor-pointer font-semibold text-gray-800">
+        <details className="mt-3 text-sm muted border border-hair rounded-ctl p-3 bg-cream">
+          <summary className="cursor-pointer font-semibold text-ink">
             Why &ldquo;byte-identical&rdquo; is the strictest possible test
           </summary>
           <p className="mt-2">
@@ -629,33 +629,38 @@ export default function PresentationTab() {
       {/* ── 9. Finding 2 ─────────────────────────────────────────────────── */}
       <SlideCard id="finding2" num={9} total={14} kicker="Finding 02"
         title="Token-level confidence tracks the same gradient"
-        icon={Gauge} accent="indigo"
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm muted mb-3">
           Mean chosen-token probability and entropy over the numeric score tokens in the JSON
           response.
         </p>
-        <table className="w-full text-sm">
+        <table className="data-table">
           <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-              <th className="text-right py-2 px-3 font-medium text-gray-500">Mean prob ↑</th>
-              <th className="text-right py-2 px-3 font-medium text-gray-500">Mean entropy ↓</th>
-              <th className="text-right py-2 pl-3 font-medium text-gray-500">Min prob</th>
+            <tr>
+              <th>Scale</th>
+              <th className="num">Mean prob ↑</th>
+              <th className="num">Mean entropy ↓</th>
+              <th className="num">Min prob</th>
             </tr>
           </thead>
           <tbody>
             {LOGPROB_TABLE.map((row) => (
-              <tr key={row.scale} className="border-b border-gray-100">
-                <td className="py-2 pr-4 font-medium" style={{ color: row.color }}>{row.scale}</td>
-                <td className="text-right py-2 px-3 font-mono">{row.meanProb.toFixed(4)}</td>
-                <td className="text-right py-2 px-3 font-mono">{row.meanEntropy.toFixed(4)}</td>
-                <td className="text-right py-2 pl-3 font-mono">{row.minProb.toFixed(3)}</td>
+              <tr key={row.scale}>
+                <td className="font-medium">
+                  <span
+                    className="inline-block w-2.5 h-2.5 rounded-full mr-2 align-middle"
+                    style={{ background: row.color, border: `1px solid ${PALETTE.hair}` }}
+                  />
+                  {row.scale}
+                </td>
+                <td className="num">{row.meanProb.toFixed(4)}</td>
+                <td className="num">{row.meanEntropy.toFixed(4)}</td>
+                <td className="num">{row.minProb.toFixed(3)}</td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="mt-4 bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-indigo-900">
+        <div className="mt-4 callout text-sm text-ink">
           <p className="font-semibold mb-1">What it means</p>
           <p>
             Mean token entropy <strong>triples</strong> from binary to continuous. Min chosen-token
@@ -665,14 +670,14 @@ export default function PresentationTab() {
           </p>
         </div>
 
-        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white space-y-2">
-          <summary className="cursor-pointer font-semibold text-gray-800">
+        <details className="mt-3 text-sm text-ink border border-hair rounded-ctl p-4 bg-white space-y-2">
+          <summary className="cursor-pointer font-semibold text-ink">
             How to read each column
           </summary>
           <div className="mt-2 space-y-3">
             <div>
-              <div className="font-semibold text-gray-900">Mean prob ↑</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Mean prob ↑</div>
+              <p className="muted">
                 The probability the model assigned to the token it actually emitted, averaged across
                 every numeric score token in the response. Higher = the model was confident in its
                 pick. Binary 0.98 vs continuous 0.94 means the model is genuinely less certain
@@ -680,8 +685,8 @@ export default function PresentationTab() {
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Mean entropy ↓</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Mean entropy ↓</div>
+              <p className="muted">
                 Shannon entropy: <code>&minus;Σ p log₂ p</code> over the top-5 alternative tokens.
                 Zero entropy = all probability mass on one option (totally sure). Higher entropy =
                 the distribution is spread across multiple plausible tokens. The 3&times; jump
@@ -689,8 +694,8 @@ export default function PresentationTab() {
               </p>
             </div>
             <div>
-              <div className="font-semibold text-gray-900">Min prob</div>
-              <p className="text-gray-600">
+              <div className="font-semibold text-ink">Min prob</div>
+              <p className="muted">
                 Worst case across the whole run. Binary&apos;s 0.50 is a literal coin flip;
                 continuous&apos;s 0.24 means the model&apos;s favorite token was only its 1-in-4
                 pick. The worst case bounds how much you can trust any single grade.
@@ -703,28 +708,26 @@ export default function PresentationTab() {
       {/* ── 10. Finding 3 ────────────────────────────────────────────────── */}
       <SlideCard id="finding3" num={10} total={14} kicker="Finding 03"
         title="Some semantic factors are systematically less stable"
-        icon={GitBranch} accent="green"
       >
-        <p className="text-sm text-gray-600 mb-3">
+        <p className="text-sm muted mb-3">
           Percent of (text × scale) cells where 5 repeats disagreed, by factor family.
         </p>
         <ResponsiveContainer width="100%" height={420}>
           <BarChart data={FAMILY_INSTABILITY} layout="vertical" margin={{ left: 80, right: 24 }}>
-            <CartesianGrid strokeDasharray="3 3" />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
             <XAxis type="number" tickFormatter={(v) => `${v}%`} domain={[0, 25]} />
             <YAxis type="category" dataKey="family" width={120} tick={{ fontSize: 11 }} />
             <Tooltip formatter={(v: number) => `${v}%`} />
-            <Bar dataKey="pct" fill="#22c55e">
+            <Bar dataKey="pct" fill={PALETTE.gold}>
               {FAMILY_INSTABILITY.map((entry, i) => {
                 const ratio = entry.pct / 25
-                const c = ratio > 0.6 ? '#ef4444' : ratio > 0.3 ? '#f59e0b' : ratio > 0 ? '#84cc16' : '#22c55e'
-                return <Cell key={i} fill={c} />
+                return <Cell key={i} fill={magnitudeColor(ratio)} />
               })}
-              <LabelList dataKey="pct" position="right" formatter={(v: number) => `${v}%`} fill="#374151" fontSize={11} />
+              <LabelList dataKey="pct" position="right" formatter={(v: number) => `${v}%`} fill={CHART.label} fontSize={11} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <p className="mt-3 text-sm text-gray-600 italic">
+        <p className="mt-3 text-sm muted italic">
           Concrete vs abstract, polarity flips, spatial language, inferred intent: the same
           categories humans disagree on.
         </p>
@@ -733,61 +736,60 @@ export default function PresentationTab() {
       {/* ── 11. Finding 4 ────────────────────────────────────────────────── */}
       <SlideCard id="finding4" num={11} total={14} kicker="Finding 04"
         title="High confidence ≠ stable answer"
-        icon={AlertOctagon} accent="red"
       >
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm muted mb-4">
           Cases where the model emitted near-certain logprobs yet still flipped its score:
         </p>
         <div className="grid md:grid-cols-2 gap-3">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="text-xs font-mono text-gray-500 mb-1">
+          <div className="border border-hair rounded-ctl p-4">
+            <div className="text-xs font-mono muted mb-1">
               narrative_paragraph / quaternary / Q19 (identity)
             </div>
-            <div className="font-mono text-sm bg-gray-50 p-2 rounded mb-2">
+            <div className="font-mono text-sm bg-cream p-2 rounded mb-2">
               5 repeats → [0, 1, 1, 1, 1]
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-xs muted">
               Variance <strong>0.16</strong> · Mean token prob <strong>0.949</strong> · Min{' '}
               <strong>0.82</strong>
             </div>
-            <div className="mt-2 text-sm text-red-700">
+            <div className="mt-2 text-sm text-ink font-semibold">
               → Model is 95% sure each time, and still produces a different answer once.
             </div>
           </div>
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="text-xs font-mono text-gray-500 mb-1">
+          <div className="border border-hair rounded-ctl p-4">
+            <div className="text-xs font-mono muted mb-1">
               sentiment_negative / binary / Q7 (negation)
             </div>
-            <div className="font-mono text-sm bg-gray-50 p-2 rounded mb-2">
+            <div className="font-mono text-sm bg-cream p-2 rounded mb-2">
               5 repeats → [0, 1, 0, 1, 0]
             </div>
-            <div className="text-xs text-gray-600">
+            <div className="text-xs muted">
               Variance <strong>0.24</strong> · Mean token prob <strong>0.665</strong> · Min{' '}
               <strong>0.56</strong>
             </div>
-            <div className="mt-2 text-sm text-gray-600">
+            <div className="mt-2 text-sm muted">
               → Here logprobs do correlate; the exception, not the rule.
             </div>
           </div>
         </div>
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-red-700 mb-1">
+        <div className="mt-4 callout-ink callout p-4">
+          <div className="panel-title mb-1" style={{ color: PALETTE.ink }}>
             Mann-Whitney U · stable vs unstable cells (mean token prob)
           </div>
           <div className="flex items-baseline gap-4">
-            <div className="text-3xl font-bold text-red-700 font-mono">p = 0.059</div>
-            <div className="text-sm text-red-800">
+            <div className="stat-num text-3xl font-mono">p = 0.059</div>
+            <div className="text-sm text-ink">
               Near-significant, but the magnitude is small: stable mean prob{' '}
               <strong>0.968</strong> vs unstable <strong>0.926</strong>.
             </div>
           </div>
-          <p className="mt-2 text-sm text-red-800">
+          <p className="mt-2 text-sm text-ink">
             <strong>Don&apos;t trust confidence alone.</strong>
           </p>
         </div>
 
-        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white">
-          <summary className="cursor-pointer font-semibold text-gray-800">
+        <details className="mt-3 text-sm text-ink border border-hair rounded-ctl p-4 bg-white">
+          <summary className="cursor-pointer font-semibold text-ink">
             What Mann-Whitney is doing here &middot; and what p = 0.059 actually means
           </summary>
           <div className="mt-2 space-y-2">
@@ -818,7 +820,7 @@ export default function PresentationTab() {
               </li>
               <li>The effect is tiny: a 4-point gap on a 0&ndash;1 scale.</li>
             </ul>
-            <p className="font-semibold text-red-800">
+            <p className="font-semibold text-ink">
               Engineering takeaway: logprobs correlate with stability in the right direction, but
               the correlation is too weak to filter on. You cannot say &ldquo;only trust grades
               where token prob &gt; X.&rdquo; The only honest measure of stability is repeat-and-check
@@ -831,9 +833,8 @@ export default function PresentationTab() {
       {/* ── 12. PCA ──────────────────────────────────────────────────────── */}
       <SlideCard id="pca" num={12} total={14} kicker="Analytical core"
         title="PCA reveals which semantic axes absorb the wobble"
-        icon={Box} accent="indigo"
       >
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm muted mb-4">
           An <strong>80 × 20 matrix per statement</strong> (20 repeats × 4 scales = 80 grading
           vectors, one row per sample, one column per question) goes through an eigendecomposition
           into 3 PCs that typically explain 60-80% of the spread. Star markers are scale centroids.
@@ -859,53 +860,53 @@ export default function PresentationTab() {
               desc: 'Quaternary spreads dramatically; the wobble lives in mid-resolution scales.',
             },
           ].map((t) => (
-            <figure key={t.id} className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+            <figure key={t.id} className="border border-hair rounded-ctl overflow-hidden bg-white">
               <img
                 src={`/presentation/pca_${t.id}.png`}
                 alt={`PCA of 80 grading vectors for ${t.label}`}
                 className="w-full"
                 loading="lazy"
               />
-              <figcaption className="p-3 text-xs text-gray-600 border-t border-gray-200">
-                <div className="font-mono font-semibold text-gray-800 mb-1">{t.label}</div>
+              <figcaption className="p-3 text-xs muted border-t border-hair">
+                <div className="font-mono font-semibold text-ink mb-1">{t.label}</div>
                 <div>{t.desc}</div>
               </figcaption>
             </figure>
           ))}
         </div>
 
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm">
+        <div className="callout p-4 text-sm">
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700 mb-1">
+              <div className="panel-title mb-1">
                 Input matrix
               </div>
-              <div className="font-mono text-lg text-gray-900">80 × 20</div>
-              <div className="text-xs text-gray-600">samples × questions; each cell in [0, 1]</div>
+              <div className="font-mono text-lg text-ink">80 × 20</div>
+              <div className="text-xs muted">samples × questions; each cell in [0, 1]</div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700 mb-1">
+              <div className="panel-title mb-1">
                 Decompose
               </div>
-              <div className="font-mono text-lg text-gray-900">3 PCs</div>
-              <div className="text-xs text-gray-600">center → cov → eigendecomposition</div>
+              <div className="font-mono text-lg text-ink">3 PCs</div>
+              <div className="text-xs muted">center → cov → eigendecomposition</div>
             </div>
             <div>
-              <div className="text-xs font-semibold uppercase tracking-wider text-indigo-700 mb-1">
+              <div className="panel-title mb-1">
                 Interpret
               </div>
-              <div className="font-mono text-lg text-gray-900">3-D scatter</div>
-              <div className="text-xs text-gray-600">colored by scale; loadings = wobble drivers</div>
+              <div className="font-mono text-lg text-ink">3-D scatter</div>
+              <div className="text-xs muted">colored by scale; loadings = wobble drivers</div>
             </div>
           </div>
-          <p className="mt-3 text-indigo-900">
+          <p className="mt-3 text-ink">
             <strong>Want a live one?</strong> Switch to the <em>Analyze Statement</em> tab, paste
             any sentence, and you get the interactive 3-D PCA on your own text.
           </p>
         </div>
 
-        <details className="mt-3 text-sm text-gray-700 border border-gray-200 rounded-lg p-4 bg-white">
-          <summary className="cursor-pointer font-semibold text-gray-800">
+        <details className="mt-3 text-sm text-ink border border-hair rounded-ctl p-4 bg-white">
+          <summary className="cursor-pointer font-semibold text-ink">
             How to read the three PCA plots above
           </summary>
           <div className="mt-2 space-y-2">
@@ -948,7 +949,6 @@ export default function PresentationTab() {
       {/* ── 13. So what ──────────────────────────────────────────────────── */}
       <SlideCard id="meaning" num={13} total={14} kicker="What it means"
         title="Implications for LLM-as-judge evaluation"
-        icon={Sparkles} accent="purple"
       >
         <div className="space-y-3">
           {[
@@ -968,16 +968,16 @@ export default function PresentationTab() {
               b: 'p = 0.059 in our data. Confident tokens still produce different scores. Repeat-and-check is the only honest measure.',
             },
           ].map((row) => (
-            <div key={row.n} className="border border-gray-200 rounded-lg p-4 flex gap-4">
-              <div className="text-2xl font-bold text-purple-600 font-mono">{row.n}</div>
+            <div key={row.n} className="border border-hair rounded-ctl p-4 flex gap-4">
+              <div className="text-2xl font-bold text-gold font-mono">{row.n}</div>
               <div>
-                <div className="font-semibold text-gray-900">{row.h}</div>
-                <div className="text-sm text-gray-600 mt-1">{row.b}</div>
+                <div className="font-semibold text-ink">{row.h}</div>
+                <div className="text-sm muted mt-1">{row.b}</div>
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-4 text-sm text-gray-600 italic">
+        <p className="mt-4 text-sm muted italic">
           Next: cross-model comparison (gpt-4o ↔ Claude ↔ Llama), longer contexts, and reweighting
           eval rubrics by per-family reliability.
         </p>
@@ -986,11 +986,10 @@ export default function PresentationTab() {
       {/* ── 14. Thanks ───────────────────────────────────────────────────── */}
       <SlideCard id="thanks" num={14} total={14} kicker="Thanks for stopping by"
         title="Try it live. Pick a statement. Watch the model wobble."
-        icon={Heart} accent="pink"
       >
         {/* Presenter cheat sheet — the one-paragraph version */}
-        <div className="mb-4 bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700 leading-relaxed">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mb-2">
+        <div className="mb-4 bg-cream border border-hair rounded-ctl p-4 text-sm text-ink leading-relaxed">
+          <div className="panel-title mb-2">
             One-paragraph version (for the stranger who just walked up)
           </div>
           <p>
@@ -1015,22 +1014,21 @@ export default function PresentationTab() {
             href={DEMO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-pink-600 text-white font-semibold rounded-lg hover:bg-pink-700 transition-colors shadow-md"
+            className="btn-primary"
           >
-            <ExternalLink className="w-4 h-4" />
             grading-llm.vercel.app
           </a>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm muted">
             Bring your own OpenAI key. Run on a statement of your choice. Inspect the PCA in 3-D.
           </p>
         </div>
-        <div className="mt-4 text-sm text-gray-500">
+        <div className="mt-4 text-sm muted">
           Atharva Patel &middot;{' '}
-          <a className="text-indigo-600 hover:underline" href="mailto:atharvajpatel@berkeley.edu">
+          <a className="text-gold hover:underline" href="mailto:atharvajpatel@berkeley.edu">
             atharvajpatel@berkeley.edu
           </a>{' '}
           &middot;{' '}
-          <a className="text-indigo-600 hover:underline" href="https://github.com/atharvajpatel/Grading-LLM" target="_blank" rel="noopener noreferrer">
+          <a className="text-gold hover:underline" href="https://github.com/atharvajpatel/Grading-LLM" target="_blank" rel="noopener noreferrer">
             github.com/atharvajpatel/Grading-LLM
           </a>
         </div>

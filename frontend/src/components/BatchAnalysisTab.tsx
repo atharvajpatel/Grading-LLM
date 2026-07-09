@@ -10,19 +10,12 @@ import {
   SCALE_ORDER,
 } from '../api/client'
 import {
-  Play,
-  Square,
-  Download,
-  RotateCcw,
-  ChevronDown,
-  ChevronUp,
-  Edit3,
-  List,
-  Key,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-} from 'lucide-react'
+  magnitudeColor,
+  onMagnitude,
+  seriesColor,
+  dashFor,
+  CHART,
+} from '../theme/palette'
 import {
   BarChart,
   Bar,
@@ -82,11 +75,6 @@ const DEFAULT_TEXTS: Array<{ id: string; text: string }> = [
   },
 ]
 
-const TEXT_PALETTE = [
-  '#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6',
-  '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16',
-]
-
 const FALLBACK_QUESTION_LABELS = [
   'Named Entities', 'Actions/Events', 'Temporal', 'Spatial', 'Numeric',
   'Modality', 'Imperative', 'Comparison', 'First Person', 'Dialogue',
@@ -133,22 +121,9 @@ function getColumn(matrix: number[][], col: number): number[] {
   return matrix.map((row) => row[col]).filter((v) => v !== undefined)
 }
 
-/** Green → Yellow → Red color interpolation based on ratio */
+/** Magnitude ramp (cream → gold → ink) based on value / max. */
 function varianceToColor(value: number, maxValue: number): string {
-  if (maxValue === 0) return '#22c55e'
-  const ratio = Math.min(value / maxValue, 1)
-  if (ratio < 0.5) {
-    const t = ratio * 2
-    const r = Math.round(34 + t * (245 - 34))
-    const g = Math.round(197 + t * (158 - 197))
-    const b = Math.round(94 + t * (11 - 94))
-    return `rgb(${r},${g},${b})`
-  }
-  const t = (ratio - 0.5) * 2
-  const r = Math.round(245 + t * (239 - 245))
-  const g = Math.round(158 + t * (68 - 158))
-  const b = Math.round(11 + t * (68 - 11))
-  return `rgb(${r},${g},${b})`
+  return magnitudeColor(maxValue > 0 ? value / maxValue : 0)
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -574,7 +549,7 @@ export default function BatchAnalysisTab() {
   if (requireApiKey === null) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="muted">Loading…</span>
       </div>
     )
   }
@@ -586,13 +561,13 @@ export default function BatchAnalysisTab() {
       {/* ── API Key ────────────────────────────────────────────────────────── */}
       {requireApiKey && (
         <div className="card">
-          <div className="flex items-center space-x-2 mb-4">
-            <Key className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">OpenAI API Key</h2>
+          <div className="mb-4">
+            <p className="panel-title">Authentication</p>
+            <h2 className="section-title">OpenAI API Key</h2>
           </div>
           {!isKeyValidated ? (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-mute">
                 Enter your OpenAI API key. Your key is sent directly to OpenAI and is not stored.
               </p>
               <input
@@ -604,29 +579,23 @@ export default function BatchAnalysisTab() {
                 disabled={isValidatingKey}
               />
               <button
-                className="btn-primary flex items-center space-x-2"
+                className="btn-primary"
                 onClick={handleValidateKey}
                 disabled={!apiKey.trim() || isValidatingKey}
               >
-                {isValidatingKey ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" /><span>Validating...</span></>
-                ) : (
-                  <><Key className="w-5 h-5" /><span>Validate</span></>
-                )}
+                {isValidatingKey ? 'Validating…' : 'Validate'}
               </button>
               {keyError && (
-                <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg">
-                  <AlertCircle className="w-5 h-5" /><span>{keyError}</span>
+                <div className="callout callout-ink">
+                  <span className="font-semibold text-ink">Error: </span>
+                  <span className="text-ink">{keyError}</span>
                 </div>
               )}
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-green-600">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-medium">API key validated</span>
-              </div>
-              <button className="text-sm text-gray-500 hover:text-gray-700 underline" onClick={handleResetKey}>
+              <span className="font-medium text-ink">Validated — API key accepted</span>
+              <button className="text-sm text-mute hover:text-gold underline" onClick={handleResetKey}>
                 Use different key
               </button>
             </div>
@@ -636,10 +605,9 @@ export default function BatchAnalysisTab() {
 
       {/* Local dev notice */}
       {isLocalDev && !requireApiKey && (
-        <div className="card bg-blue-50 border-blue-200">
-          <div className="flex items-center space-x-2 text-blue-700">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-medium">Local Development Mode — using environment API key</span>
+        <div className="card">
+          <div className="callout">
+            <span className="font-medium text-ink">Local Development Mode — using environment API key</span>
           </div>
         </div>
       )}
@@ -647,33 +615,31 @@ export default function BatchAnalysisTab() {
       {/* ── Text Selection ─────────────────────────────────────────────────── */}
       {isKeyValidated && (
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Text Corpus</h2>
+          <h2 className="section-title mb-4">Text Corpus</h2>
 
           {/* Toggle */}
           <div className="flex space-x-2 mb-4">
             <button
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-ctl border-2 text-sm transition-all ${
                 textMode === 'default'
-                  ? 'border-blue-500 bg-blue-50 text-blue-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'border-gold bg-gold-badge text-ink font-semibold'
+                  : 'border-hair text-mute hover:border-gold'
               }`}
               onClick={() => setTextMode('default')}
               disabled={isRunning}
             >
-              <List className="w-4 h-4" />
-              <span>Default ({DEFAULT_TEXTS.length})</span>
+              Default ({DEFAULT_TEXTS.length})
             </button>
             <button
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-ctl border-2 text-sm transition-all ${
                 textMode === 'custom'
-                  ? 'border-purple-500 bg-purple-50 text-purple-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'border-gold bg-gold-badge text-ink font-semibold'
+                  : 'border-hair text-mute hover:border-gold'
               }`}
               onClick={() => setTextMode('custom')}
               disabled={isRunning}
             >
-              <Edit3 className="w-4 h-4" />
-              <span>Custom</span>
+              Custom
             </button>
           </div>
 
@@ -681,18 +647,17 @@ export default function BatchAnalysisTab() {
           {textMode === 'default' && (
             <div>
               <button
-                className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 mb-2"
+                className="text-sm text-gold hover:text-gold-deep font-medium mb-2"
                 onClick={() => setShowDefaultTexts(!showDefaultTexts)}
               >
-                {showDefaultTexts ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                <span>{showDefaultTexts ? 'Hide' : 'Show'} {DEFAULT_TEXTS.length} default texts</span>
+                {showDefaultTexts ? 'Hide' : 'Show'} {DEFAULT_TEXTS.length} default texts
               </button>
               {showDefaultTexts && (
                 <div className="space-y-2 max-h-80 overflow-y-auto">
                   {DEFAULT_TEXTS.map((t) => (
-                    <div key={t.id} className="bg-gray-50 rounded-lg p-3">
-                      <span className="text-xs font-mono font-medium text-gray-500">{t.id}</span>
-                      <p className="text-sm text-gray-700 mt-1">{t.text}</p>
+                    <div key={t.id} className="bg-cream border border-hair rounded-ctl p-3">
+                      <span className="text-xs font-mono font-medium text-mute">{t.id}</span>
+                      <p className="text-sm text-ink mt-1">{t.text}</p>
                     </div>
                   ))}
                 </div>
@@ -720,21 +685,21 @@ export default function BatchAnalysisTab() {
                     disabled={isRunning}
                   />
                   <button
-                    className="text-red-400 hover:text-red-600 mt-2 text-lg font-bold"
+                    className="btn-secondary mt-1"
                     onClick={() => removeCustomRow(idx)}
                     disabled={isRunning || customTexts.length <= 1}
                     title="Remove row"
                   >
-                    &times;
+                    Remove
                   </button>
                 </div>
               ))}
               <button
-                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                className="btn-secondary"
                 onClick={addCustomRow}
                 disabled={isRunning}
               >
-                + Add text
+                Add text
               </button>
             </div>
           )}
@@ -747,34 +712,24 @@ export default function BatchAnalysisTab() {
           <div className="flex items-center space-x-4 flex-wrap gap-y-2">
             {!isRunning ? (
               <button
-                className="btn-primary flex items-center space-x-2"
+                className="btn-primary"
                 onClick={runBatch}
                 disabled={getTexts().length === 0}
               >
-                <Play className="w-5 h-5" />
-                <span>Run Batch Analysis</span>
+                Run Batch Analysis
               </button>
             ) : (
-              <button className="btn-danger flex items-center space-x-2" onClick={handleCancel}>
-                <Square className="w-5 h-5" />
-                <span>Stop</span>
+              <button className="btn-danger" onClick={handleCancel}>
+                Stop
               </button>
             )}
             {results.length > 0 && !isRunning && (
               <>
-                <button
-                  className="flex items-center space-x-2 px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
-                  onClick={handleDownload}
-                >
-                  <Download className="w-5 h-5" />
-                  <span>Download JSON</span>
+                <button className="btn-secondary" onClick={handleDownload}>
+                  Download JSON
                 </button>
-                <button
-                  className="flex items-center space-x-2 px-4 py-3 text-gray-500 font-medium rounded-lg hover:bg-gray-100 transition-colors"
-                  onClick={handleReset}
-                >
-                  <RotateCcw className="w-5 h-5" />
-                  <span>Reset</span>
+                <button className="btn-secondary" onClick={handleReset}>
+                  Reset
                 </button>
               </>
             )}
@@ -783,30 +738,30 @@ export default function BatchAnalysisTab() {
           {/* Progress */}
           {isRunning && (
             <div className="mt-4 space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-mute">
                 <span className="font-medium">
                   Text {currentTextIndex + 1} of {totalTexts}: <span className="font-mono">{texts[currentTextIndex]?.id}</span>
                 </span>
                 <span>{results.length} / {totalTexts} completed</span>
               </div>
               {/* Macro progress (texts) */}
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-hair rounded-full h-2">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-gold h-2 rounded-full transition-all duration-300"
                   style={{ width: `${((results.length + currentTextProgress / 100) / totalTexts) * 100}%` }}
                 />
               </div>
               {/* Micro progress (current text) */}
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Current text: {currentTextProgress.toFixed(1)}%</span>
+              <div className="text-sm text-mute">
+                Running… current text: {currentTextProgress.toFixed(1)}%
               </div>
             </div>
           )}
 
           {error && (
-            <div className="mt-4 flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg">
-              <AlertCircle className="w-5 h-5" /><span>{error}</span>
+            <div className="mt-4 callout callout-ink">
+              <span className="font-semibold text-ink">Error: </span>
+              <span className="text-ink">{error}</span>
             </div>
           )}
         </div>
@@ -817,54 +772,58 @@ export default function BatchAnalysisTab() {
         <>
           {/* Cost Summary */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="metric-card bg-green-50">
-              <p className="text-sm text-green-600">Total Cost</p>
-              <p className="text-2xl font-bold text-green-700">
+            <div className="metric-card">
+              <p className="metric-label">Total Cost</p>
+              <p className="stat-num text-2xl">
                 ${totalUsage.cost < 0.01 ? totalUsage.cost.toFixed(4) : totalUsage.cost.toFixed(2)}
               </p>
+              <div className="metric-rule" />
             </div>
-            <div className="metric-card bg-blue-50">
-              <p className="text-sm text-blue-600">API Calls</p>
-              <p className="text-2xl font-bold text-blue-700">{totalUsage.apiCalls.toLocaleString()}</p>
+            <div className="metric-card">
+              <p className="metric-label">API Calls</p>
+              <p className="stat-num text-2xl">{totalUsage.apiCalls.toLocaleString()}</p>
+              <div className="metric-rule" />
             </div>
-            <div className="metric-card bg-purple-50">
-              <p className="text-sm text-purple-600">Input Tokens</p>
-              <p className="text-2xl font-bold text-purple-700">{totalUsage.inputTokens.toLocaleString()}</p>
+            <div className="metric-card">
+              <p className="metric-label">Input Tokens</p>
+              <p className="stat-num text-2xl">{totalUsage.inputTokens.toLocaleString()}</p>
+              <div className="metric-rule" />
             </div>
-            <div className="metric-card bg-orange-50">
-              <p className="text-sm text-orange-600">Output Tokens</p>
-              <p className="text-2xl font-bold text-orange-700">{totalUsage.outputTokens.toLocaleString()}</p>
+            <div className="metric-card">
+              <p className="metric-label">Output Tokens</p>
+              <p className="stat-num text-2xl">{totalUsage.outputTokens.toLocaleString()}</p>
+              <div className="metric-rule" />
             </div>
           </div>
 
           {/* Scale Degradation Summary Table */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Scale Degradation Summary</h3>
+            <h3 className="section-title mb-4">Scale Degradation Summary</h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Var</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Median Var</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">% Zero-Var</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">% High-Var</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Median Entropy</th>
-                    <th className="text-right py-2 pl-3 font-medium text-gray-500">Mean Mode Consistency</th>
+                  <tr>
+                    <th>Scale</th>
+                    <th className="num">Mean Var</th>
+                    <th className="num">Median Var</th>
+                    <th className="num">% Zero-Var</th>
+                    <th className="num">% High-Var</th>
+                    <th className="num">Median Entropy</th>
+                    <th className="num">Mean Mode Consistency</th>
                   </tr>
                 </thead>
                 <tbody>
                   {computeScaleSummary().map((row) => (
-                    <tr key={row.scale} className="border-b border-gray-100">
-                      <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                    <tr key={row.scale}>
+                      <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                         {row.scale}
                       </td>
-                      <td className="text-right py-2 px-3 font-mono">{row.meanVar.toFixed(4)}</td>
-                      <td className="text-right py-2 px-3 font-mono">{row.medianVar.toFixed(4)}</td>
-                      <td className="text-right py-2 px-3 font-mono">{row.zeroVarPct.toFixed(1)}%</td>
-                      <td className="text-right py-2 px-3 font-mono">{row.highVarPct.toFixed(1)}%</td>
-                      <td className="text-right py-2 px-3 font-mono">{row.medianEntropy.toFixed(4)}</td>
-                      <td className="text-right py-2 pl-3 font-mono">{(row.meanConsistency * 100).toFixed(2)}%</td>
+                      <td className="num">{row.meanVar.toFixed(4)}</td>
+                      <td className="num">{row.medianVar.toFixed(4)}</td>
+                      <td className="num">{row.zeroVarPct.toFixed(1)}%</td>
+                      <td className="num">{row.highVarPct.toFixed(1)}%</td>
+                      <td className="num">{row.medianEntropy.toFixed(4)}</td>
+                      <td className="num">{(row.meanConsistency * 100).toFixed(2)}%</td>
                     </tr>
                   ))}
                 </tbody>
@@ -874,9 +833,9 @@ export default function BatchAnalysisTab() {
 
           {/* Question Stability Heatmap */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Question Stability Across Scales</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              Mean variance per question across all texts. Green = stable (zero variance). Red = unstable.
+            <h3 className="section-title mb-2">Question Stability Across Scales</h3>
+            <p className="text-sm text-mute mb-4">
+              Mean variance per question across all texts. Pale = stable (zero variance). Dark = unstable.
             </p>
             {(() => {
               const heatmap = computeHeatmapData()
@@ -889,9 +848,9 @@ export default function BatchAnalysisTab() {
                   <table className="w-full text-xs">
                     <thead>
                       <tr>
-                        <th className="text-left py-1 pr-2 font-medium text-gray-500 w-36">Question</th>
+                        <th className="text-left py-1 pr-2 font-medium text-mute w-36">Question</th>
                         {SCALE_ORDER.map((s) => (
-                          <th key={s} className="py-1 px-2 font-medium text-gray-500 capitalize text-center w-28">
+                          <th key={s} className="py-1 px-2 font-medium text-mute capitalize text-center w-28">
                             {s}
                           </th>
                         ))}
@@ -900,7 +859,7 @@ export default function BatchAnalysisTab() {
                     <tbody>
                       {heatmap.map((row) => (
                         <tr key={row.question}>
-                          <td className="py-1 pr-2 font-medium text-gray-700 truncate max-w-[9rem]" title={row.question}>
+                          <td className="py-1 pr-2 font-medium text-ink truncate max-w-[9rem]" title={row.question}>
                             {row.question}
                           </td>
                           {SCALE_ORDER.map((s) => {
@@ -911,7 +870,7 @@ export default function BatchAnalysisTab() {
                                   className="rounded px-2 py-1 text-center font-mono"
                                   style={{
                                     backgroundColor: varianceToColor(val, maxVar),
-                                    color: val / maxVar > 0.5 ? '#fff' : '#1f2937',
+                                    color: onMagnitude(val / maxVar),
                                   }}
                                   title={`${row.question} / ${s}: ${val.toFixed(6)}`}
                                 >
@@ -931,13 +890,13 @@ export default function BatchAnalysisTab() {
 
           {/* Mean Variance by Scale (bar chart) */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Mean Variance by Scale</h3>
+            <h3 className="section-title mb-4">Mean Variance by Scale</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={computeScaleSummary()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="scale" tick={{ textTransform: 'capitalize' } as any} />
-                <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-                <Tooltip formatter={(v: number) => v.toFixed(6)} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                <XAxis dataKey="scale" tick={{ textTransform: 'capitalize', fill: CHART.tick } as any} stroke={CHART.axis} />
+                <YAxis tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} stroke={CHART.axis} />
+                <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ background: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
                 <Bar dataKey="meanVar" name="Mean Variance">
                   {computeScaleSummary().map((entry) => (
                     <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale]} />
@@ -949,23 +908,24 @@ export default function BatchAnalysisTab() {
 
           {/* Variance Degradation by Text Type (line chart) */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Variance Degradation by Text Type</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="section-title mb-2">Variance Degradation by Text Type</h3>
+            <p className="text-sm text-mute mb-4">
               How each text's mean variance changes across scales (binary &rarr; continuous).
             </p>
             <ResponsiveContainer width="100%" height={350}>
               <LineChart data={computeDegradationData()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="scale" />
-                <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-                <Tooltip formatter={(v: number) => v.toFixed(6)} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                <XAxis dataKey="scale" tick={{ fill: CHART.tick }} stroke={CHART.axis} />
+                <YAxis tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} stroke={CHART.axis} />
+                <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ background: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
                 <Legend />
                 {results.map((r, idx) => (
                   <Line
                     key={r.id}
                     type="monotone"
                     dataKey={r.id}
-                    stroke={TEXT_PALETTE[idx % TEXT_PALETTE.length]}
+                    stroke={seriesColor(idx)}
+                    strokeDasharray={dashFor(idx)}
                     strokeWidth={2}
                     dot={{ r: 3 }}
                   />
@@ -976,8 +936,8 @@ export default function BatchAnalysisTab() {
 
           {/* Text Difficulty Ranking (horizontal bars) */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Text Difficulty Ranking</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="section-title mb-2">Text Difficulty Ranking</h3>
+            <p className="text-sm text-mute mb-4">
               Texts ranked by overall mean variance. Longer bar = more unstable.
             </p>
             {(() => {
@@ -986,23 +946,15 @@ export default function BatchAnalysisTab() {
               return (
                 <ResponsiveContainer width="100%" height={Math.max(difficulty.length * 36, 120)}>
                   <BarChart data={difficulty} layout="vertical" margin={{ left: 120 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} />
-                    <YAxis type="category" dataKey="id" width={110} tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(v: number) => v.toFixed(6)} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                    <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} tick={{ fill: CHART.tick }} stroke={CHART.axis} />
+                    <YAxis type="category" dataKey="id" width={110} tick={{ fontSize: 12, fill: CHART.tick }} stroke={CHART.axis} />
+                    <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ background: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
                     <Bar dataKey="meanVariance" name="Mean Variance">
                       {difficulty.map((entry) => (
                         <Cell
                           key={entry.id}
-                          fill={
-                            maxVar === 0
-                              ? '#22c55e'
-                              : entry.meanVariance / maxVar < 0.33
-                                ? '#22c55e'
-                                : entry.meanVariance / maxVar < 0.66
-                                  ? '#f59e0b'
-                                  : '#ef4444'
-                          }
+                          fill={magnitudeColor(maxVar > 0 ? entry.meanVariance / maxVar : 0)}
                         />
                       ))}
                     </Bar>
@@ -1014,16 +966,16 @@ export default function BatchAnalysisTab() {
 
           {/* Mode Consistency by Text and Scale (grouped bars) */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Mode Consistency by Text and Scale</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="section-title mb-2">Mode Consistency by Text and Scale</h3>
+            <p className="text-sm text-mute mb-4">
               Mean mode consistency across 20 questions. 1.0 = all 20 samples identical.
             </p>
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={computeModeConsistencyByText()}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="id" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={60} />
-                <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} />
-                <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                <XAxis dataKey="id" tick={{ fontSize: 11, fill: CHART.tick }} stroke={CHART.axis} angle={-30} textAnchor="end" height={60} />
+                <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} tick={{ fill: CHART.tick }} stroke={CHART.axis} />
+                <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} contentStyle={{ background: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
                 <Legend />
                 {SCALE_ORDER.map((scale) => (
                   <Bar key={scale} dataKey={scale} name={scale} fill={SCALE_COLORS[scale]} />
@@ -1034,34 +986,34 @@ export default function BatchAnalysisTab() {
 
           {/* Per-Text Scale Metrics (raw table) */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Per-Text Scale Metrics</h3>
+            <h3 className="section-title mb-4">Per-Text Scale Metrics</h3>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 pr-3 font-medium text-gray-500">Text</th>
-                    <th className="text-left py-2 px-3 font-medium text-gray-500">Scale</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Variance</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Consistency</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Entropy</th>
-                    <th className="text-right py-2 pl-3 font-medium text-gray-500">Unique Vectors</th>
+                  <tr>
+                    <th>Text</th>
+                    <th>Scale</th>
+                    <th className="num">Avg Variance</th>
+                    <th className="num">Avg Consistency</th>
+                    <th className="num">Avg Entropy</th>
+                    <th className="num">Unique Vectors</th>
                   </tr>
                 </thead>
                 <tbody>
                   {computePerTextTable().map((row, idx) => (
-                    <tr key={`${row.textId}-${row.scale}`} className={idx % 4 === 3 ? 'border-b border-gray-200' : ''}>
+                    <tr key={`${row.textId}-${row.scale}`}>
                       {idx % 4 === 0 && (
-                        <td className="py-1.5 pr-3 font-medium text-gray-700 font-mono text-xs" rowSpan={4}>
+                        <td className="font-medium text-ink font-mono text-xs" rowSpan={4}>
                           {row.textId}
                         </td>
                       )}
-                      <td className="py-1.5 px-3 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>
+                      <td className="capitalize" style={{ color: SCALE_COLORS[row.scale] }}>
                         {row.scale}
                       </td>
-                      <td className="text-right py-1.5 px-3 font-mono">{row.avgVariance.toFixed(4)}</td>
-                      <td className="text-right py-1.5 px-3 font-mono">{(row.avgConsistency * 100).toFixed(2)}%</td>
-                      <td className="text-right py-1.5 px-3 font-mono">{row.avgEntropy.toFixed(4)}</td>
-                      <td className="text-right py-1.5 pl-3 font-mono">{row.uniqueVectors}/20</td>
+                      <td className="num">{row.avgVariance.toFixed(4)}</td>
+                      <td className="num">{(row.avgConsistency * 100).toFixed(2)}%</td>
+                      <td className="num">{row.avgEntropy.toFixed(4)}</td>
+                      <td className="num">{row.uniqueVectors}/20</td>
                     </tr>
                   ))}
                 </tbody>

@@ -14,14 +14,14 @@ function App() {
   const [activeTab, setActiveTab] = useState<TabType>('presentation')
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-cream">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="border-b border-hair">
         <div className="max-w-7xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="page-title">
             GRADING-LLM
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 muted">
             Measure LLM consistency when grading statements across binary, ternary, quaternary, and continuous scales
           </p>
         </div>
@@ -29,7 +29,7 @@ function App() {
 
       {/* Tab Navigation */}
       <div className="max-w-7xl mx-auto px-4 mt-6">
-        <div className="flex space-x-1 border-b border-gray-200">
+        <div className="flex space-x-1 border-b border-hair overflow-x-auto whitespace-nowrap">
           <button
             className={`tab-button ${activeTab === 'presentation' ? 'active' : ''}`}
             onClick={() => setActiveTab('presentation')}

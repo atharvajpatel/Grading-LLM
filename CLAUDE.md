@@ -79,7 +79,9 @@ Active: [new session]
 Last: [first session]
 
 ## Last Session Bridge
-[auto-bridge from context compacting]
-Files: src/grading_llm/json_consistency_experiment.py (create), src/grading_llm/analyze_json_consistency.py (create)
+[proactive bridge @ 125% context — saved before compacting]
+Files (2):
+  frontend/src/components/PresentationTab.tsx (create)
+  frontend/src/App.tsx (edit)
 
 # === END COGNILAYER ===

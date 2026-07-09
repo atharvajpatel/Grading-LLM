@@ -178,11 +178,15 @@ export async function getAppConfig(): Promise<AppConfig> {
   return response.data
 }
 
+// Single-hue gold ramp, light -> dark, mirroring binary(2 levels) ->
+// continuous(unbounded) granularity. Scales are told apart by luminance,
+// not hue. Charts that separate scales by color alone must add a second
+// channel (see SCALE_MARKER / dashFor in src/theme/palette.ts).
 export const SCALE_COLORS: Record<string, string> = {
-  binary: '#2196F3',
-  ternary: '#4CAF50',
-  quaternary: '#FF9800',
-  continuous: '#E91E63',
+  binary: '#E0C39B',
+  ternary: '#C4956A',
+  quaternary: '#9A6F45',
+  continuous: '#6B4A2B',
 }
 
 export const SCALE_ORDER = ['binary', 'ternary', 'quaternary', 'continuous']

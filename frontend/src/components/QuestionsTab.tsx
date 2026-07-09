@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { getQuestions, Question, QuestionMode } from '../api/client'
-import { ChevronDown, ChevronRight, HelpCircle, AlertTriangle, Rocket, Calculator, FileText } from 'lucide-react'
 
 export default function QuestionsTab() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -34,62 +33,60 @@ export default function QuestionsTab() {
   return (
     <div className="space-y-8">
       {/* Methodology Section */}
-      <div className="card bg-gradient-to-br from-blue-50 to-indigo-50">
-        <div className="flex items-center space-x-2 mb-4">
-          <Calculator className="w-6 h-6 text-blue-600" />
-          <h2 className="text-xl font-bold text-gray-900">Methodology: 1600 Evaluations</h2>
-        </div>
+      <div className="card">
+        <p className="panel-title mb-1">Methodology</p>
+        <h2 className="section-title mb-4">1600 Evaluations</h2>
 
-        <div className="prose prose-sm max-w-none text-gray-700 space-y-4">
+        <div className="prose prose-sm max-w-none text-mute space-y-4">
           <p>
             This tool measures how consistently an LLM grades statements when using different
-            grading scales. Each analysis performs <strong>1600 total evaluations</strong>:
+            grading scales. Each analysis performs <strong className="text-ink">1600 total evaluations</strong>:
           </p>
 
-          <div className="bg-white rounded-lg p-4 border border-blue-200">
-            <div className="text-center text-lg font-mono text-gray-800 mb-2">
-              20 questions × 20 samples × 4 scales = <span className="text-blue-600 font-bold">1600 evaluations</span>
+          <div className="bg-white rounded-ctl p-4 border border-hair">
+            <div className="text-center text-lg font-mono text-ink mb-2">
+              20 questions × 20 samples × 4 scales = <span className="text-gold font-bold">1600 evaluations</span>
             </div>
-            <div className="text-center text-sm text-gray-500">
+            <div className="text-center text-sm text-mute">
               (~80 API calls, batching 20 questions per call)
             </div>
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-800 mt-6">How It Works</h3>
+          <h3 className="section-title mt-6">How It Works</h3>
 
           <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h4 className="font-semibold text-gray-800 mb-2">1. Questions (20)</h4>
+            <div className="bg-white rounded-ctl p-4 border border-hair">
+              <h4 className="font-semibold text-ink mb-2">1. Questions (20)</h4>
               <p className="text-sm">
                 A fixed set of 20 semantic questions that probe different aspects of the statement
                 (factuality, clarity, objectivity, etc.). These form a 20-dimensional embedding.
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h4 className="font-semibold text-gray-800 mb-2">2. Samples (20)</h4>
+            <div className="bg-white rounded-ctl p-4 border border-hair">
+              <h4 className="font-semibold text-ink mb-2">2. Samples (20)</h4>
               <p className="text-sm">
-                Each set of 20 questions is asked <strong>20 times with identical prompts</strong>.
+                Each set of 20 questions is asked <strong className="text-ink">20 times with identical prompts</strong>.
                 Same statement, same questions, same instructions. This measures consistency:
                 does the model give the same answer when asked the same thing?
               </p>
             </div>
 
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h4 className="font-semibold text-gray-800 mb-2">3. Grading Scales (4)</h4>
+            <div className="bg-white rounded-ctl p-4 border border-hair">
+              <h4 className="font-semibold text-ink mb-2">3. Grading Scales (4)</h4>
               <p className="text-sm">
                 The same sampling is repeated across 4 different grading granularities:
               </p>
               <ul className="text-sm mt-2 space-y-1">
-                <li><span className="font-mono text-blue-600">Binary</span>: 0 or 1</li>
-                <li><span className="font-mono text-green-600">Ternary</span>: 0, 0.5, or 1</li>
-                <li><span className="font-mono text-orange-600">Quaternary</span>: 0, 0.33, 0.66, or 1</li>
-                <li><span className="font-mono text-pink-600">Continuous</span>: any value from 0 to 1</li>
+                <li><span className="font-mono text-scale-binary">Binary</span>: 0 or 1</li>
+                <li><span className="font-mono text-scale-ternary">Ternary</span>: 0, 0.5, or 1</li>
+                <li><span className="font-mono text-scale-quaternary">Quaternary</span>: 0, 0.33, 0.66, or 1</li>
+                <li><span className="font-mono text-scale-continuous">Continuous</span>: any value from 0 to 1</li>
               </ul>
             </div>
 
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h4 className="font-semibold text-gray-800 mb-2">4. Analysis</h4>
+            <div className="bg-white rounded-ctl p-4 border border-hair">
+              <h4 className="font-semibold text-ink mb-2">4. Analysis</h4>
               <p className="text-sm">
                 For each scale, we compute variance and consistency across the 20 samples.
                 PCA reduces the 20-dimensional embeddings to 3D for visualization.
@@ -98,7 +95,7 @@ export default function QuestionsTab() {
             </div>
           </div>
 
-          <h3 className="text-lg font-semibold text-gray-800 mt-6">Why This Matters</h3>
+          <h3 className="section-title mt-6">Why This Matters</h3>
           <p>
             When using LLMs as evaluators or embedders, understanding their consistency is crucial.
             A model that gives different answers to the same question each time it's asked is
@@ -111,17 +108,18 @@ export default function QuestionsTab() {
       {/* Questions Section */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            20 Semantic Questions
-          </h2>
+          <div>
+            <p className="panel-title mb-1">Questions</p>
+            <h2 className="section-title">20 Semantic Questions</h2>
+          </div>
 
           {/* Mode Toggle */}
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+          <div className="flex rounded-ctl border border-hair overflow-hidden">
             <button
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 questionMode === 'mech'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gold text-white'
+                  : 'bg-transparent text-mute border-hair hover:bg-cream'
               }`}
               onClick={() => setQuestionMode('mech')}
             >
@@ -130,8 +128,8 @@ export default function QuestionsTab() {
             <button
               className={`px-4 py-2 text-sm font-medium transition-colors ${
                 questionMode === 'interp'
-                  ? 'bg-purple-500 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gold text-white'
+                  : 'bg-transparent text-mute border-hair hover:bg-cream'
               }`}
               onClick={() => setQuestionMode('interp')}
             >
@@ -140,22 +138,22 @@ export default function QuestionsTab() {
           </div>
         </div>
 
-        <p className="text-gray-600 mb-6">
+        <p className="text-mute mb-6">
           {questionMode === 'mech' ? (
             <>
-              <strong className="text-blue-600">Mechanistic questions</strong> probe explicit
+              <strong className="text-gold font-semibold">Mechanistic questions</strong> probe explicit
               linguistic and semantic features (named entities, causality, temporal references, etc.).
             </>
           ) : (
             <>
-              <strong className="text-purple-600">Interpretability questions</strong> probe implicit
+              <strong className="text-gold font-semibold">Interpretability questions</strong> probe implicit
               meaning, inference, and social understanding (unstated judgments, implied tension, etc.).
             </>
           )}
         </p>
 
         {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading questions...</div>
+          <div className="text-center py-8 text-mute">Loading questions...</div>
         ) : (
           <div className="space-y-2">
             {families.map((family) => {
@@ -163,38 +161,36 @@ export default function QuestionsTab() {
               const isExpanded = expandedFamilies.has(family)
 
               return (
-                <div key={family} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div key={family} className="border border-hair rounded-ctl overflow-hidden">
                   <button
-                    className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-cream hover:bg-hair transition-colors"
                     onClick={() => toggleFamily(family)}
                   >
-                    <span className="font-medium text-gray-800">
+                    <span className="font-medium text-ink">
                       {formatFamilyName(family)}
                     </span>
-                    {isExpanded ? (
-                      <ChevronDown className="w-5 h-5 text-gray-500" />
-                    ) : (
-                      <ChevronRight className="w-5 h-5 text-gray-500" />
-                    )}
+                    <span className="text-xs font-semibold uppercase tracking-wider text-gold">
+                      {isExpanded ? 'Hide' : 'Show'}
+                    </span>
                   </button>
 
                   {isExpanded && (
                     <div className="p-4 space-y-3 bg-white">
                       {familyQuestions.map((q) => (
                         <div key={q.id} className="text-sm">
-                          <p className="text-gray-800 mb-1">
-                            <span className="font-mono text-xs text-gray-400 mr-2">
+                          <p className="text-ink mb-1">
+                            <span className="font-mono text-xs text-mute mr-2">
                               {q.id}
                             </span>
                             {q.question}
                           </p>
                           {q.minimal_pairs && (
-                            <div className="ml-4 text-xs text-gray-500 space-y-1">
+                            <div className="ml-4 text-xs text-mute space-y-1">
                               <p>
-                                <span className="text-green-600">+</span> {q.minimal_pairs.positive}
+                                <span className="text-gold font-semibold">+</span> {q.minimal_pairs.positive}
                               </p>
                               <p>
-                                <span className="text-red-600">−</span> {q.minimal_pairs.negative}
+                                <span className="text-mute font-semibold">−</span> {q.minimal_pairs.negative}
                               </p>
                             </div>
                           )}
@@ -211,18 +207,14 @@ export default function QuestionsTab() {
 
       {/* 10 Statement Archetypes */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <FileText className="w-6 h-6 text-emerald-600" />
-          <h2 className="text-xl font-bold text-gray-900">
-            10 Statement Archetypes
-          </h2>
-        </div>
+        <p className="panel-title mb-1">Corpus</p>
+        <h2 className="section-title mb-4">10 Statement Archetypes</h2>
 
-        <p className="text-gray-600 mb-4">
+        <p className="text-mute mb-4">
           The batch experiments on the Research, Logprobs, and Presentation tabs grade these same
           10 texts. They&apos;re hand-picked archetypes designed to span the difficulty surface
           (factual, evaluative, ambiguous, clinical, abstract, narrative, technical), not a
-          representative corpus. Source: <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">data/batch_input_10.jsonl</code>.
+          representative corpus. Source: <code className="text-xs bg-cream border border-hair px-1 py-0.5 rounded">data/batch_input_10.jsonl</code>.
         </p>
 
         <div className="space-y-2">
@@ -238,26 +230,26 @@ export default function QuestionsTab() {
             { id: 'narrative_paragraph',    tag: 'Narrative',   color: 'rose',    text: 'Maria had been working at the clinic for twelve years when the new director arrived. Within weeks, he had restructured the scheduling system, fired two senior nurses, and implemented a policy requiring all staff to log their breaks. Morale plummeted. Patients noticed the tension. By March, three more staff members had quietly submitted their resignations.' },
             { id: 'technical_ml',           tag: 'Technical',   color: 'cyan',    text: 'The transformer architecture uses multi-head self-attention to compute weighted representations of input tokens, where attention weights are derived from scaled dot-product similarity between query and key projections, enabling the model to capture long-range dependencies without recurrence.' },
           ].map((t, i) => (
-            <div key={t.id} className="border border-gray-200 rounded-lg p-3 hover:border-gray-300 transition-colors">
+            <div key={t.id} className="border border-hair rounded-ctl p-3 hover:border-gold transition-colors">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center text-xs font-bold font-mono">
+                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-cream text-ink flex items-center justify-center text-xs font-bold font-mono">
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <code className="text-xs font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{t.id}</code>
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-${t.color}-100 text-${t.color}-700`}>
+                    <code className="text-xs font-mono text-ink bg-cream border border-hair px-1.5 py-0.5 rounded">{t.id}</code>
+                    <span className="chip-accent text-[10px] font-semibold uppercase tracking-wider">
                       {t.tag}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed">{t.text}</p>
+                  <p className="text-sm text-ink leading-relaxed">{t.text}</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mt-5 bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-900">
+        <div className="callout mt-5 text-sm">
           <p className="font-semibold mb-1">N = 10 is a probe, not a benchmark.</p>
           <p>
             With 10 texts × 20 questions = 200 paired data points per scale, the Wilcoxon
@@ -273,33 +265,31 @@ export default function QuestionsTab() {
 
       {/* How PCA Works */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <HelpCircle className="w-6 h-6 text-blue-600" />
-          <h2 className="text-xl font-bold text-gray-900">How PCA Works</h2>
-        </div>
+        <p className="panel-title mb-1">Method</p>
+        <h2 className="section-title mb-4">How PCA Works</h2>
 
-        <div className="prose prose-sm max-w-none text-gray-700 space-y-4">
+        <div className="prose prose-sm max-w-none text-mute space-y-4">
           <p>
-            <strong>Principal Component Analysis (PCA)</strong> reduces the 20-dimensional embedding
+            <strong className="text-ink">Principal Component Analysis (PCA)</strong> reduces the 20-dimensional embedding
             (one dimension per question) to 3 dimensions for visualization.
           </p>
 
-          <h3 className="text-lg font-semibold text-gray-800 mt-6">What the Plot Shows</h3>
+          <h3 className="section-title mt-6">What the Plot Shows</h3>
           <ul className="list-disc list-inside space-y-1">
-            <li><strong>80 points</strong>: 20 samples × 4 scales</li>
-            <li><strong>Colors</strong>: Binary (blue), Ternary (green), Quaternary (orange), Continuous (pink)</li>
-            <li><strong>Tight clusters</strong>: Model is consistent on that scale</li>
-            <li><strong>Spread points</strong>: Model is uncertain or inconsistent</li>
+            <li><strong className="text-ink">80 points</strong>: 20 samples × 4 scales</li>
+            <li><strong className="text-ink">Colors</strong>: <span className="text-scale-binary">Binary</span>, <span className="text-scale-ternary">Ternary</span>, <span className="text-scale-quaternary">Quaternary</span>, <span className="text-scale-continuous">Continuous</span></li>
+            <li><strong className="text-ink">Tight clusters</strong>: Model is consistent on that scale</li>
+            <li><strong className="text-ink">Spread points</strong>: Model is uncertain or inconsistent</li>
           </ul>
 
-          <h3 className="text-lg font-semibold text-gray-800 mt-6">Interpreting Loadings</h3>
+          <h3 className="section-title mt-6">Interpreting Loadings</h3>
           <p>
             Each principal component is a linear combination of questions. High-loading questions
             "drive" variance in that dimension. If a question has a high absolute loading on PC1,
             it means responses to that question vary the most across samples.
           </p>
 
-          <h3 className="text-lg font-semibold text-gray-800 mt-6">Explained Variance</h3>
+          <h3 className="section-title mt-6">Explained Variance</h3>
           <p>
             The percentage shown for each PC indicates how much of the total variance it captures.
             PC1 captures the most, PC2 the second most, etc. Together, PC1-3 typically capture
@@ -310,10 +300,8 @@ export default function QuestionsTab() {
 
       {/* Limitations */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <AlertTriangle className="w-6 h-6 text-amber-600" />
-          <h2 className="text-xl font-bold text-gray-900">Limitations</h2>
-        </div>
+        <p className="panel-title mb-1">Caveats</p>
+        <h2 className="section-title mb-4">Limitations</h2>
 
         <div className="space-y-3">
           {[
@@ -338,9 +326,9 @@ export default function QuestionsTab() {
               desc: '20 samples per scale may not capture the full distribution of model responses.',
             },
           ].map((item, i) => (
-            <div key={i} className="p-3 bg-amber-50 rounded-lg">
-              <p className="font-medium text-gray-800">{i + 1}. {item.title}</p>
-              <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+            <div key={i} className="callout p-3">
+              <p className="font-medium text-ink">{i + 1}. {item.title}</p>
+              <p className="text-sm text-mute mt-1">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -348,18 +336,16 @@ export default function QuestionsTab() {
 
       {/* What's Next */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Rocket className="w-6 h-6 text-purple-600" />
-          <h2 className="text-xl font-bold text-gray-900">What's Next</h2>
-        </div>
+        <p className="panel-title mb-1">Roadmap</p>
+        <h2 className="section-title mb-4">What's Next</h2>
 
         <div className="space-y-2">
           {/* Key research question - highlighted */}
-          <div className="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
-            <div className="w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+          <div className="callout flex items-start space-x-3 p-3">
+            <div className="w-6 h-6 rounded-full bg-gold text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
               1
             </div>
-            <span className="text-gray-800">
+            <span className="text-ink">
               <strong>Once we figure out that boundary, how do we push LLMs to be consistent?
               Do they ever surpass calibration and consistency compared to human inter-annotators?</strong>
             </span>
@@ -375,11 +361,11 @@ export default function QuestionsTab() {
             'Longitudinal analysis: track consistency over model versions',
             'Correlation with downstream task performance',
           ].map((item, i) => (
-            <div key={i} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded">
-              <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-medium">
+            <div key={i} className="flex items-center space-x-3 p-2 hover:bg-cream rounded">
+              <div className="chip-accent w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium">
                 {i + 2}
               </div>
-              <span className="text-gray-700">{item}</span>
+              <span className="text-ink">{item}</span>
             </div>
           ))}
         </div>

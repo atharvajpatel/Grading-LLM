@@ -16,7 +16,6 @@ import PCAPlot3D from './PCAPlot3D'
 import MetricsTable from './MetricsTable'
 import VectorHeatmap from './VectorHeatmap'
 import ValueDistribution from './ValueDistribution'
-import { Loader2, Play, AlertCircle, XCircle, DollarSign, CheckCircle, Key, Target } from 'lucide-react'
 
 const POLL_INTERVAL = 1000 // 1 second
 
@@ -266,7 +265,7 @@ export default function AnalyzeTab() {
   if (requireApiKey === null) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <span className="muted">Loading…</span>
       </div>
     )
   }
@@ -277,13 +276,12 @@ export default function AnalyzeTab() {
       {requireApiKey && (
         <div className="card">
           <div className="flex items-center space-x-2 mb-4">
-            <Key className="w-5 h-5 text-blue-600" />
-            <h2 className="text-lg font-semibold text-gray-900">OpenAI API Key</h2>
+            <h2 className="panel-title">OpenAI API Key</h2>
           </div>
 
           {!isKeyValidated ? (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
+              <p className="muted text-sm">
                 Enter your OpenAI API key to use this tool. Your key is sent directly to OpenAI and is not stored on our servers.
               </p>
 
@@ -299,38 +297,26 @@ export default function AnalyzeTab() {
               </div>
 
               <button
-                className="btn-primary flex items-center space-x-2"
+                className="btn-primary"
                 onClick={handleValidateKey}
                 disabled={!apiKey.trim() || isValidatingKey}
               >
-                {isValidatingKey ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Validating...</span>
-                  </>
-                ) : (
-                  <>
-                    <Key className="w-5 h-5" />
-                    <span>Validate Key</span>
-                  </>
-                )}
+                {isValidatingKey ? 'Validating…' : 'Validate Key'}
               </button>
 
               {keyError && (
-                <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg">
-                  <AlertCircle className="w-5 h-5" />
-                  <span>{keyError}</span>
+                <div className="callout-ink">
+                  <span className="font-semibold">Error:</span> {keyError}
                 </div>
               )}
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-green-600">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-medium">API key validated</span>
+              <div className="flex items-center space-x-2">
+                <span className="font-semibold text-ink">Validated — API key ready</span>
               </div>
               <button
-                className="text-sm text-gray-500 hover:text-gray-700 underline"
+                className="text-sm text-mute hover:text-ink underline"
                 onClick={handleResetKey}
               >
                 Use different key
@@ -342,25 +328,23 @@ export default function AnalyzeTab() {
 
       {/* Local Dev Mode Notice */}
       {isLocalDev && !requireApiKey && (
-        <div className="card bg-blue-50 border-blue-200">
-          <div className="flex items-center space-x-2 text-blue-700">
-            <CheckCircle className="w-5 h-5" />
-            <span className="font-medium">Local Development Mode</span>
+        <div className="callout">
+          <div className="flex items-center space-x-2">
+            <span className="font-semibold text-ink">Local Development Mode</span>
           </div>
-          <p className="text-sm text-blue-600 mt-1">
+          <p className="muted text-sm mt-1">
             Using API key from environment. No key entry required.
           </p>
         </div>
       )}
 
       {/* Problem Statement */}
-      <div className="card bg-gradient-to-br from-amber-50 to-orange-50 border-l-4 border-amber-500">
+      <div className="callout">
         <div className="flex items-center space-x-2 mb-4">
-          <Target className="w-6 h-6 text-amber-600" />
-          <h2 className="text-xl font-bold text-gray-900">The Problem</h2>
+          <h2 className="section-title">The Problem</h2>
         </div>
 
-        <div className="prose prose-sm max-w-none text-gray-700 space-y-4">
+        <div className="prose prose-sm max-w-none text-ink space-y-4">
           <p className="text-lg">
             <strong>Where does the statistical boundary lie for a calibrated LLM as a judge/labeller?</strong>
           </p>
@@ -372,9 +356,9 @@ export default function AnalyzeTab() {
             actually calibrated versus just noise?
           </p>
 
-          <div className="bg-white rounded-lg p-4 border border-amber-200">
-            <p className="font-medium text-gray-800 mb-2">This tool helps you find that boundary by:</p>
-            <ul className="list-disc list-inside space-y-1 text-gray-700">
+          <div className="card">
+            <p className="font-semibold text-ink mb-2">This tool helps you find that boundary by:</p>
+            <ul className="list-disc list-inside space-y-1 text-ink">
               <li>Testing LLM consistency across <strong>binary → ternary → quaternary → continuous</strong> scales</li>
               <li>Measuring variance and entropy at each granularity level</li>
               <li>Visualizing where the model's responses start to diverge</li>
@@ -382,7 +366,7 @@ export default function AnalyzeTab() {
             </ul>
           </div>
 
-          <p className="text-sm text-gray-600 italic">
+          <p className="muted text-sm italic">
             Use this to calibrate your LLM as a judge/labeller pipeline and choose the right labeling
             granularity for your specific use case.
           </p>
@@ -392,11 +376,11 @@ export default function AnalyzeTab() {
       {/* Analysis Section - Only shown after key is validated */}
       {isKeyValidated && (
         <div className="card">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Analyze Statement</h2>
+          <h2 className="section-title mb-4">Analyze Statement</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-ink mb-1">
                 Statement to Analyze
               </label>
               <textarea
@@ -410,14 +394,14 @@ export default function AnalyzeTab() {
 
             {/* Question Mode Selector */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink mb-2">
                 Question Mode
               </label>
               <div className="flex space-x-4">
-                <label className={`flex items-center space-x-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                <label className={`flex items-center space-x-2 p-3 rounded-ctl border-2 cursor-pointer transition-all ${
                   questionMode === 'mech'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-gold bg-gold-badge font-semibold'
+                    : 'border-hair hover:border-gold'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <input
                     type="radio"
@@ -426,17 +410,17 @@ export default function AnalyzeTab() {
                     checked={questionMode === 'mech'}
                     onChange={(e) => setQuestionMode(e.target.value as QuestionMode)}
                     disabled={isLoading}
-                    className="text-blue-600"
+                    className="accent-gold"
                   />
                   <div>
-                    <span className="font-medium text-gray-900">Mechanistic</span>
-                    <p className="text-xs text-gray-500">Explicit linguistic features</p>
+                    <span className={questionMode === 'mech' ? 'font-semibold text-ink' : 'text-mute'}>Mechanistic</span>
+                    <p className="text-xs text-mute">Explicit linguistic features</p>
                   </div>
                 </label>
-                <label className={`flex items-center space-x-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                <label className={`flex items-center space-x-2 p-3 rounded-ctl border-2 cursor-pointer transition-all ${
                   questionMode === 'interp'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-gold bg-gold-badge font-semibold'
+                    : 'border-hair hover:border-gold'
                 } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <input
                     type="radio"
@@ -445,11 +429,11 @@ export default function AnalyzeTab() {
                     checked={questionMode === 'interp'}
                     onChange={(e) => setQuestionMode(e.target.value as QuestionMode)}
                     disabled={isLoading}
-                    className="text-purple-600"
+                    className="accent-gold"
                   />
                   <div>
-                    <span className="font-medium text-gray-900">Interpretability</span>
-                    <p className="text-xs text-gray-500">Implicit meaning & inference</p>
+                    <span className={questionMode === 'interp' ? 'font-semibold text-ink' : 'text-mute'}>Interpretability</span>
+                    <p className="text-xs text-mute">Implicit meaning & inference</p>
                   </div>
                 </label>
               </div>
@@ -458,20 +442,18 @@ export default function AnalyzeTab() {
             <div className="flex items-center space-x-4">
               {!isLoading ? (
                 <button
-                  className="btn-primary flex items-center space-x-2"
+                  className="btn-primary"
                   onClick={handleAnalyze}
                   disabled={!statement.trim()}
                 >
-                  <Play className="w-5 h-5" />
-                  <span>Run Analysis</span>
+                  Run Analysis
                 </button>
               ) : (
                 <button
-                  className="btn-danger flex items-center space-x-2"
+                  className="btn-danger"
                   onClick={handleCancel}
                 >
-                  <XCircle className="w-5 h-5" />
-                  <span>Cancel</span>
+                  Cancel
                 </button>
               )}
             </div>
@@ -480,22 +462,22 @@ export default function AnalyzeTab() {
           {/* Progress Bar */}
           {isLoading && jobStatus && (
             <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span className="font-medium">
+              <div className="flex justify-between text-sm text-mute">
+                <span className="font-medium tabular-nums">
                   {getEvaluationsCompleted()} / {TOTAL_EVALUATIONS} evaluations
                 </span>
-                <span className="text-gray-500">
+                <span className="tabular-nums">
                   ({jobStatus.progress}%)
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3">
+              <div className="w-full bg-hair rounded-full h-3">
                 <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                  className="bg-gold h-3 rounded-full transition-all duration-300"
                   style={{ width: `${(getEvaluationsCompleted() / TOTAL_EVALUATIONS) * 100}%` }}
                 />
               </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Loader2 className="w-4 h-4 animate-spin" />
+              <div className="flex items-center space-x-2 text-sm text-mute">
+                <span>Running…</span>
                 <span>
                   Scale: <span className="font-medium capitalize">{jobStatus.current_scale || 'starting'}</span>
                   {jobStatus.current_sample > 0 && (
@@ -507,9 +489,8 @@ export default function AnalyzeTab() {
           )}
 
           {error && (
-            <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg">
-              <AlertCircle className="w-5 h-5" />
-              <span>{error}</span>
+            <div className="callout-ink">
+              <span className="font-semibold">Error:</span> {error}
             </div>
           )}
         </div>
@@ -523,47 +504,42 @@ export default function AnalyzeTab() {
             {/* Statement */}
             <div className="card lg:col-span-2">
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium text-gray-500">Analyzed Statement</h3>
+                <h3 className="text-sm font-medium text-mute">Analyzed Statement</h3>
                 {result.question_mode && (
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    result.question_mode === 'mech'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-purple-100 text-purple-700'
-                  }`}>
+                  <span className="chip-accent">
                     {result.question_mode === 'mech' ? 'Mechanistic' : 'Interpretability'}
                   </span>
                 )}
               </div>
-              <p className="text-lg text-gray-900 italic">"{result.statement}"</p>
+              <p className="text-lg text-ink italic">"{result.statement}"</p>
             </div>
 
             {/* Usage Stats */}
             {usage && (
-              <div className="card bg-gradient-to-br from-slate-50 to-slate-100">
+              <div className="card">
                 <div className="flex items-center space-x-2 mb-3">
-                  <DollarSign className="w-5 h-5 text-green-600" />
-                  <h3 className="text-sm font-semibold text-gray-700">API Usage</h3>
+                  <h3 className="panel-title">API Usage</h3>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Cost</span>
-                    <span className="font-bold text-green-600">
+                    <span className="text-mute">Cost</span>
+                    <span className="font-bold text-ink tabular-nums">
                       ${usage.cost_usd < 0.01 ? usage.cost_usd.toFixed(4) : usage.cost_usd.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Total Tokens</span>
-                    <span className="font-medium text-gray-800">
+                    <span className="text-mute">Total Tokens</span>
+                    <span className="font-medium text-ink tabular-nums">
                       {usage.total_tokens.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-500">
+                  <div className="flex justify-between text-xs text-mute">
                     <span>Input: {usage.input_tokens.toLocaleString()}</span>
                     <span>Output: {usage.output_tokens.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between pt-1 border-t border-gray-200">
-                    <span className="text-gray-600">API Calls</span>
-                    <span className="font-medium text-gray-800">{usage.api_calls}</span>
+                  <div className="flex justify-between pt-1 border-t border-hair">
+                    <span className="text-mute">API Calls</span>
+                    <span className="font-medium text-ink tabular-nums">{usage.api_calls}</span>
                   </div>
                 </div>
               </div>
@@ -572,8 +548,8 @@ export default function AnalyzeTab() {
 
           {/* Unique Vectors by Scale */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Distinct Vector Patterns</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <h3 className="section-title mb-2">Distinct Vector Patterns</h3>
+            <p className="muted text-sm mb-4">
               Number of distinct patterns among 20 samples. 1 = all identical (most consistent), 20 = all different (least consistent).
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -587,20 +563,20 @@ export default function AnalyzeTab() {
                     className="metric-card"
                     style={{ backgroundColor: `${SCALE_COLORS[scale]}15` }}
                   >
-                    <p className="text-sm capitalize" style={{ color: SCALE_COLORS[scale] }}>
+                    <p className="metric-label capitalize" style={{ color: SCALE_COLORS[scale] }}>
                       {scale}
                     </p>
-                    <p className="text-2xl font-bold" style={{ color: SCALE_COLORS[scale] }}>
+                    <p className="stat-num" style={{ color: SCALE_COLORS[scale] }}>
                       {uniqueCount}/{totalCount}
                     </p>
-                    <p className="text-xs text-gray-500">distinct patterns</p>
+                    <p className="text-xs text-mute">distinct patterns</p>
                   </div>
                 )
               })}
             </div>
             {result.identical_counts && (
-              <div className="mt-4 text-center text-sm text-gray-600">
-                Overall: <span className="font-semibold">{result.identical_counts.total_unique}</span> distinct patterns out of <span className="font-semibold">{result.identical_counts.total_samples}</span> total samples
+              <div className="mt-4 text-center text-sm text-mute">
+                Overall: <span className="font-semibold text-ink">{result.identical_counts.total_unique}</span> distinct patterns out of <span className="font-semibold text-ink">{result.identical_counts.total_samples}</span> total samples
               </div>
             )}
           </div>
@@ -614,14 +590,14 @@ export default function AnalyzeTab() {
 
           {/* 3D PCA Plot */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="section-title mb-4">
               3D PCA Visualization
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="muted text-sm mb-4">
               Each point represents one embedding sample. Colors indicate grading scale.
               Tight clusters = consistent, spread = uncertain.
             </p>
-            <div className="h-[500px] bg-gray-50 rounded-lg overflow-hidden">
+            <div className="h-[500px] plot-frame overflow-hidden">
               <PCAPlot3D
                 coords={result.pca.coords}
                 scaleLabels={result.pca.scale_labels}
@@ -632,10 +608,10 @@ export default function AnalyzeTab() {
               {SCALE_ORDER.map((scale) => (
                 <div key={scale} className="flex items-center space-x-2">
                   <div
-                    className="w-4 h-4 rounded-full"
+                    className="w-4 h-4 rounded-full border border-hair"
                     style={{ backgroundColor: SCALE_COLORS[scale] }}
                   />
-                  <span className="text-sm text-gray-600 capitalize">{scale}</span>
+                  <span className="text-sm text-mute capitalize">{scale}</span>
                 </div>
               ))}
             </div>
@@ -650,7 +626,7 @@ export default function AnalyzeTab() {
 
           {/* Metrics Table */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="section-title mb-4">
               Detailed Metrics
             </h3>
             <MetricsTable scaleMetrics={result.scale_metrics} />
@@ -658,41 +634,41 @@ export default function AnalyzeTab() {
 
           {/* Top Loading Questions */}
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="section-title mb-4">
               Top Contributing Questions per PC
             </h3>
 
             {/* PCA Explanation */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 text-sm">
-              <p className="font-medium text-blue-800 mb-2">How PCA Works:</p>
-              <ul className="text-blue-700 space-y-1 list-disc list-inside">
+            <div className="callout text-sm mb-4">
+              <p className="font-semibold text-ink mb-2">How PCA Works:</p>
+              <ul className="text-ink space-y-1 list-disc list-inside">
                 <li>Each Principal Component (PC) is a <strong>linear combination of ALL 20 questions</strong></li>
                 <li>Every question has a "loading" (coefficient) showing its weight in that PC</li>
                 <li>We show the <strong>top 5 questions with highest absolute loadings</strong> - these have the strongest influence on that PC</li>
-                <li><span className="text-green-600 font-mono">+</span> loading = question score increases along this PC direction</li>
-                <li><span className="text-red-600 font-mono">−</span> loading = question score decreases along this PC direction</li>
+                <li><span className="text-gold font-mono">+</span> loading = question score increases along this PC direction</li>
+                <li><span className="text-ink font-mono">−</span> loading = question score decreases along this PC direction</li>
               </ul>
-              <p className="mt-2 text-blue-600 text-xs">
+              <p className="mt-2 muted text-xs">
                 Example: PC1 = 0.4×Q3 + 0.35×Q7 + 0.25×Q12 + ... (all 20 questions contribute, but Q3, Q7, Q12 dominate)
               </p>
             </div>
             <div className="space-y-6">
               {['PC1', 'PC2', 'PC3'].map((pc, idx) => (
                 <div key={pc}>
-                  <h4 className="font-medium text-gray-800 mb-2">
+                  <h4 className="font-semibold text-ink mb-2">
                     {pc} ({(result.pca.explained_variance_ratio[idx] * 100).toFixed(1)}% variance)
                   </h4>
                   <div className="space-y-2">
                     {result.pca.top_loading_questions[pc]?.slice(0, 5).map((q, i) => (
                       <div
                         key={q.id}
-                        className="flex items-start space-x-3 text-sm bg-gray-50 p-2 rounded"
+                        className="flex items-start space-x-3 text-sm bg-cream border border-hair p-2 rounded-ctl"
                       >
-                        <span className="text-gray-400 w-4">{i + 1}.</span>
-                        <span className="flex-1 text-gray-700">{q.question}</span>
+                        <span className="text-mute w-4 tabular-nums">{i + 1}.</span>
+                        <span className="flex-1 text-ink">{q.question}</span>
                         <span
-                          className={`font-mono ${
-                            q.loading > 0 ? 'text-green-600' : 'text-red-600'
+                          className={`font-mono tabular-nums ${
+                            q.loading > 0 ? 'text-gold' : 'text-ink'
                           }`}
                         >
                           {q.loading > 0 ? '+' : ''}{q.loading.toFixed(3)}

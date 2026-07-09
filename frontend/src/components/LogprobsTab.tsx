@@ -2,18 +2,10 @@ import { useState } from 'react'
 import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell,
 } from 'recharts'
-import {
-  BookOpen, BarChart3, Layers, TrendingUp, FlaskConical, ChevronDown, ChevronUp, Microscope, AlertTriangle, CheckCircle, Target,
-} from 'lucide-react'
+import { SCALE_COLORS } from '../api/client'
+import { magnitudeColor, onMagnitude, seriesColor, dashFor, CHART } from '../theme/palette'
 
 // ─── Hardcoded Data from Second Run with Logprobs ───────────────────────────
-
-const SCALE_COLORS: Record<string, string> = {
-  binary: '#2196F3',
-  ternary: '#4CAF50',
-  quaternary: '#FF9800',
-  continuous: '#E91E63',
-}
 
 const SCALE_ORDER = ['binary', 'ternary', 'quaternary', 'continuous']
 
@@ -123,11 +115,6 @@ const PER_TEXT_TABLE = [
   { textId: 'technical_ml', scale: 'continuous', avgVariance: 0.005249, avgConsistency: 0.9525, avgEntropy: 0.1548, uniqueVectors: 8 },
 ]
 
-const TEXT_PALETTE = [
-  '#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#8b5cf6',
-  '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16',
-]
-
 const TEXT_IDS = [
   'factual_simple', 'sentiment_positive', 'sentiment_negative', 'ambiguous',
   'medical_clinical', 'negation_heavy', 'imperative_action', 'abstract_philosophical',
@@ -172,14 +159,7 @@ const ETA_SQUARED = { byScale: 0.006311, byText: 0.022173, byQuestion: 0.050296 
 // ─── Utility ──────────────────────────────────────────────────────────────────
 
 function varianceToColor(value: number, maxValue: number): string {
-  if (maxValue === 0) return '#22c55e'
-  const ratio = Math.min(value / maxValue, 1)
-  if (ratio < 0.5) {
-    const t = ratio * 2
-    return `rgb(${Math.round(34 + t * 211)},${Math.round(197 + t * -39)},${Math.round(94 + t * -83)})`
-  }
-  const t = (ratio - 0.5) * 2
-  return `rgb(${Math.round(245 + t * -6)},${Math.round(158 + t * -90)},${Math.round(11 + t * 57)})`
+  return magnitudeColor(maxValue > 0 ? value / maxValue : 0)
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -197,55 +177,51 @@ export default function LogprobsTab() {
   return (
     <div className="space-y-8">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="card bg-gradient-to-br from-indigo-50 to-blue-50 border-l-4 border-indigo-500">
-        <div className="flex items-center space-x-3 mb-3">
-          <BookOpen className="w-7 h-7 text-indigo-600" />
-          <h2 className="text-2xl font-bold text-gray-900">
-            SECOND Run with Logprobs - 16,000 Evaluations
-          </h2>
-        </div>
-        <p className="text-gray-600 leading-relaxed">
+      <div className="card">
+        <p className="panel-title">Overview</p>
+        <h2 className="page-title mb-3">
+          Second Run with Logprobs &mdash; 16,000 Evaluations
+        </h2>
+        <p className="text-mute leading-relaxed">
           This page presents hardcoded results from the <strong>second batch run</strong> with logprobs enabled.
           10 texts &times; 20 questions &times; 4 scales &times; 20 samples = <strong>16,000 individual LLM evaluations</strong> on
           GPT-4o-mini at temperature=0. Logprobs were collected to enable advanced statistical reliability analysis
           (Cronbach&rsquo;s &alpha;, ICC, Cohen&rsquo;s &kappa;, Krippendorff&rsquo;s &alpha;, bootstrap CIs, Friedman test).
         </p>
         <div className="mt-3 flex flex-wrap gap-3 text-sm">
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">GPT-4o-mini</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">Temperature = 0</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">20 repeated samples</span>
-          <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">Logprobs Enabled</span>
-          <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full font-medium">Second Run</span>
+          <span className="chip">GPT-4o-mini</span>
+          <span className="chip">Temperature = 0</span>
+          <span className="chip">20 repeated samples</span>
+          <span className="chip">Logprobs Enabled</span>
+          <span className="chip">Second Run</span>
         </div>
       </div>
 
       {/* ── Scale Degradation Summary ──────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Layers className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Scale Degradation Summary</h3>
-        </div>
+        <p className="panel-title">Scales</p>
+        <h3 className="section-title mb-4">Scale Degradation Summary</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% Zero-Var</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">% High-Var</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Mean Mode Consistency</th>
+              <tr>
+                <th className="text-left">Scale</th>
+                <th className="text-right">Mean Var</th>
+                <th className="text-right">% Zero-Var</th>
+                <th className="text-right">% High-Var</th>
+                <th className="text-right">Mean Mode Consistency</th>
               </tr>
             </thead>
             <tbody>
               {SCALE_SUMMARY.map((row) => (
-                <tr key={row.scale} className="border-b border-gray-100">
-                  <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                <tr key={row.scale}>
+                  <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                     {row.scale}
                   </td>
-                  <td className="text-right py-2 px-3 font-mono">{row.meanVar.toFixed(4)}</td>
-                  <td className="text-right py-2 px-3 font-mono">{row.zeroVarPct.toFixed(1)}%</td>
-                  <td className="text-right py-2 px-3 font-mono">{row.highVarPct.toFixed(1)}%</td>
-                  <td className="text-right py-2 pl-3 font-mono">{(row.meanConsistency * 100).toFixed(2)}%</td>
+                  <td className="num">{row.meanVar.toFixed(4)}</td>
+                  <td className="num">{row.zeroVarPct.toFixed(1)}%</td>
+                  <td className="num">{row.highVarPct.toFixed(1)}%</td>
+                  <td className="num">{(row.meanConsistency * 100).toFixed(2)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -253,7 +229,7 @@ export default function LogprobsTab() {
         </div>
 
         {/* Key finding callout */}
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+        <div className="callout mt-4 text-sm">
           <p className="font-semibold mb-1">Finding: Quaternary remains the least reliable scale</p>
           <p>
             Quaternary has the <strong>highest</strong> mean variance (0.0056) and highest high-variance rate (11.0%).
@@ -265,16 +241,14 @@ export default function LogprobsTab() {
 
       {/* ── Mean Variance by Scale (bar chart) ─────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <BarChart3 className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Mean Variance by Scale</h3>
-        </div>
+        <p className="panel-title">Distribution</p>
+        <h3 className="section-title mb-4">Mean Variance by Scale</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={SCALE_SUMMARY}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="scale" />
-            <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="scale" stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <YAxis tickFormatter={(v: number) => v.toFixed(4)} stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Bar dataKey="meanVar" name="Mean Variance">
               {SCALE_SUMMARY.map((entry) => (
                 <Cell key={entry.scale} fill={SCALE_COLORS[entry.scale]} />
@@ -286,12 +260,10 @@ export default function LogprobsTab() {
 
       {/* ── Question Stability Heatmap ─────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <Microscope className="w-5 h-5 text-purple-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Question Stability Across Scales</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
-          Mean variance per question across all 10 texts. Green = stable (zero variance). Red = unstable.
+        <p className="panel-title">Stability</p>
+        <h3 className="section-title mb-2">Question Stability Across Scales</h3>
+        <p className="muted text-sm mb-4">
+          Mean variance per question across all 10 texts. Pale = stable (zero variance); dark = unstable.
         </p>
 
         {/* Interactive heatmap */}
@@ -299,16 +271,16 @@ export default function LogprobsTab() {
           <table className="w-full text-xs">
             <thead>
               <tr>
-                <th className="text-left py-1 pr-2 font-medium text-gray-500 w-36">Question</th>
+                <th className="text-left py-1 pr-2 font-medium text-mute w-36">Question</th>
                 {SCALE_ORDER.map((s) => (
-                  <th key={s} className="py-1 px-2 font-medium text-gray-500 capitalize text-center w-28">{s}</th>
+                  <th key={s} className="py-1 px-2 font-medium text-mute capitalize text-center w-28">{s}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {HEATMAP_DATA.map((row) => (
                 <tr key={row.question}>
-                  <td className="py-1 pr-2 font-medium text-gray-700 text-xs">{row.question}</td>
+                  <td className="py-1 pr-2 font-medium text-ink text-xs">{row.question}</td>
                   {SCALE_ORDER.map((s) => {
                     const val = (row as any)[s] as number
                     return (
@@ -317,7 +289,7 @@ export default function LogprobsTab() {
                           className="rounded px-2 py-1 text-center font-mono"
                           style={{
                             backgroundColor: varianceToColor(val, heatmapMaxVar),
-                            color: val / heatmapMaxVar > 0.5 ? '#fff' : '#1f2937',
+                            color: onMagnitude(val / heatmapMaxVar),
                           }}
                           title={`${row.question} / ${s}: ${val.toFixed(6)}`}
                         >
@@ -333,12 +305,9 @@ export default function LogprobsTab() {
         </div>
 
         {/* Finding callout */}
-        <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 text-sm">
-          <div className="flex items-center space-x-2 mb-1">
-            <CheckCircle className="w-4 h-4 text-green-600" />
-            <p className="font-semibold text-green-800">Finding: Reliability varies dramatically by feature type</p>
-          </div>
-          <p className="text-green-700">
+        <div className="callout mt-4 text-sm">
+          <p className="font-semibold mb-1">Finding: Reliability varies dramatically by feature type</p>
+          <p>
             <strong>Perfectly stable</strong> (zero variance): Named Entities, Temporal, First Person, Modality, Imperative, Normative.
             <br />
             <strong>Unstable</strong>: Identity (0.0308 at quaternary), Causality (0.024 binary), Dialogue (0.0228 binary),
@@ -349,26 +318,25 @@ export default function LogprobsTab() {
 
       {/* ── Variance Degradation by Text Type (line chart) ─────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <TrendingUp className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Variance Degradation by Text Type</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="panel-title">Degradation</p>
+        <h3 className="section-title mb-2">Variance Degradation by Text Type</h3>
+        <p className="muted text-sm mb-4">
           How each text&rsquo;s mean variance changes across scales (binary &rarr; continuous).
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={DEGRADATION_DATA}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="scale" />
-            <YAxis tickFormatter={(v: number) => v.toFixed(4)} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="scale" stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <YAxis tickFormatter={(v: number) => v.toFixed(4)} stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Legend />
             {TEXT_IDS.map((id, idx) => (
               <Line
                 key={id}
                 type="monotone"
                 dataKey={id}
-                stroke={TEXT_PALETTE[idx % TEXT_PALETTE.length]}
+                stroke={seriesColor(idx)}
+                strokeDasharray={dashFor(idx)}
                 strokeWidth={2}
                 dot={{ r: 3 }}
               />
@@ -379,19 +347,17 @@ export default function LogprobsTab() {
 
       {/* ── Text Difficulty Ranking ────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <Target className="w-5 h-5 text-red-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Text Difficulty Ranking</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="panel-title">Difficulty</p>
+        <h3 className="section-title mb-2">Text Difficulty Ranking</h3>
+        <p className="muted text-sm mb-4">
           Texts ranked by overall mean variance. Longer bar = more unstable.
         </p>
         <ResponsiveContainer width="100%" height={360}>
           <BarChart data={TEXT_DIFFICULTY} layout="vertical" margin={{ left: 140 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} />
-            <YAxis type="category" dataKey="id" width={130} tick={{ fontSize: 12 }} />
-            <Tooltip formatter={(v: number) => v.toFixed(6)} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis type="number" tickFormatter={(v: number) => v.toFixed(4)} stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <YAxis type="category" dataKey="id" width={130} tick={{ fontSize: 12, fill: CHART.tick }} stroke={CHART.axis} />
+            <Tooltip formatter={(v: number) => v.toFixed(6)} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Bar dataKey="meanVariance" name="Mean Variance">
               {TEXT_DIFFICULTY.map((entry) => {
                 const maxVar = TEXT_DIFFICULTY[0].meanVariance
@@ -399,7 +365,7 @@ export default function LogprobsTab() {
                 return (
                   <Cell
                     key={entry.id}
-                    fill={ratio < 0.33 ? '#22c55e' : ratio < 0.66 ? '#f59e0b' : '#ef4444'}
+                    fill={magnitudeColor(ratio)}
                   />
                 )
               })}
@@ -407,7 +373,7 @@ export default function LogprobsTab() {
           </BarChart>
         </ResponsiveContainer>
 
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
+        <div className="callout mt-4 text-sm">
           <p className="font-semibold mb-1">Finding: Ambiguous text remains hardest to grade reliably</p>
           <p>
             Ambiguous text (0.0099) is 11.5&times; more unstable than abstract philosophical (0.0009).
@@ -418,19 +384,17 @@ export default function LogprobsTab() {
 
       {/* ── Mode Consistency by Text and Scale ─────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-2">
-          <BarChart3 className="w-5 h-5 text-green-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Mode Consistency by Text and Scale</h3>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="panel-title">Consistency</p>
+        <h3 className="section-title mb-2">Mode Consistency by Text and Scale</h3>
+        <p className="muted text-sm mb-4">
           Mean mode consistency across 20 questions. 1.0 = all 20 samples identical.
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart data={MODE_CONSISTENCY_DATA}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="id" tick={{ fontSize: 11 }} angle={-30} textAnchor="end" height={60} />
-            <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} />
-            <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+            <XAxis dataKey="id" tick={{ fontSize: 11, fill: CHART.tick }} angle={-30} textAnchor="end" height={60} stroke={CHART.axis} />
+            <YAxis domain={[0.85, 1.0]} tickFormatter={(v: number) => v.toFixed(2)} stroke={CHART.axis} tick={{ fill: CHART.tick }} />
+            <Tooltip formatter={(v: number) => (v * 100).toFixed(2) + '%'} contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}` }} />
             <Legend />
             {SCALE_ORDER.map((scale) => (
               <Bar key={scale} dataKey={scale} name={scale} fill={SCALE_COLORS[scale]} />
@@ -441,37 +405,35 @@ export default function LogprobsTab() {
 
       {/* ── Per-Text Scale Metrics ─────────────────────────────────────────── */}
       <div className="card">
-        <div className="flex items-center space-x-2 mb-4">
-          <Layers className="w-5 h-5 text-gray-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Per-Text Scale Metrics</h3>
-        </div>
+        <p className="panel-title">Detail</p>
+        <h3 className="section-title mb-4">Per-Text Scale Metrics</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="data-table w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 pr-3 font-medium text-gray-500">Text</th>
-                <th className="text-left py-2 px-3 font-medium text-gray-500">Scale</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Variance</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Consistency</th>
-                <th className="text-right py-2 px-3 font-medium text-gray-500">Avg Entropy</th>
-                <th className="text-right py-2 pl-3 font-medium text-gray-500">Unique Vectors</th>
+              <tr>
+                <th className="text-left">Text</th>
+                <th className="text-left">Scale</th>
+                <th className="text-right">Avg Variance</th>
+                <th className="text-right">Avg Consistency</th>
+                <th className="text-right">Avg Entropy</th>
+                <th className="text-right">Unique Vectors</th>
               </tr>
             </thead>
             <tbody>
               {PER_TEXT_TABLE.map((row, idx) => (
-                <tr key={`${row.textId}-${row.scale}`} className={idx % 4 === 3 ? 'border-b border-gray-200' : ''}>
+                <tr key={`${row.textId}-${row.scale}`}>
                   {idx % 4 === 0 && (
-                    <td className="py-1.5 pr-3 font-medium text-gray-700 font-mono text-xs" rowSpan={4}>
+                    <td className="font-medium text-ink font-mono text-xs" rowSpan={4}>
                       {row.textId}
                     </td>
                   )}
-                  <td className="py-1.5 px-3 capitalize" style={{ color: SCALE_COLORS[row.scale] }}>
+                  <td className="capitalize" style={{ color: SCALE_COLORS[row.scale] }}>
                     {row.scale}
                   </td>
-                  <td className="text-right py-1.5 px-3 font-mono">{row.avgVariance.toFixed(4)}</td>
-                  <td className="text-right py-1.5 px-3 font-mono">{(row.avgConsistency * 100).toFixed(2)}%</td>
-                  <td className="text-right py-1.5 px-3 font-mono">{row.avgEntropy.toFixed(4)}</td>
-                  <td className="text-right py-1.5 pl-3 font-mono">{row.uniqueVectors}/20</td>
+                  <td className="num">{row.avgVariance.toFixed(4)}</td>
+                  <td className="num">{(row.avgConsistency * 100).toFixed(2)}%</td>
+                  <td className="num">{row.avgEntropy.toFixed(4)}</td>
+                  <td className="num">{row.uniqueVectors}/20</td>
                 </tr>
               ))}
             </tbody>
@@ -480,12 +442,10 @@ export default function LogprobsTab() {
       </div>
 
       {/* ── Advanced Statistical Analysis ─────────────────────────────────── */}
-      <div className="card bg-gradient-to-br from-purple-50 to-indigo-50 border-l-4 border-purple-500">
-        <div className="flex items-center space-x-3 mb-3">
-          <FlaskConical className="w-7 h-7 text-purple-600" />
-          <h2 className="text-2xl font-bold text-gray-900">Advanced Statistical Analysis</h2>
-        </div>
-        <p className="text-gray-600 leading-relaxed">
+      <div className="card">
+        <p className="panel-title">Advanced</p>
+        <h2 className="page-title mb-3">Advanced Statistical Analysis</h2>
+        <p className="text-mute leading-relaxed">
           Three tiers of reliability metrics computed from logprobs-enabled second run.
           These go beyond simple variance to established psychometric and agreement measures.
         </p>
@@ -498,49 +458,48 @@ export default function LogprobsTab() {
           onClick={() => setShowTier1(!showTier1)}
         >
           <div className="flex items-center space-x-2">
-            <Layers className="w-5 h-5 text-purple-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Tier 1: Reliability Metrics</h3>
-            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">Inter-Rater Agreement</span>
+            <h3 className="section-title">Tier 1: Reliability Metrics</h3>
+            <span className="chip-accent">Inter-Rater Agreement</span>
           </div>
-          {showTier1 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="text-sm font-medium text-gold">{showTier1 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showTier1 && (
           <div className="mt-4">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="data-table w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-200">
-                    <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Cronbach&rsquo;s &alpha;</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">ICC</th>
-                    <th className="text-right py-2 px-3 font-medium text-gray-500">Cohen&rsquo;s &kappa;</th>
-                    <th className="text-right py-2 pl-3 font-medium text-gray-500">Krippendorff&rsquo;s &alpha;</th>
+                  <tr>
+                    <th className="text-left">Scale</th>
+                    <th className="text-right">Cronbach&rsquo;s &alpha;</th>
+                    <th className="text-right">ICC</th>
+                    <th className="text-right">Cohen&rsquo;s &kappa;</th>
+                    <th className="text-right">Krippendorff&rsquo;s &alpha;</th>
                   </tr>
                 </thead>
                 <tbody>
                   {TIER1_DATA.map((row) => (
-                    <tr key={row.scale} className="border-b border-gray-100">
-                      <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                    <tr key={row.scale}>
+                      <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                         {row.scale}
                       </td>
-                      <td className="text-right py-2 px-3 font-mono">
-                        <span className={row.cronbachsAlpha < 0 ? 'text-red-600' : row.cronbachsAlpha < 0.5 ? 'text-amber-600' : 'text-green-600'}>
+                      <td className="num">
+                        <span className={row.cronbachsAlpha < 0 ? 'text-ink font-semibold' : row.cronbachsAlpha < 0.5 ? 'text-ink font-semibold' : 'muted'}>
                           {row.cronbachsAlpha.toFixed(4)}
                         </span>
                       </td>
-                      <td className="text-right py-2 px-3 font-mono">{row.icc.toFixed(4)}</td>
-                      <td className="text-right py-2 px-3 font-mono">
-                        {row.cohensKappa !== null ? row.cohensKappa.toFixed(4) : <span className="text-gray-400">N/A</span>}
+                      <td className="num">{row.icc.toFixed(4)}</td>
+                      <td className="num">
+                        {row.cohensKappa !== null ? row.cohensKappa.toFixed(4) : <span className="muted">N/A</span>}
                       </td>
-                      <td className="text-right py-2 pl-3 font-mono">{row.krippendorffAlpha.toFixed(4)}</td>
+                      <td className="num">{row.krippendorffAlpha.toFixed(4)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <div className="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm text-purple-800">
+            <div className="callout-ink mt-4 text-sm">
               <p className="font-semibold mb-1">Interpretation</p>
               <p>
                 <strong>ICC &gt; 0.95</strong> across all scales indicates excellent absolute agreement between repeated runs.
@@ -561,35 +520,34 @@ export default function LogprobsTab() {
           onClick={() => setShowTier2(!showTier2)}
         >
           <div className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Tier 2: Test-Retest Stability</h3>
-            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Temporal Consistency</span>
+            <h3 className="section-title">Tier 2: Test-Retest Stability</h3>
+            <span className="chip-accent">Temporal Consistency</span>
           </div>
-          {showTier2 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="text-sm font-medium text-gold">{showTier2 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showTier2 && (
           <div className="mt-4 space-y-6">
             {/* Test-Retest Correlations */}
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-2">Test-Retest Correlations (Split-Half)</p>
+              <p className="text-sm font-semibold text-ink mb-2">Test-Retest Correlations (Split-Half)</p>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Pearson r</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">Spearman &rho;</th>
+                    <tr>
+                      <th className="text-left">Scale</th>
+                      <th className="text-right">Pearson r</th>
+                      <th className="text-right">Spearman &rho;</th>
                     </tr>
                   </thead>
                   <tbody>
                     {TIER2_TEST_RETEST.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
-                        <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                      <tr key={row.scale}>
+                        <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">{row.pearsonR.toFixed(4)}</td>
-                        <td className="text-right py-2 pl-3 font-mono">{row.spearmanRho.toFixed(4)}</td>
+                        <td className="num">{row.pearsonR.toFixed(4)}</td>
+                        <td className="num">{row.spearmanRho.toFixed(4)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -599,28 +557,28 @@ export default function LogprobsTab() {
 
             {/* Bland-Altman */}
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-2">Bland-Altman Analysis (Mean Bias &amp; Limits of Agreement)</p>
+              <p className="text-sm font-semibold text-ink mb-2">Bland-Altman Analysis (Mean Bias &amp; Limits of Agreement)</p>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-3 font-medium text-gray-500">Mean Bias</th>
-                      <th className="text-right py-2 pl-3 font-medium text-gray-500">Std of Differences</th>
+                    <tr>
+                      <th className="text-left">Scale</th>
+                      <th className="text-right">Mean Bias</th>
+                      <th className="text-right">Std of Differences</th>
                     </tr>
                   </thead>
                   <tbody>
                     {TIER2_BLAND_ALTMAN.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
-                        <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                      <tr key={row.scale}>
+                        <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-3 font-mono">
-                          <span className={Math.abs(row.meanBias) < 0.001 ? 'text-green-600' : 'text-amber-600'}>
+                        <td className="num">
+                          <span className={Math.abs(row.meanBias) < 0.001 ? 'muted' : 'text-ink font-semibold'}>
                             {row.meanBias.toFixed(4)}
                           </span>
                         </td>
-                        <td className="text-right py-2 pl-3 font-mono">{row.meanStdDiff.toFixed(4)}</td>
+                        <td className="num">{row.meanStdDiff.toFixed(4)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -629,7 +587,7 @@ export default function LogprobsTab() {
             </div>
 
             {/* Regression callout */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+            <div className="callout text-sm">
               <p className="font-semibold mb-1">Variance-Over-Time Regression</p>
               <p>
                 Linear regression across 20 sequential samples: slope = <span className="font-mono">{REGRESSION.slope.toFixed(6)}</span>,
@@ -649,41 +607,40 @@ export default function LogprobsTab() {
           onClick={() => setShowTier3(!showTier3)}
         >
           <div className="flex items-center space-x-2">
-            <Target className="w-5 h-5 text-emerald-600" />
-            <h3 className="text-lg font-semibold text-gray-900">Tier 3: Confidence Intervals &amp; Effect Sizes</h3>
-            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">Bootstrap &amp; Non-parametric</span>
+            <h3 className="section-title">Tier 3: Confidence Intervals &amp; Effect Sizes</h3>
+            <span className="chip-accent">Bootstrap &amp; Non-parametric</span>
           </div>
-          {showTier3 ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
+          <span className="text-sm font-medium text-gold">{showTier3 ? 'Hide' : 'Show'}</span>
         </button>
 
         {showTier3 && (
           <div className="mt-4 space-y-6">
             {/* Bootstrap CI Table */}
             <div>
-              <p className="text-sm font-semibold text-gray-700 mb-2">Bootstrap 95% Confidence Intervals (1000 resamples)</p>
+              <p className="text-sm font-semibold text-ink mb-2">Bootstrap 95% Confidence Intervals (1000 resamples)</p>
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="data-table w-full text-sm">
                   <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-2 pr-4 font-medium text-gray-500">Scale</th>
-                      <th className="text-right py-2 px-2 font-medium text-gray-500">Variance (point)</th>
-                      <th className="text-right py-2 px-2 font-medium text-gray-500">Var 95% CI</th>
-                      <th className="text-right py-2 px-2 font-medium text-gray-500">Consistency (point)</th>
-                      <th className="text-right py-2 pl-2 font-medium text-gray-500">Con 95% CI</th>
+                    <tr>
+                      <th className="text-left">Scale</th>
+                      <th className="text-right">Variance (point)</th>
+                      <th className="text-right">Var 95% CI</th>
+                      <th className="text-right">Consistency (point)</th>
+                      <th className="text-right">Con 95% CI</th>
                     </tr>
                   </thead>
                   <tbody>
                     {TIER3_BOOTSTRAP.map((row) => (
-                      <tr key={row.scale} className="border-b border-gray-100">
-                        <td className="py-2 pr-4 capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
+                      <tr key={row.scale}>
+                        <td className="capitalize font-medium" style={{ color: SCALE_COLORS[row.scale] }}>
                           {row.scale}
                         </td>
-                        <td className="text-right py-2 px-2 font-mono">{row.varPoint.toFixed(4)}</td>
-                        <td className="text-right py-2 px-2 font-mono text-gray-500">
+                        <td className="num">{row.varPoint.toFixed(4)}</td>
+                        <td className="num muted">
                           [{row.varLower.toFixed(4)}, {row.varUpper.toFixed(4)}]
                         </td>
-                        <td className="text-right py-2 px-2 font-mono">{(row.conPoint * 100).toFixed(2)}%</td>
-                        <td className="text-right py-2 pl-2 font-mono text-gray-500">
+                        <td className="num">{(row.conPoint * 100).toFixed(2)}%</td>
+                        <td className="num muted">
                           [{(row.conLower * 100).toFixed(2)}%, {(row.conUpper * 100).toFixed(2)}%]
                         </td>
                       </tr>
@@ -694,40 +651,37 @@ export default function LogprobsTab() {
             </div>
 
             {/* Friedman Test callout */}
-            <div className={`border rounded-lg p-4 text-sm ${FRIEDMAN.significant ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-green-50 border-green-200 text-green-800'}`}>
-              <div className="flex items-center space-x-2 mb-1">
-                {FRIEDMAN.significant ? <AlertTriangle className="w-4 h-4 text-amber-600" /> : <CheckCircle className="w-4 h-4 text-green-600" />}
-                <p className="font-semibold">Friedman Test (Non-parametric ANOVA for Repeated Measures)</p>
-              </div>
+            <div className={FRIEDMAN.significant ? 'callout-ink text-sm' : 'callout text-sm'}>
+              <p className="font-semibold mb-1">Friedman Test (Non-parametric ANOVA for Repeated Measures)</p>
               <p>
                 &chi;&sup2; = <span className="font-mono">{FRIEDMAN.chiSquared.toFixed(4)}</span>,
                 p = <span className="font-mono">{FRIEDMAN.pValue.toExponential(2)}</span>.
                 {FRIEDMAN.significant
-                  ? ' Significant differences exist between scales. Scale choice materially affects reliability.'
-                  : ' No significant differences between scales.'}
+                  ? ' Result: statistically significant. Significant differences exist between scales. Scale choice materially affects reliability.'
+                  : ' Result: not significant. No significant differences between scales.'}
               </p>
             </div>
 
             {/* Eta-Squared callout with horizontal bar */}
-            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm text-indigo-800">
+            <div className="callout text-sm">
               <p className="font-semibold mb-3">Effect Sizes (&eta;&sup2;) &mdash; What Drives Variance?</p>
               <div className="space-y-3">
                 {[
-                  { label: 'By Question', value: ETA_SQUARED.byQuestion, color: '#8b5cf6' },
-                  { label: 'By Text', value: ETA_SQUARED.byText, color: '#3b82f6' },
-                  { label: 'By Scale', value: ETA_SQUARED.byScale, color: '#10b981' },
+                  { label: 'By Question', value: ETA_SQUARED.byQuestion, t: 1.0 },
+                  { label: 'By Text', value: ETA_SQUARED.byText, t: 0.5 },
+                  { label: 'By Scale', value: ETA_SQUARED.byScale, t: 0.0 },
                 ].map((factor) => {
                   const maxEta = Math.max(ETA_SQUARED.byScale, ETA_SQUARED.byText, ETA_SQUARED.byQuestion)
                   const pct = (factor.value / maxEta) * 100
                   return (
                     <div key={factor.label} className="flex items-center gap-3">
-                      <span className="w-28 text-sm font-medium text-gray-700 flex-shrink-0">{factor.label}</span>
-                      <div className="flex-1 bg-gray-200 rounded-full h-5 overflow-hidden">
+                      <span className="w-28 text-sm font-medium text-ink flex-shrink-0">{factor.label}</span>
+                      <div className="flex-1 bg-hair rounded-full h-5 overflow-hidden">
                         <div
                           className="h-full rounded-full flex items-center justify-end pr-2"
-                          style={{ width: `${pct}%`, backgroundColor: factor.color }}
+                          style={{ width: `${pct}%`, backgroundColor: magnitudeColor(factor.t) }}
                         >
-                          <span className="text-white text-xs font-mono font-bold">
+                          <span className="text-xs font-mono font-bold" style={{ color: onMagnitude(factor.t) }}>
                             {factor.value.toFixed(4)}
                           </span>
                         </div>
@@ -736,7 +690,7 @@ export default function LogprobsTab() {
                   )
                 })}
               </div>
-              <p className="mt-3 text-xs text-indigo-600">
+              <p className="mt-3 text-xs muted">
                 <strong>Question type</strong> explains 8&times; more variance than scale choice.
                 The feature being measured matters far more than how finely you measure it.
               </p>
